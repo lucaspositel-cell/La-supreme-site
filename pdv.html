@@ -196,34 +196,87 @@ async function fecharCaixa(id,esperado){
 
 function reportRow(label,value){return `<div class="row"><span class="grow">${esc(label)}</span><b>${value}</b></div>`}
 
+let reportPreset='hoje', reportIni='', reportFim='';
+
+function localDateStr(d){const y=d.getFullYear(),m=String(d.getMonth()+1).padStart(2,'0'),day=String(d.getDate()).padStart(2,'0');return `${y}-${m}-${day}`}
+function reportRange(preset=reportPreset){
+  const now=new Date(), end=new Date(now); end.setHours(23,59,59,999);
+  let start=new Date(now); start.setHours(0,0,0,0);
+  if(preset==='ontem'){start.setDate(start.getDate()-1);end.setDate(end.getDate()-1)}
+  if(preset==='7dias')start.setDate(start.getDate()-6);
+  if(preset==='30dias')start.setDate(start.getDate()-29);
+  if(preset==='personalizado'){
+    if(!reportIni||!reportFim)return null;
+    start=new Date(reportIni+'T00:00:00');end=new Date(reportFim+'T23:59:59.999');
+  }
+  return {start,end};
+}
+function reportFilterBar(){
+  const btn=(id,label)=>`<button class="${reportPreset===id?'yellow':'dark'}" onclick="setReportPreset('${id}')">${label}</button>`;
+  return `<div class="card" style="margin-top:10px"><div class="small">Período do relatório</div><div class="row" style="margin-top:8px;overflow:auto">${btn('hoje','Hoje')}${btn('ontem','Ontem')}${btn('7dias','7 dias')}${btn('30dias','30 dias')}${btn('personalizado','Personalizado')}</div>${reportPreset==='personalizado'?`<div class="actions field"><input id="rini" type="date" value="${esc(reportIni)}"><input id="rfim" type="date" value="${esc(reportFim)}"></div><button class="ok" style="width:100%;margin-top:8px" onclick="applyCustomReport()">Aplicar período</button>`:''}</div>`;
+}
+function setReportPreset(p){
+  reportPreset=p;
+  if(p==='personalizado'){
+    const now=new Date(); if(!reportFim)reportFim=localDateStr(now); if(!reportIni)reportIni=reportFim;
+    reports.innerHTML='<h2>Relatórios</h2>'+reportFilterBar()+'<div class="small" style="margin-top:10px">Escolha as datas e toque em Aplicar período.</div>';
+    return;
+  }
+  loadRelatorios();
+}
+function applyCustomReport(){
+  reportIni=document.getElementById('rini').value;reportFim=document.getElementById('rfim').value;
+  if(!reportIni||!reportFim)return alert('Informe a data inicial e final.');
+  if(reportIni>reportFim)return alert('A data inicial não pode ser maior que a final.');
+  loadRelatorios();
+}
 async function loadRelatorios(){
-  reports.innerHTML='<h2>Relatórios</h2><div class="small">Carregando...</div>';
+  reports.innerHTML='<h2>Relatórios</h2>'+reportFilterBar()+'<div class="small" style="margin-top:10px">Carregando...</div>';
   try{
-    const [geral,pag,orig,dias,prods,sabores,caixas] = await Promise.all([
-      api('relatorio_vendas_geral?select=*'),
-      api('relatorio_por_pagamento?select=*'),
-      api('relatorio_por_origem?select=*'),
-      api('relatorio_vendas_por_dia?select=*&order=data.desc&limit=14'),
-      api('relatorio_produtos?select=*&order=quantidade.desc,faturamento.desc&limit=10'),
-      api('relatorio_sabores?select=*&order=ocorrencias.desc&limit=10'),
-      api('relatorio_caixas?select=*&order=aberto_em.desc&limit=10')
-    ]);
-    const g=geral[0]||{};
-    const payHtml=pag.length?pag.map(x=>reportRow(x.forma_pagamento, money(x.total)+' · '+x.quantidade_vendas+' venda(s)')).join(''):'<div class="small">Sem vendas.</div>';
-    const origHtml=orig.length?orig.map(x=>reportRow(String(x.origem||'').replace('balcao','Balcão').replace('mesa','Mesas'), money(x.total)+' · '+x.quantidade_vendas+' venda(s)')).join(''):'<div class="small">Sem vendas.</div>';
-    const diasHtml=dias.length?dias.map(x=>reportRow(new Date(x.data+'T12:00:00').toLocaleDateString('pt-BR'), money(x.faturamento)+' · '+x.quantidade_vendas+' venda(s)')).join(''):'<div class="small">Sem vendas.</div>';
-    const prodHtml=prods.length?prods.map((x,i)=>`<div class="item"><b>${i+1}. ${esc(x.produto_nome)}${x.tamanho?' — '+esc(x.tamanho):''}</b><div class="small">${x.quantidade} un. · ${money(x.faturamento)}</div></div>`).join(''):'<div class="small">Sem itens.</div>';
-    const sabHtml=sabores.length?sabores.map((x,i)=>`<div class="item"><b>${i+1}. ${esc(x.sabor)}</b><div class="small">${x.ocorrencias} ocorrência(s)</div></div>`).join(''):'<div class="small">Sem sabores.</div>';
-    const cxHtml=caixas.length?caixas.map(x=>`<div class="item"><b>${esc(x.operador||'Operador')} — ${String(x.status).toUpperCase()}</b><div class="small">Abertura: ${new Date(x.aberto_em).toLocaleString('pt-BR')}${x.fechado_em?' · Fechamento: '+new Date(x.fechado_em).toLocaleString('pt-BR'):''}</div><div class="small">Inicial ${money(x.valor_abertura)}${x.valor_fechamento_informado!=null?' · Informado '+money(x.valor_fechamento_informado)+' · Diferença '+money(x.diferenca):''}</div></div>`).join(''):'<div class="small">Sem caixas.</div>';
-    reports.innerHTML=`<h2>Relatórios</h2>
-      <div class="card" style="margin-top:10px"><div class="small">Resumo geral</div><div class="total">${money(g.faturamento_total||0)}</div>${reportRow('Vendas',Number(g.quantidade_vendas||0))}${reportRow('Ticket médio',money(g.ticket_medio||0))}${reportRow('Descontos',money(g.descontos_total||0))}</div>
+    const rg=reportRange();
+    if(!rg)return;
+    const ini=encodeURIComponent(rg.start.toISOString()), fim=encodeURIComponent(rg.end.toISOString());
+    const vendas=await api(`comandas?status=eq.fechada&fechada_em=gte.${ini}&fechada_em=lte.${fim}&select=id,tipo,total,subtotal,desconto,forma_pagamento,fechada_em`);
+    const ids=vendas.map(v=>v.id);
+    let itens=[];
+    if(ids.length)itens=await api(`comanda_itens?comanda_id=in.(${ids.join(',')})&select=comanda_id,produto_nome,tamanho,sabor_1,sabor_2,quantidade,total`);
+    const caixas=await api(`caixa_sessoes?aberto_em=gte.${ini}&aberto_em=lte.${fim}&select=*&order=aberto_em.desc&limit=50`);
+
+    const faturamento=vendas.reduce((n,v)=>n+Number(v.total||0),0);
+    const descontos=vendas.reduce((n,v)=>n+Number(v.desconto||0),0);
+    const ticket=vendas.length?faturamento/vendas.length:0;
+
+    const pgMap={}; vendas.forEach(v=>{const k=v.forma_pagamento||'Não informado';pgMap[k]??={total:0,q:0};pgMap[k].total+=Number(v.total||0);pgMap[k].q++});
+    const payHtml=Object.keys(pgMap).length?Object.entries(pgMap).sort((a,b)=>b[1].total-a[1].total).map(([k,x])=>reportRow(k,money(x.total)+' · '+x.q+' venda(s)')).join(''):'<div class="small">Sem vendas.</div>';
+
+    const orMap={}; vendas.forEach(v=>{const k=v.tipo||'outro';orMap[k]??={total:0,q:0};orMap[k].total+=Number(v.total||0);orMap[k].q++});
+    const origemNome=k=>String(k).replace('balcao','Balcão').replace('mesa','Mesas').replace('delivery','Delivery');
+    const origHtml=Object.keys(orMap).length?Object.entries(orMap).sort((a,b)=>b[1].total-a[1].total).map(([k,x])=>reportRow(origemNome(k),money(x.total)+' · '+x.q+' venda(s)')).join(''):'<div class="small">Sem vendas.</div>';
+
+    const dayMap={}; vendas.forEach(v=>{const k=localDateStr(new Date(v.fechada_em));dayMap[k]??={total:0,q:0};dayMap[k].total+=Number(v.total||0);dayMap[k].q++});
+    const diasHtml=Object.keys(dayMap).length?Object.entries(dayMap).sort((a,b)=>b[0].localeCompare(a[0])).map(([k,x])=>reportRow(new Date(k+'T12:00:00').toLocaleDateString('pt-BR'),money(x.total)+' · '+x.q+' venda(s)')).join(''):'<div class="small">Sem vendas.</div>';
+
+    const prodMap={}; itens.forEach(x=>{const k=(x.produto_nome||'Produto')+'||'+(x.tamanho||'');prodMap[k]??={nome:x.produto_nome||'Produto',tam:x.tamanho||'',q:0,total:0};prodMap[k].q+=Number(x.quantidade||0);prodMap[k].total+=Number(x.total||0)});
+    const prods=Object.values(prodMap).sort((a,b)=>b.q-a.q||b.total-a.total).slice(0,10);
+    const prodHtml=prods.length?prods.map((x,i)=>`<div class="item"><b>${i+1}. ${esc(x.nome)}${x.tam?' — '+esc(x.tam):''}</b><div class="small">${x.q} un. · ${money(x.total)}</div></div>`).join(''):'<div class="small">Sem itens.</div>';
+
+    const sabMap={}; itens.forEach(x=>{[x.sabor_1,x.sabor_2].filter(Boolean).forEach(s=>sabMap[s]=(sabMap[s]||0)+Number(x.quantidade||1))});
+    const sabores=Object.entries(sabMap).sort((a,b)=>b[1]-a[1]).slice(0,10);
+    const sabHtml=sabores.length?sabores.map(([s,q],i)=>`<div class="item"><b>${i+1}. ${esc(s)}</b><div class="small">${q} ocorrência(s)</div></div>`).join(''):'<div class="small">Sem sabores.</div>';
+
+    const cxHtml=caixas.length?caixas.map(x=>`<div class="item"><b>${esc(x.operador||'Operador')} — ${String(x.status).toUpperCase()}</b><div class="small">Abertura: ${new Date(x.aberto_em).toLocaleString('pt-BR')}${x.fechado_em?' · Fechamento: '+new Date(x.fechado_em).toLocaleString('pt-BR'):''}</div><div class="small">Inicial ${money(x.valor_abertura)}${x.valor_fechamento_informado!=null?' · Informado '+money(x.valor_fechamento_informado)+' · Diferença '+money(x.diferenca):''}</div></div>`).join(''):'<div class="small">Sem caixas no período.</div>';
+
+    const label=rg.start.toLocaleDateString('pt-BR')+(localDateStr(rg.start)!==localDateStr(rg.end)?' até '+rg.end.toLocaleDateString('pt-BR'):'');
+    reports.innerHTML=`<h2>Relatórios</h2>${reportFilterBar()}
+      <div class="small" style="margin-top:10px">Exibindo: ${label}</div>
+      <div class="card" style="margin-top:10px"><div class="small">Resumo do período</div><div class="total">${money(faturamento)}</div>${reportRow('Vendas',vendas.length)}${reportRow('Ticket médio',money(ticket))}${reportRow('Descontos',money(descontos))}</div>
       <div class="card" style="margin-top:10px"><h3>Formas de pagamento</h3>${payHtml}</div>
       <div class="card" style="margin-top:10px"><h3>Origem das vendas</h3>${origHtml}</div>
-      <div class="card" style="margin-top:10px"><h3>Últimos dias</h3>${diasHtml}</div>
+      <div class="card" style="margin-top:10px"><h3>Vendas por dia</h3>${diasHtml}</div>
       <div class="card" style="margin-top:10px"><h3>Produtos mais vendidos</h3>${prodHtml}</div>
       <div class="card" style="margin-top:10px"><h3>Sabores mais vendidos</h3>${sabHtml}</div>
       <div class="card" style="margin-top:10px"><h3>Histórico de caixas</h3>${cxHtml}</div>`;
-  }catch(e){reports.innerHTML='<h2>Relatórios</h2><div class="notice">Erro: '+esc(e.message)+'</div>'}
+  }catch(e){reports.innerHTML='<h2>Relatórios</h2>'+reportFilterBar()+'<div class="notice">Erro: '+esc(e.message)+'</div>'}
 }
 
 function closeM(){modal.innerHTML='';curT=curC=null;sitems=[]}
