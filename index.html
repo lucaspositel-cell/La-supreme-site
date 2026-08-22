@@ -181,7 +181,7 @@ a{color:inherit}
   <nav class="category-nav"><button class="cat-btn" onclick="document.getElementById('cat-tradicionais').scrollIntoView({behavior:'smooth',block:'start'})">🍕 Tradicionais</button><button class="cat-btn" onclick="document.getElementById('cat-queijos').scrollIntoView({behavior:'smooth',block:'start'})">🧀 Queijos</button><button class="cat-btn" onclick="document.getElementById('cat-carnes').scrollIntoView({behavior:'smooth',block:'start'})">🥩 Carnes</button><button class="cat-btn" onclick="document.getElementById('cat-verduras-e-legumes').scrollIntoView({behavior:'smooth',block:'start'})">🥬 Verduras e Legumes</button><button class="cat-btn" onclick="document.getElementById('cat-frutos-do-mar').scrollIntoView({behavior:'smooth',block:'start'})">🦐 Frutos do Mar</button><button class="cat-btn" onclick="document.getElementById('cat-pizzas-doces').scrollIntoView({behavior:'smooth',block:'start'})">🍫 Pizzas Doces</button><button class="cat-btn" onclick="document.getElementById('cat-calzones').scrollIntoView({behavior:'smooth',block:'start'})">🥟 Calzones</button><button class="cat-btn" onclick="document.getElementById('cat-crostinis').scrollIntoView({behavior:'smooth',block:'start'})">🥖 Crostinis</button><button class="cat-btn" onclick="document.getElementById('cat-pizza-rolls').scrollIntoView({behavior:'smooth',block:'start'})">🍕 Pizza Rolls</button><button class="cat-btn" onclick="document.getElementById('cat-bebidas').scrollIntoView({behavior:'smooth',block:'start'})">🥤 Bebidas</button></nav>
   <div class="note">
     <strong>Como pedir:</strong> escolha o sabor e toque em <strong>“Pedir pelo WhatsApp”</strong>.
-    <br><strong>Bordas recheadas:</strong> Catupiry ou Cheddar — <strong>+ R$ 12,00</strong>.
+    <br><strong>Bordas recheadas:</strong> Catupiry ou Cheddar — <strong>+ R$ 12,00</strong>.<br><strong>Pizza meio a meio:</strong> 50% do valor de cada sabor.
     Entregas em Maristela, Laranjal Paulista e Pereiras — consulte condições e taxa no atendimento.
   </div>
 
@@ -1740,7 +1740,7 @@ function openProduct(p){
       <p class="desc">${escapeHtml(p.desc)}</p>
       <div class="form-grid">
         <div class="field full"><label>Tamanho</label><div class="choice-row"><button class="choice active" data-size="broto" onclick="chooseSize(this)">Broto 25 cm<br><small>${money(p.broto)}</small></button><button class="choice" data-size="grande" onclick="chooseSize(this)">Grande 35 cm<br><small>${money(p.grande)}</small></button></div></div>
-        <div class="field full"><label>Segundo sabor (opcional — meio a meio)</label><select id="halfFlavor" onchange="refreshProductPrice()"><option value="">Pizza inteira — ${escapeHtml(p.name)}</option>${options}</select><div class="half-note">No meio a meio, o sistema considera o sabor de maior valor.</div></div>
+        <div class="field full"><label>Segundo sabor (opcional — meio a meio)</label><select id="halfFlavor" onchange="refreshProductPrice()"><option value="">Pizza inteira — ${escapeHtml(p.name)}</option>${options}</select><div class="half-note">No meio a meio, o valor é calculado por 50% de cada sabor.</div></div>
         <div class="field full"><label>Borda recheada</label><select id="crust" onchange="refreshProductPrice()"><option value="">Sem borda</option><option value="Catupiry">Catupiry + R$ 12,00</option><option value="Cheddar">Cheddar + R$ 12,00</option></select></div>
         <div class="field full"><label>Observações</label><textarea id="itemObs" placeholder="Ex.: sem cebola, pouco orégano..."></textarea></div>
       </div>
@@ -1758,7 +1758,14 @@ function findPizza(name){return allPizzaProducts().find(p=>p.name===name);}
 function calcPizza(){
   const size=selectedSize(), p=currentProduct;
   let base=Number(p[size]||0), half=document.getElementById('halfFlavor')?.value||'';
-  if(half){const p2=findPizza(half); if(p2) base=Math.max(base,Number(p2[size]||0));}
+  if(half){
+    const p2=findPizza(half);
+    if(p2){
+      const price1=Number(p[size]||0);
+      const price2=Number(p2[size]||0);
+      base=(price1*0.5)+(price2*0.5);
+    }
+  }
   const crust=document.getElementById('crust')?.value||'';
   return {base,total:base+(crust?12:0),half,crust,size};
 }
@@ -1988,8 +1995,8 @@ window.addEventListener('afterprint',()=>{
 /* ===== LA SUPREME - PEDIDOS ONLINE =====
    Preencha SUPABASE_URL e SUPABASE_ANON_KEY depois de criar o projeto.
 */
-const SUPABASE_URL = 'https://stacwvpsfjvyvbjwagtd.supabase.co';
-const SUPABASE_ANON_KEY = 'sb_publishable_uM7vsWn839Zmj1lTk3yKyg_b5Vj501Z';
+const SUPABASE_URL = 'COLE_AQUI_SUPABASE_URL';
+const SUPABASE_ANON_KEY = 'COLE_AQUI_SUPABASE_ANON_KEY';
 
 function supabaseConfigured(){
   return SUPABASE_URL.startsWith('https://') &&
