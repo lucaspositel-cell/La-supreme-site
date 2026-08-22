@@ -283,10 +283,44 @@ async function loadRelatorios(){
     const rg=reportRange();
     if(!rg)return;
     const ini=encodeURIComponent(rg.start.toISOString()), fim=encodeURIComponent(rg.end.toISOString());
-    const vendas=await api(`comandas?status=eq.fechada&fechada_em=gte.${ini}&fechada_em=lte.${fim}&select=id,tipo,cliente_nome,total,subtotal,desconto,forma_pagamento,fechada_em`);
-    const ids=vendas.map(v=>v.id);
+    const vendasInternas=await api(`comandas?status=eq.fechada&fechada_em=gte.${ini}&fechada_em=lte.${fim}&select=id,tipo,cliente_nome,total,subtotal,desconto,forma_pagamento,fechada_em`);
+    const ids=vendasInternas.map(v=>v.id);
     let itens=[];
     if(ids.length)itens=await api(`comanda_itens?comanda_id=in.(${ids.join(',')})&select=comanda_id,produto_nome,tamanho,sabor_1,sabor_2,quantidade,total`);
+
+    // Delivery: só entra no faturamento quando o pedido estiver concluído.
+    const pedidosDelivery=await api(`orders?status=eq.concluido&created_at=gte.${ini}&created_at=lte.${fim}&select=id,order_no,created_at,customer_name,payment,subtotal,delivery_fee,total,items`);
+    const vendasDelivery=pedidosDelivery.map(o=>({
+      id:'delivery_'+o.id,
+      tipo:'delivery',
+      cliente_nome:o.customer_name||null,
+      total:Number(o.total||0),
+      subtotal:Number(o.subtotal||0),
+      desconto:0,
+      forma_pagamento:o.payment||'Não informado',
+      fechada_em:o.created_at,
+      _order_no:o.order_no,
+      _delivery:true
+    }));
+    pedidosDelivery.forEach(o=>{
+      (Array.isArray(o.items)?o.items:[]).forEach((x,idx)=>{
+        const nome=x.name||'Produto';
+        const qtd=Number(x.qty||1);
+        const unit=Number(x.unit||0);
+        // Para meio a meio, tenta aproveitar os sabores se vierem estruturados;
+        // caso contrário mantém o nome completo do item.
+        itens.push({
+          comanda_id:'delivery_'+o.id,
+          produto_nome:nome,
+          tamanho:x.size||'',
+          sabor_1:x.flavor1||x.sabor_1||'',
+          sabor_2:x.flavor2||x.sabor_2||'',
+          quantidade:qtd,
+          total:unit*qtd
+        });
+      });
+    });
+    const vendas=[...vendasInternas,...vendasDelivery];
     const caixas=await api(`caixa_sessoes?aberto_em=gte.${ini}&aberto_em=lte.${fim}&select=*&order=aberto_em.desc&limit=50`);
 
     const faturamento=vendas.reduce((n,v)=>n+Number(v.total||0),0);
@@ -318,7 +352,8 @@ async function loadRelatorios(){
       const origem=String(v.tipo||'outro').replace('balcao','Balcão').replace('mesa','Mesa').replace('delivery','Delivery');
       const hora=new Date(v.fechada_em).toLocaleTimeString('pt-BR',{hour:'2-digit',minute:'2-digit'});
       const qtd=itens.filter(x=>String(x.comanda_id)===String(v.id)).reduce((n,x)=>n+Number(x.quantidade||1),0);
-      return `<div class="item" style="cursor:pointer" onclick="vendaDetalheHtml(window._reportVendas.find(x=>String(x.id)==='${v.id}'),window._reportItens.filter(x=>String(x.comanda_id)==='${v.id}'))"><div class="row"><div class="grow"><b>${hora} · ${origem}</b><div class="small">${esc(v.forma_pagamento||'Não informado')} · ${qtd} item(ns)${v.cliente_nome?' · '+esc(v.cliente_nome):''}</div></div><b>${money(v.total)}</b></div><div class="small">Toque para ver os detalhes</div></div>`;
+      const pedido=v._order_no?' · Pedido '+esc(v._order_no):'';
+      return `<div class="item" style="cursor:pointer" onclick="vendaDetalheHtml(window._reportVendas.find(x=>String(x.id)==='${v.id}'),window._reportItens.filter(x=>String(x.comanda_id)==='${v.id}'))"><div class="row"><div class="grow"><b>${hora} · ${origem}${pedido}</b><div class="small">${esc(v.forma_pagamento||'Não informado')} · ${qtd} item(ns)${v.cliente_nome?' · '+esc(v.cliente_nome):''}</div></div><b>${money(v.total)}</b></div><div class="small">Toque para ver os detalhes</div></div>`;
     }).join(''):'<div class="small">Sem vendas no período.</div>';
 
     const cxHtml=caixas.length?caixas.map(x=>`<div class="item"><b>${esc(x.operador||'Operador')} — ${String(x.status).toUpperCase()}</b><div class="small">Abertura: ${new Date(x.aberto_em).toLocaleString('pt-BR')}${x.fechado_em?' · Fechamento: '+new Date(x.fechado_em).toLocaleString('pt-BR'):''}</div><div class="small">Inicial ${money(x.valor_abertura)}${x.valor_fechamento_informado!=null?' · Informado '+money(x.valor_fechamento_informado)+' · Diferença '+money(x.diferenca):''}</div></div>`).join(''):'<div class="small">Sem caixas no período.</div>';
