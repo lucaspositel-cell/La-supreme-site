@@ -1,6 +1,6 @@
 <!doctype html><html lang="pt-BR"><head><meta charset="utf-8"><meta name="viewport" content="width=device-width,initial-scale=1"><title>La Supreme — PDV</title><style>
 :root{--bg:#120f0d;--p:#211a17;--p2:#2b211d;--t:#fff8ed;--m:#c8b9ad;--g:#dfb25b;--ok:#1d8b54;--r:#b6282c;--l:#41332c}*{box-sizing:border-box}body{margin:0;background:var(--bg);color:var(--t);font:14px Arial}header{position:sticky;top:0;z-index:10;background:#100d0cf5;border-bottom:1px solid var(--l);padding:12px}.h,.wrap{max-width:1100px;margin:auto}.h{display:flex;align-items:center}h1{font:700 22px Georgia;margin:0}.gold{color:var(--g)}.tabs{display:flex;gap:8px;overflow:auto;padding:12px 0}button{border:0;border-radius:10px;padding:10px;font-weight:800}.tab{background:var(--p);color:#fff;border:1px solid var(--l);white-space:nowrap}.tab.on{background:var(--g);color:#241704}.wrap{padding:0 12px 80px}.notice,.card{background:var(--p);border:1px solid var(--l);border-radius:14px;padding:12px}.notice{color:var(--m);margin-bottom:12px}.tables{display:grid;grid-template-columns:repeat(3,1fr);gap:10px}.mesa{background:linear-gradient(var(--p2),var(--p));border:1px solid var(--l);border-radius:15px;padding:14px}.mesa.livre{border-color:#315d43}.mesa.ocupada{border-color:var(--g)}.mesa b{font:700 20px Georgia}.small{color:var(--m);font-size:12px;margin-top:6px}.hidden{display:none}.modalbg{position:fixed;inset:0;background:#0009;z-index:50;display:flex;align-items:flex-end;justify-content:center}.modal{background:#181311;width:min(760px,100%);max-height:92vh;overflow:auto;border-radius:18px 18px 0 0;padding:14px}.row{display:flex;gap:8px;align-items:center}.grow{flex:1}input,select{width:100%;background:#211a17;color:#fff;border:1px solid var(--l);border-radius:9px;padding:10px}.field{margin-top:9px}.products{display:grid;grid-template-columns:1fr 1fr;gap:8px;max-height:42vh;overflow:auto;margin-top:9px}.prod{background:#241c19;border:1px solid var(--l);border-radius:11px;padding:9px}.prod h4{margin:0 0 5px}.prodBtns{display:grid;grid-template-columns:1fr 1fr;gap:5px;margin-top:7px}.ok{background:var(--ok);color:#fff}.yellow{background:var(--g);color:#241704}.red{background:var(--r);color:#fff}.dark{background:#392d27;color:#fff}.item{padding:7px 0;border-bottom:1px dashed #49372f}.total{font-size:20px;font-weight:900;margin:10px 0}.actions{display:grid;grid-template-columns:1fr 1fr;gap:7px}.counter{display:grid;grid-template-columns:1.1fr .9fr;gap:10px}@media(max-width:700px){.tables{grid-template-columns:repeat(2,1fr)}.products{grid-template-columns:1fr}.counter{grid-template-columns:1fr}}</style></head><body>
-<header><div class="h"><h1>LA <span class="gold">SUPREME</span> — PDV</h1></div></header><main class="wrap"><div class="tabs"><button class="tab" onclick="location.href='painel.html'">Delivery</button><button class="tab" id="tb" onclick="tab('balcao')">Balcão</button><button class="tab on" id="tm" onclick="tab('mesas')">Mesas</button><button class="tab" onclick="alert('Caixa será a próxima etapa')">Caixa</button><button class="tab" onclick="alert('Relatórios serão a próxima etapa')">Relatórios</button></div><div id="notice" class="notice">Conectando...</div><section id="mesas"><div id="tables" class="tables"></div></section><section id="balcao" class="hidden"><div class="counter"><div class="card"><h2>Balcão</h2><input id="bq" placeholder="Buscar produto" oninput="renderProducts('b')"><div id="bp" class="products"></div></div><div class="card"><h2>Comanda</h2><div class="field"><input id="bc" placeholder="Cliente (opcional)"></div><div id="bitems"></div><div class="total">Total: <span id="btot">R$ 0,00</span></div><div class="field"><select id="bpay"><option>Pix</option><option>Dinheiro</option><option>Cartão Débito</option><option>Cartão Crédito</option></select></div><div class="actions"><button class="dark" onclick="bCart=[];renderBCart()">Limpar</button><button class="ok" onclick="finishB()">Fechar venda</button></div></div></div></section></main><div id="modal"></div>
+<header><div class="h"><h1>LA <span class="gold">SUPREME</span> — PDV</h1></div></header><main class="wrap"><div class="tabs"><button class="tab" onclick="location.href='painel.html'">Delivery</button><button class="tab" id="tb" onclick="tab('balcao')">Balcão</button><button class="tab on" id="tm" onclick="tab('mesas')">Mesas</button><button class="tab" id="tc" onclick="tab('caixa')">Caixa</button><button class="tab" onclick="alert('Relatórios serão a próxima etapa')">Relatórios</button></div><div id="notice" class="notice">Conectando...</div><section id="mesas"><div id="tables" class="tables"></div></section><section id="balcao" class="hidden"><div class="counter"><div class="card"><h2>Balcão</h2><input id="bq" placeholder="Buscar produto" oninput="renderProducts('b')"><div id="bp" class="products"></div></div><div class="card"><h2>Comanda</h2><div class="field"><input id="bc" placeholder="Cliente (opcional)"></div><div id="bitems"></div><div class="total">Total: <span id="btot">R$ 0,00</span></div><div class="field"><select id="bpay"><option>Pix</option><option>Dinheiro</option><option>Cartão Débito</option><option>Cartão Crédito</option></select></div><div class="actions"><button class="dark" onclick="bCart=[];renderBCart()">Limpar</button><button class="ok" onclick="finishB()">Fechar venda</button></div></div></div></section><section id="caixa" class="hidden"><div id="cashbox" class="card"><h2>Caixa</h2><div class="small">Carregando...</div></div></section></main><div id="modal"></div>
 <script>
 const SUPABASE_URL='https://stacwvpsfjvyvbjwagtd.supabase.co';
 const SUPABASE_ANON_KEY='sb_publishable_uM7vsWn839Zmj1lTk3yKyg_b5Vj501Z';
@@ -18,9 +18,12 @@ async function api(p,o={}){
 function tab(x){
   mesas.classList.toggle('hidden',x!='mesas');
   balcao.classList.toggle('hidden',x!='balcao');
+  caixa.classList.toggle('hidden',x!='caixa');
   tm.classList.toggle('on',x=='mesas');
   tb.classList.toggle('on',x=='balcao');
+  tc.classList.toggle('on',x=='caixa');
   if(x=='balcao')renderProducts('b');
+  if(x=='caixa')loadCaixa();
 }
 
 async function load(){
@@ -135,6 +138,55 @@ async function finishB(){
   await api('comanda_itens',{method:'POST',body:JSON.stringify(bCart.map(x=>({comanda_id:c.id,...x})))});
   alert('Venda de balcão finalizada. Total: '+money(total));
   bCart=[];renderBCart();bc.value='';
+}
+
+
+async function loadCaixa(){
+  cashbox.innerHTML='<h2>Caixa</h2><div class="small">Carregando...</div>';
+  try{
+    const a=await api('caixa_sessoes?status=eq.aberto&select=*&order=aberto_em.desc&limit=1');
+    if(!a.length){
+      cashbox.innerHTML=`<h2>Caixa fechado</h2><div class="notice">Abra o caixa para iniciar o movimento do turno.</div><div class="field"><input id="cop" placeholder="Operador"></div><div class="field"><input id="cab" inputmode="decimal" value="0" placeholder="Valor inicial em dinheiro"></div><button class="ok" style="width:100%;margin-top:10px" onclick="abrirCaixa()">Abrir caixa</button>`;
+      return;
+    }
+    const c=a[0], inicio=encodeURIComponent(c.aberto_em);
+    const vendas=await api(`comandas?status=eq.fechada&fechada_em=gte.${inicio}&select=total,forma_pagamento,fechada_em`);
+    const movs=await api(`caixa_movimentos?caixa_id=eq.${c.id}&select=*&order=criado_em.desc`);
+    const soma=pg=>vendas.filter(v=>v.forma_pagamento===pg).reduce((n,v)=>n+Number(v.total||0),0);
+    const pix=soma('Pix'), din=soma('Dinheiro'), deb=soma('Cartão Débito'), cred=soma('Cartão Crédito');
+    const vendasTotal=vendas.reduce((n,v)=>n+Number(v.total||0),0);
+    const supr=movs.filter(m=>m.tipo==='suprimento').reduce((n,m)=>n+Number(m.valor||0),0);
+    const sang=movs.filter(m=>m.tipo==='sangria').reduce((n,m)=>n+Number(m.valor||0),0);
+    const esperado=Number(c.valor_abertura||0)+din+supr-sang;
+    cashbox.innerHTML=`<div class="row"><h2>Caixa aberto</h2><span class="grow"></span><b class="gold">${esc(c.operador||'Operador')}</b></div>
+      <div class="small">Aberto em ${new Date(c.aberto_em).toLocaleString('pt-BR')}</div>
+      <div class="total">Vendas do turno: ${money(vendasTotal)}</div>
+      <div class="card" style="margin-top:10px"><div class="row"><span class="grow">Dinheiro</span><b>${money(din)}</b></div><div class="row"><span class="grow">Pix</span><b>${money(pix)}</b></div><div class="row"><span class="grow">Débito</span><b>${money(deb)}</b></div><div class="row"><span class="grow">Crédito</span><b>${money(cred)}</b></div></div>
+      <div class="card" style="margin-top:10px"><div class="row"><span class="grow">Abertura</span><b>${money(c.valor_abertura)}</b></div><div class="row"><span class="grow">Suprimentos</span><b>${money(supr)}</b></div><div class="row"><span class="grow">Sangrias</span><b>-${money(sang)}</b></div><div class="row"><span class="grow"><b>Dinheiro esperado</b></span><b>${money(esperado)}</b></div></div>
+      <div class="actions" style="margin-top:10px"><button class="yellow" onclick="movCaixa('suprimento',${c.id})">+ Suprimento</button><button class="red" onclick="movCaixa('sangria',${c.id})">− Sangria</button></div>
+      <button class="ok" style="width:100%;margin-top:10px" onclick="fecharCaixa(${c.id},${esperado})">Fechar caixa</button>`;
+  }catch(e){cashbox.innerHTML='<h2>Caixa</h2><div class="notice">Erro: '+esc(e.message)+'</div>'}
+}
+
+async function abrirCaixa(){
+  const v=Number(String(cab.value).replace(',','.'))||0;
+  try{await api('caixa_sessoes',{method:'POST',body:JSON.stringify({operador:cop.value.trim()||'Operador',valor_abertura:v,status:'aberto'})});await loadCaixa()}catch(e){alert('Erro ao abrir caixa: '+e.message)}
+}
+
+async function movCaixa(tipo,id){
+  const nome=tipo==='sangria'?'Sangria':'Suprimento';
+  const v=prompt(nome+' — valor em R$'); if(v===null)return;
+  const valor=Number(String(v).replace(',','.')); if(!(valor>0))return alert('Informe um valor válido.');
+  const descricao=prompt('Descrição (opcional)')||null;
+  try{await api('caixa_movimentos',{method:'POST',body:JSON.stringify({caixa_id:id,tipo,valor,descricao})});await loadCaixa()}catch(e){alert('Erro: '+e.message)}
+}
+
+async function fecharCaixa(id,esperado){
+  const v=prompt('Dinheiro contado no caixa (R$)',Number(esperado).toFixed(2).replace('.',',')); if(v===null)return;
+  const informado=Number(String(v).replace(',','.')); if(!Number.isFinite(informado)||informado<0)return alert('Informe um valor válido.');
+  const dif=informado-Number(esperado);
+  if(!confirm('Esperado: '+money(esperado)+'\nInformado: '+money(informado)+'\nDiferença: '+money(dif)+'\n\nConfirmar fechamento?'))return;
+  try{await api(`caixa_sessoes?id=eq.${id}`,{method:'PATCH',body:JSON.stringify({status:'fechado',valor_fechamento_informado:informado,valor_fechamento_esperado:esperado,diferenca:dif,fechado_em:new Date().toISOString()})});alert('Caixa fechado. Diferença: '+money(dif));await loadCaixa()}catch(e){alert('Erro ao fechar caixa: '+e.message)}
 }
 
 function closeM(){modal.innerHTML='';curT=curC=null;sitems=[]}
