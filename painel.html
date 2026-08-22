@@ -90,7 +90,7 @@ function render(rows){
       ${o.general_obs?`<div class="muted" style="margin-top:8px"><b>Obs. gerais:</b> ${esc(o.general_obs)}</div>`:''}
       <div class="total">Subtotal: ${money(o.subtotal)}</div>
       <div class="actions">
-        <button class="print" onclick='printOrder(${JSON.stringify(o).replace(/'/g,"&#39;")})'>🖨️ Imprimir</button>
+        <button class="print" onclick='printOrder(${JSON.stringify(o).replace(/'/g,"&#39;")})'>🖨️ Imprimir cozinha</button>
         ${nextButton(o)}
       </div>
     </article>`;
@@ -109,13 +109,30 @@ async function statusOrder(id,status){
 function receipt(o){
   const W=32,L='-'.repeat(W),D='='.repeat(W),c=s=>' '.repeat(Math.max(0,Math.floor((W-String(s).length)/2)))+s;
   const wrap=(s,w=30)=>{let a=[],cur='';String(s||'').split(/\s+/).forEach(x=>{if((cur+' '+x).trim().length>w){if(cur)a.push(cur);cur=x}else cur=(cur+' '+x).trim()});if(cur)a.push(cur);return a};
-  let r=[D,c('LA SUPREME'),c('PEDIDO '+o.order_no),D,new Date(o.created_at).toLocaleString('pt-BR'),`CLIENTE: ${o.customer_name}`];
-  if(o.customer_phone)r.push(`FONE: ${o.customer_phone}`);r.push(`TIPO: ${o.fulfillment==='delivery'?'ENTREGA':'RETIRADA'}`,L);
-  (o.items||[]).forEach(x=>{wrap(`${x.qty||1}x ${x.name}`).forEach(v=>r.push(v.toUpperCase()));if(x.size)r.push('  '+x.size.toUpperCase());if(x.crust)r.push('  BORDA: '+x.crust.toUpperCase());if(x.obs)wrap('  OBS: '+x.obs).forEach(v=>r.push(v.toUpperCase()));r.push('  '+money((x.unit||0)*(x.qty||1)),'')});
-  r.push(L,'SUBTOTAL: '+money(o.subtotal));if(o.fulfillment==='delivery')r.push('ENTREGA: A CONFIRMAR');r.push(L,'PAGAMENTO: '+String(o.payment||'').toUpperCase());
-  if(o.fulfillment==='delivery'){r.push('','ENDERECO:');wrap(o.address).forEach(v=>r.push(v.toUpperCase()))}
-  if(o.general_obs){r.push('','OBS. GERAIS:');wrap(o.general_obs).forEach(v=>r.push(v.toUpperCase()))}
-  r.push(D,c('SABOR QUE VIRA TRADICAO!'),D,'','','');return r.join('\n');
+  let r=[
+    D,
+    c('LA SUPREME'),
+    c('COMANDA DA COZINHA'),
+    D,
+    `PEDIDO: ${o.order_no}`,
+    `HORARIO: ${new Date(o.created_at).toLocaleString('pt-BR')}`,
+    `TIPO: ${o.fulfillment==='delivery'?'DELIVERY':'RETIRADA'}`,
+    `CLIENTE: ${o.customer_name||''}`,
+    L
+  ];
+  (o.items||[]).forEach(x=>{
+    wrap(`${x.qty||1}x ${x.name}`).forEach(v=>r.push(v.toUpperCase()));
+    if(x.size)r.push('  TAMANHO: '+String(x.size).toUpperCase());
+    if(x.crust)r.push('  BORDA: '+String(x.crust).toUpperCase());
+    if(x.obs)wrap('  OBS: '+x.obs).forEach(v=>r.push(v.toUpperCase()));
+    r.push('');
+  });
+  if(o.general_obs){
+    r.push(L,'OBS. GERAIS:');
+    wrap(o.general_obs).forEach(v=>r.push(v.toUpperCase()));
+  }
+  r.push(L,c('FIM DA COMANDA'),D,'','','');
+  return r.join('\n');
 }
 function printOrder(o){
   // Impressão via RawBT custom scheme. Em Android, abre o RawBT com o texto do cupom.
