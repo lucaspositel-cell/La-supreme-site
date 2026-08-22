@@ -1,0 +1,154 @@
+<!doctype html><html lang="pt-BR"><head><meta charset="utf-8"><meta name="viewport" content="width=device-width,initial-scale=1"><title>La Supreme — PDV</title><style>
+:root{--bg:#120f0d;--p:#211a17;--p2:#2b211d;--t:#fff8ed;--m:#c8b9ad;--g:#dfb25b;--ok:#1d8b54;--r:#b6282c;--l:#41332c}*{box-sizing:border-box}body{margin:0;background:var(--bg);color:var(--t);font:14px Arial}header{position:sticky;top:0;z-index:10;background:#100d0cf5;border-bottom:1px solid var(--l);padding:12px}.h,.wrap{max-width:1100px;margin:auto}.h{display:flex;align-items:center}h1{font:700 22px Georgia;margin:0}.gold{color:var(--g)}.tabs{display:flex;gap:8px;overflow:auto;padding:12px 0}button{border:0;border-radius:10px;padding:10px;font-weight:800}.tab{background:var(--p);color:#fff;border:1px solid var(--l);white-space:nowrap}.tab.on{background:var(--g);color:#241704}.wrap{padding:0 12px 80px}.notice,.card{background:var(--p);border:1px solid var(--l);border-radius:14px;padding:12px}.notice{color:var(--m);margin-bottom:12px}.tables{display:grid;grid-template-columns:repeat(3,1fr);gap:10px}.mesa{background:linear-gradient(var(--p2),var(--p));border:1px solid var(--l);border-radius:15px;padding:14px}.mesa.livre{border-color:#315d43}.mesa.ocupada{border-color:var(--g)}.mesa b{font:700 20px Georgia}.small{color:var(--m);font-size:12px;margin-top:6px}.hidden{display:none}.modalbg{position:fixed;inset:0;background:#0009;z-index:50;display:flex;align-items:flex-end;justify-content:center}.modal{background:#181311;width:min(760px,100%);max-height:92vh;overflow:auto;border-radius:18px 18px 0 0;padding:14px}.row{display:flex;gap:8px;align-items:center}.grow{flex:1}input,select{width:100%;background:#211a17;color:#fff;border:1px solid var(--l);border-radius:9px;padding:10px}.field{margin-top:9px}.products{display:grid;grid-template-columns:1fr 1fr;gap:8px;max-height:42vh;overflow:auto;margin-top:9px}.prod{background:#241c19;border:1px solid var(--l);border-radius:11px;padding:9px}.prod h4{margin:0 0 5px}.prodBtns{display:grid;grid-template-columns:1fr 1fr;gap:5px;margin-top:7px}.ok{background:var(--ok);color:#fff}.yellow{background:var(--g);color:#241704}.red{background:var(--r);color:#fff}.dark{background:#392d27;color:#fff}.item{padding:7px 0;border-bottom:1px dashed #49372f}.total{font-size:20px;font-weight:900;margin:10px 0}.actions{display:grid;grid-template-columns:1fr 1fr;gap:7px}.counter{display:grid;grid-template-columns:1.1fr .9fr;gap:10px}@media(max-width:700px){.tables{grid-template-columns:repeat(2,1fr)}.products{grid-template-columns:1fr}.counter{grid-template-columns:1fr}}</style></head><body>
+<header><div class="h"><h1>LA <span class="gold">SUPREME</span> — PDV</h1></div></header><main class="wrap"><div class="tabs"><button class="tab" onclick="location.href='painel.html'">Delivery</button><button class="tab" id="tb" onclick="tab('balcao')">Balcão</button><button class="tab on" id="tm" onclick="tab('mesas')">Mesas</button><button class="tab" onclick="alert('Caixa será a próxima etapa')">Caixa</button><button class="tab" onclick="alert('Relatórios serão a próxima etapa')">Relatórios</button></div><div id="notice" class="notice">Conectando...</div><section id="mesas"><div id="tables" class="tables"></div></section><section id="balcao" class="hidden"><div class="counter"><div class="card"><h2>Balcão</h2><input id="bq" placeholder="Buscar produto" oninput="renderProducts('b')"><div id="bp" class="products"></div></div><div class="card"><h2>Comanda</h2><div class="field"><input id="bc" placeholder="Cliente (opcional)"></div><div id="bitems"></div><div class="total">Total: <span id="btot">R$ 0,00</span></div><div class="field"><select id="bpay"><option>Pix</option><option>Dinheiro</option><option>Cartão Débito</option><option>Cartão Crédito</option></select></div><div class="actions"><button class="dark" onclick="bCart=[];renderBCart()">Limpar</button><button class="ok" onclick="finishB()">Fechar venda</button></div></div></div></section></main><div id="modal"></div>
+<script>
+const SUPABASE_URL='https://stacwvpsfjvyvbjwagtd.supabase.co';
+const SUPABASE_ANON_KEY='sb_publishable_uM7vsWn839Zmj1lTk3yKyg_b5Vj501Z';
+const PRODUCTS=[{"category": "Tradicionais", "name": "Portuguesa Especial", "desc": "Molho, presunto, milho, ervilha, palmito, ovos, cebola, mussarela, azeitonas e orégano", "broto": 40.0, "grande": 80.0}, {"category": "Tradicionais", "name": "Portuguesa Supreme", "desc": "Molho, lombo, milho, ervilha, palmito, ovos, cebola, Catupiry, mussarela, azeitonas e orégano", "broto": 44.0, "grande": 88.0}, {"category": "Tradicionais", "name": "Mista", "desc": "Molho, presunto, tomate, cebola, mussarela, azeitonas e orégano", "broto": 32.5, "grande": 65.0}, {"category": "Tradicionais", "name": "Mista Especial", "desc": "Molho, presunto, tomate, cebola, Catupiry, mussarela, azeitonas e orégano", "broto": 35.0, "grande": 70.0}, {"category": "Tradicionais", "name": "Frango", "desc": "Molho, frango, mussarela, azeitonas e orégano", "broto": 35.0, "grande": 70.0}, {"category": "Tradicionais", "name": "Frango Catupiry", "desc": "Molho, frango, Catupiry, azeitonas e orégano", "broto": 38.0, "grande": 76.0}, {"category": "Tradicionais", "name": "Frango Cheddar", "desc": "Molho, frango, cheddar, azeitonas e orégano", "broto": 38.0, "grande": 76.0}, {"category": "Tradicionais", "name": "Frango Especial", "desc": "Molho, frango, Catupiry, milho, mussarela, azeitonas e orégano", "broto": 44.0, "grande": 88.0}, {"category": "Tradicionais", "name": "Frango Bacon", "desc": "Molho, frango, Catupiry, bacon, azeitonas e orégano", "broto": 40.0, "grande": 80.0}, {"category": "Tradicionais", "name": "Calabresa", "desc": "Molho, calabresa, mussarela, cebola, azeitonas e orégano", "broto": 40.0, "grande": 80.0}, {"category": "Tradicionais", "name": "Calabresa Especial", "desc": "Molho, calabresa, Catupiry, mussarela, azeitonas e orégano", "broto": 45.0, "grande": 90.0}, {"category": "Tradicionais", "name": "Calábria", "desc": "Molho, calabresa fatiada, ovos, cebola, Catupiry, mussarela, azeitonas e orégano", "broto": 45.0, "grande": 90.0}, {"category": "Tradicionais", "name": "Calabresa Supreme", "desc": "Molho, mussarela, calabresa, cebola roxa, gorgonzola, azeitonas e orégano", "broto": 50.0, "grande": 100.0}, {"category": "Tradicionais", "name": "Catupyresa", "desc": "Molho, calabresa, Catupiry, azeitonas e orégano", "broto": 38.0, "grande": 76.0}, {"category": "Tradicionais", "name": "Palmito", "desc": "Molho, palmito, mussarela, azeitonas e orégano", "broto": 40.0, "grande": 80.0}, {"category": "Tradicionais", "name": "Palmito Especial", "desc": "Molho, palmito, mussarela, Catupiry, azeitonas e orégano", "broto": 42.0, "grande": 84.0}, {"category": "Tradicionais", "name": "Palmito Supreme", "desc": "Molho, palmito, mussarela, cream cheese, bacon, azeitonas e orégano", "broto": 50.0, "grande": 100.0}, {"category": "Tradicionais", "name": "Atum", "desc": "Molho, atum, mussarela, azeitonas e orégano", "broto": 35.0, "grande": 70.0}, {"category": "Tradicionais", "name": "Atum Especial", "desc": "Molho, atum, cebola, Catupiry, mussarela, azeitonas e orégano", "broto": 37.5, "grande": 75.0}, {"category": "Tradicionais", "name": "Atum Supreme", "desc": "Molho, atum, tomate, palmito, cebola roxa, mussarela, azeitonas e orégano", "broto": 42.0, "grande": 84.0}, {"category": "Tradicionais", "name": "Bacon", "desc": "Molho, mussarela, bacon, azeitonas e orégano", "broto": 40.0, "grande": 80.0}, {"category": "Tradicionais", "name": "Baiana", "desc": "Molho, calabresa moída, ovos, parmesão, pimenta, azeitonas e orégano", "broto": 40.0, "grande": 80.0}, {"category": "Tradicionais", "name": "Baiana Especial", "desc": "Molho, calabresa moída, ovos, Catupiry, parmesão, pimenta, azeitonas e orégano", "broto": 44.0, "grande": 88.0}, {"category": "Tradicionais", "name": "Baiana Supreme", "desc": "Molho, calabresa moída, ovos, Catupiry, gorgonzola, pimenta, azeitonas e orégano", "broto": 49.0, "grande": 98.0}, {"category": "Tradicionais", "name": "Hot Dog", "desc": "Molho, purê de batata, salsicha, Catupiry, mussarela, azeitonas e orégano", "broto": 45.0, "grande": 90.0}, {"category": "Tradicionais", "name": "Lombo", "desc": "Molho, lombo, tomate, cebola, mussarela, azeitonas e orégano", "broto": 40.0, "grande": 80.0}, {"category": "Tradicionais", "name": "Lombo Especial", "desc": "Molho, lombo, cebola, Catupiry, parmesão, manjericão, azeitonas e orégano", "broto": 47.5, "grande": 95.0}, {"category": "Tradicionais", "name": "Lombo Supreme", "desc": "Molho, lombo, tomate, palmito, cebola, cheddar, mussarela, bacon, azeitonas e orégano", "broto": 57.5, "grande": 115.0}, {"category": "Tradicionais", "name": "Supreme Defumada", "desc": "Molho, lombo, champignon, Catupiry, bacon, azeitonas e orégano", "broto": 47.5, "grande": 95.0}, {"category": "Tradicionais", "name": "Nova Delícia", "desc": "Molho, lombo, calabresa moída, mussarela, bacon, azeitonas e orégano", "broto": 47.0, "grande": 94.0}, {"category": "Tradicionais", "name": "Pepperoni", "desc": "Molho, mussarela, Catupiry, pepperoni, azeitonas e orégano", "broto": 47.0, "grande": 94.0}, {"category": "Tradicionais", "name": "Pepperoni Especial", "desc": "Molho, mussarela, pepperoni, cebola, Catupiry, azeitonas e orégano", "broto": 50.0, "grande": 100.0}, {"category": "Tradicionais", "name": "Pepperoni Supreme", "desc": "Molho, 5 queijos, pepperoni, azeitonas e orégano", "broto": 57.5, "grande": 115.0}, {"category": "Queijos", "name": "Marguerita", "desc": "Molho, mussarela, parmesão, tomate, manjericão in natura, azeitonas e orégano", "broto": 44.0, "grande": 88.0}, {"category": "Queijos", "name": "Mussarela", "desc": "Molho, mussarela, azeitonas e orégano", "broto": 40.0, "grande": 80.0}, {"category": "Queijos", "name": "2 Queijos", "desc": "Molho, mussarela, Catupiry, azeitonas e orégano", "broto": 44.0, "grande": 88.0}, {"category": "Queijos", "name": "3 Queijos", "desc": "Molho, mussarela, Catupiry, parmesão, azeitonas e orégano", "broto": 46.0, "grande": 92.0}, {"category": "Queijos", "name": "4 Queijos", "desc": "Molho, mussarela, Catupiry, parmesão, provolone, azeitonas e orégano", "broto": 49.0, "grande": 98.0}, {"category": "Queijos", "name": "5 Queijos", "desc": "Molho, mussarela, Catupiry, parmesão, provolone, gorgonzola, azeitonas e orégano", "broto": 57.5, "grande": 115.0}, {"category": "Queijos", "name": "Gorgonzola Supreme", "desc": "Molho, mussarela, parmesão, gorgonzola, azeitonas e orégano", "broto": 54.0, "grande": 108.0}, {"category": "Carnes", "name": "Alcatra Supreme", "desc": "Molho, miolo de alcatra, Catupiry, mussarela, parmesão, azeitonas e orégano", "broto": 60.0, "grande": 120.0}, {"category": "Carnes", "name": "Coreana", "desc": "Molho, frango em cubos, Catupiry, mussarela, bacon, azeitonas e orégano", "broto": 49.0, "grande": 98.0}, {"category": "Carnes", "name": "Coreana Especial", "desc": "Molho, frango em cubos, cream cheese, mussarela, bacon, azeitonas e orégano", "broto": 52.0, "grande": 104.0}, {"category": "Carnes", "name": "Costela", "desc": "Molho, costela desfiada, mussarela, azeitonas e orégano. Vinagrete para acompanhamento", "broto": 45.0, "grande": 90.0}, {"category": "Carnes", "name": "Costela Especial", "desc": "Molho, costela desfiada, Catupiry, mussarela, azeitonas e orégano. Vinagrete para acompanhamento", "broto": 48.0, "grande": 96.0}, {"category": "Carnes", "name": "Costela Supreme", "desc": "Molho, costela desfiada, cebola roxa, mussarela, gorgonzola, azeitonas e orégano. Vinagrete para acompanhamento", "broto": 60.0, "grande": 120.0}, {"category": "Carnes", "name": "Costela Acebolada", "desc": "Molho, costela desfiada, cebola, mussarela, azeitonas e orégano. Vinagrete para acompanhamento", "broto": 47.5, "grande": 95.0}, {"category": "Carnes", "name": "Strogonoff de Frango", "desc": "Molho, strogonoff de frango, Catupiry, champignon, mussarela, azeitonas e orégano", "broto": 49.0, "grande": 98.0}, {"category": "Carnes", "name": "Filé Supreme", "desc": "Molho, filé mignon, Catupiry, mussarela, parmesão ralado, azeitonas e orégano", "broto": 62.0, "grande": 124.0}, {"category": "Carnes", "name": "Chef Supreme", "desc": "Molho, miolo de alcatra, Catupiry, mussarela, gorgonzola, azeitonas e orégano", "broto": 68.0, "grande": 136.0}, {"category": "Verduras e Legumes", "name": "Abobrinha", "desc": "Molho, abobrinha, mussarela, parmesão, azeitonas e orégano", "broto": 45.0, "grande": 90.0}, {"category": "Verduras e Legumes", "name": "Escarola", "desc": "Molho, escarola, Catupiry, mussarela, azeitonas e orégano", "broto": 37.0, "grande": 74.0}, {"category": "Verduras e Legumes", "name": "Escarola Especial", "desc": "Molho, escarola, Catupiry, mussarela, bacon, azeitonas e orégano", "broto": 42.0, "grande": 84.0}, {"category": "Verduras e Legumes", "name": "Escarola Supreme", "desc": "Molho, escarola, Catupiry, mussarela, bacon, azeitonas e orégano", "broto": 47.5, "grande": 95.0}, {"category": "Verduras e Legumes", "name": "Alho-Poró", "desc": "Molho, alho-poró, mussarela, azeitonas e orégano", "broto": 40.0, "grande": 80.0}, {"category": "Verduras e Legumes", "name": "Alho-Poró Especial", "desc": "Molho, alho-poró, mussarela, Catupiry, azeitonas e orégano", "broto": 42.5, "grande": 85.0}, {"category": "Verduras e Legumes", "name": "Alho-Poró Supreme", "desc": "Molho, alho-poró, Catupiry, bacon, azeitonas e orégano", "broto": 49.0, "grande": 98.0}, {"category": "Verduras e Legumes", "name": "Rúcula", "desc": "Molho, mussarela, rúcula, azeitonas e orégano", "broto": 39.0, "grande": 78.0}, {"category": "Verduras e Legumes", "name": "Rúcula Especial", "desc": "Molho, mussarela, tomate seco, rúcula, azeitonas e orégano", "broto": 42.0, "grande": 84.0}, {"category": "Verduras e Legumes", "name": "Rúcula Supreme", "desc": "Molho, mussarela de búfala, tomate seco, azeitonas e orégano", "broto": 47.5, "grande": 95.0}, {"category": "Verduras e Legumes", "name": "Brócolis", "desc": "Molho, mussarela, brócolis, tomate seco, azeitonas e orégano", "broto": 40.0, "grande": 80.0}, {"category": "Verduras e Legumes", "name": "Brócolis Especial", "desc": "Molho, mussarela de búfala, brócolis, tomate seco, azeitonas e orégano", "broto": 42.5, "grande": 85.0}, {"category": "Verduras e Legumes", "name": "Brócolis Supreme", "desc": "Molho, mussarela, Catupiry, brócolis, tomate seco, bacon, azeitonas e orégano", "broto": 49.0, "grande": 98.0}, {"category": "Verduras e Legumes", "name": "Vegetariana", "desc": "Molho, tomate, champignon, palmito, cebola, brócolis, azeitonas e orégano", "broto": 45.0, "grande": 90.0}, {"category": "Verduras e Legumes", "name": "Vegetariana Supreme", "desc": "Molho, tomate, champignon, palmito, cebola, brócolis, azeitonas e orégano", "broto": 52.5, "grande": 105.0}, {"category": "Frutos do Mar", "name": "Camarão", "desc": "Molho, camarão, Catupiry, mussarela, azeitonas e orégano", "broto": 60.0, "grande": 120.0}, {"category": "Frutos do Mar", "name": "Camarão Especial", "desc": "Molho, camarão, molho branco, mussarela, azeitonas e orégano", "broto": 65.0, "grande": 130.0}, {"category": "Frutos do Mar", "name": "Strogonoff de Camarão", "desc": "Molho, strogonoff de camarão, Catupiry, champignon, mussarela, azeitonas e orégano", "broto": 67.5, "grande": 135.0}, {"category": "Pizzas Doces", "name": "Abacaxi Supreme", "desc": "Abacaxi, doce de leite, canela e mel", "broto": 45.0, "grande": 90.0}, {"category": "Pizzas Doces", "name": "Banana Nevada", "desc": "Banana, chocolate branco e canela em pó", "broto": 36.0, "grande": 72.0}, {"category": "Pizzas Doces", "name": "Banana c/ Doce de Leite", "desc": "Banana, doce de leite e canela em pó", "broto": 37.5, "grande": 75.0}, {"category": "Pizzas Doces", "name": "Banana c/ Nutella", "desc": "Banana e Nutella", "broto": 47.5, "grande": 95.0}, {"category": "Pizzas Doces", "name": "Brigadeiro", "desc": "Chocolate em ganache e chocolate granulado", "broto": 40.0, "grande": 80.0}, {"category": "Pizzas Doces", "name": "Romeu e Julieta", "desc": "Goiabada e mussarela", "broto": 39.0, "grande": 78.0}, {"category": "Pizzas Doces", "name": "Confeti", "desc": "Chocolate em ganache e confetes", "broto": 40.0, "grande": 80.0}, {"category": "Pizzas Doces", "name": "Paçoca", "desc": "Chocolate em ganache e paçoca", "broto": 40.0, "grande": 80.0}, {"category": "Pizzas Doces", "name": "Morango", "desc": "Chocolate em ganache e morangos", "broto": 45.0, "grande": 90.0}, {"category": "Pizzas Doces", "name": "Nutella", "desc": "Nutella", "broto": 50.0, "grande": 100.0}, {"category": "Pizzas Doces", "name": "Nutella c/ Morango", "desc": "Nutella e morangos", "broto": 55.0, "grande": 110.0}, {"category": "Pizzas Doces", "name": "Cereja", "desc": "Chocolate em ganache e cerejas", "broto": 40.0, "grande": 80.0}, {"category": "Pizzas Doces", "name": "Ferrero Rocher", "desc": "Chocolate em ganache e Ferrero Rocher", "broto": 59.0, "grande": 118.0}, {"category": "Pizzas Doces", "name": "Kit Kat", "desc": "Chocolate em ganache e Kit Kat", "broto": 42.0, "grande": 84.0}, {"category": "Pizzas Doces", "name": "Kinder Bueno", "desc": "Chocolate em ganache e Kinder Bueno", "broto": 42.5, "grande": 85.0}, {"category": "Pizzas Doces", "name": "Prestígio", "desc": "Chocolate em ganache e flocos de coco", "broto": 38.0, "grande": 76.0}, {"category": "Calzones", "name": "Frango Catupiry", "desc": "Frango desfiado, mussarela e Catupiry", "price": 80.0}, {"category": "Calzones", "name": "Calabresa", "desc": "Calabresa, cebola e mussarela", "price": 80.0}, {"category": "Calzones", "name": "4 Queijos", "desc": "Mussarela, Catupiry, provolone e parmesão", "price": 90.0}, {"category": "Calzones", "name": "Alho-Poró", "desc": "Alho-poró, Catupiry e mussarela", "price": 80.0}, {"category": "Calzones", "name": "Filé Mignon", "desc": "Filé mignon em tiras, Catupiry e mussarela", "price": 120.0}, {"category": "Calzones", "name": "Alcatra", "desc": "Miolo de alcatra em cubos, Catupiry e mussarela", "price": 120.0}, {"category": "Crostinis", "name": "Gorgonzola e azeite", "desc": "", "price": 50.0}, {"category": "Crostinis", "name": "Parmesão e azeite", "desc": "", "price": 50.0}, {"category": "Pizza Rolls", "name": "Gorgo Peppe", "desc": "Gorgonzola, mussarela e pepperoni", "price": 50.0}, {"category": "Pizza Rolls", "name": "4 Queijos", "desc": "Mussarela, Catupiry, parmesão e provolone", "price": 50.0}, {"category": "Bebidas", "name": "Coca-Cola 2L", "desc": "Refrigerante 2 litros", "price": 19.0}, {"category": "Bebidas", "name": "Fanta Uva 2L", "desc": "Refrigerante 2 litros", "price": 16.0}, {"category": "Bebidas", "name": "Fanta Laranja 2L", "desc": "Refrigerante 2 litros", "price": 16.0}, {"category": "Bebidas", "name": "Tubaína", "desc": "Refrigerante", "price": 12.0}, {"category": "Bebidas", "name": "Heineken Long Neck", "desc": "Cerveja", "price": 11.0}, {"category": "Bebidas", "name": "Skol Lata", "desc": "Cerveja", "price": 7.0}, {"category": "Bebidas", "name": "Original Lata", "desc": "Cerveja", "price": 8.0}];;
+let tabs=[],curT=null,curC=null,sitems=[],bCart=[];
+const money=v=>'R$ '+Number(v||0).toFixed(2).replace('.',',');
+const esc=s=>String(s??'').replace(/[&<>"']/g,m=>({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&#039;'}[m]));
+
+async function api(p,o={}){
+  let r=await fetch(`${SUPABASE_URL}/rest/v1/${p}`,{...o,headers:{apikey:SUPABASE_ANON_KEY,Authorization:`Bearer ${SUPABASE_ANON_KEY}`,'Content-Type':'application/json',Prefer:'return=representation',...(o.headers||{})}});
+  if(!r.ok)throw Error(await r.text());
+  let t=await r.text(); return t?JSON.parse(t):null;
+}
+
+function tab(x){
+  mesas.classList.toggle('hidden',x!='mesas');
+  balcao.classList.toggle('hidden',x!='balcao');
+  tm.classList.toggle('on',x=='mesas');
+  tb.classList.toggle('on',x=='balcao');
+  if(x=='balcao')renderProducts('b');
+}
+
+async function load(){
+  try{
+    tabs=await api('mesas?select=*&order=numero.asc');
+    notice.textContent='🟢 Online — '+tabs.length+' mesas';
+    renderTables();
+  }catch(e){notice.textContent='Erro ao conectar: '+e.message}
+}
+
+function renderTables(){
+  tables.innerHTML=tabs.map(t=>`<div class="mesa ${t.status}" onclick="openT('${t.id}')"><b>Mesa ${esc(t.numero)}</b><div class="small">${String(t.status).toUpperCase()}</div><div class="small">${t.status==='livre'?'Disponível':'Comanda aberta'}</div></div>`).join('');
+}
+
+async function openT(id){
+  curT=tabs.find(t=>String(t.id)===String(id));
+  if(curT.status==='livre'){
+    modal.innerHTML=`<div class="modalbg"><div class="modal"><div class="row"><h2>Mesa ${esc(curT.numero)}</h2><span class="grow"></span><button class="dark" onclick="closeM()">Fechar</button></div><div class="field"><input id="cust" placeholder="Cliente (opcional)"></div><div class="actions"><button class="dark" onclick="closeM()">Cancelar</button><button class="ok" onclick="startT()">Abrir mesa</button></div></div></div>`;
+    return;
+  }
+  let a=await api(`comandas?mesa_id=eq.${curT.id}&status=eq.aberta&select=*&order=aberta_em.desc&limit=1`);
+  if(!a.length){await api(`mesas?id=eq.${curT.id}`,{method:'PATCH',body:JSON.stringify({status:'livre'})});await load();return openT(id)}
+  curC=a[0];
+  sitems=await api(`comanda_itens?comanda_id=eq.${curC.id}&select=*&order=created_at.asc`);
+  showT();
+}
+
+async function startT(){
+  let a=await api('comandas',{method:'POST',body:JSON.stringify({tipo:'mesa',mesa_id:curT.id,cliente_nome:cust.value.trim()||null,status:'aberta'})});
+  curC=a[0];
+  await api(`mesas?id=eq.${curT.id}`,{method:'PATCH',body:JSON.stringify({status:'ocupada'})});
+  sitems=[];
+  await load();
+  showT();
+}
+
+function showT(){
+  modal.innerHTML=`<div class="modalbg"><div class="modal"><div class="row"><h2>Mesa ${esc(curT.numero)}</h2><span class="grow"></span><button class="dark" onclick="closeM()">Fechar</button></div><div class="small">${curC.cliente_nome?'Cliente: '+esc(curC.cliente_nome):'Comanda aberta'}</div><div class="field"><input id="tq" placeholder="Buscar produto" oninput="renderProducts('t')"></div><div class="row field"><button class="yellow grow" onclick="openHalfHalf('t')">🍕 Pizza meio a meio 50/50</button></div><div id="tp" class="products"></div><h3>Itens</h3><div id="titems"></div><div class="total">Total: <span id="ttot">R$ 0,00</span></div><div class="actions"><button class="yellow" onclick="alert('Impressão parcial entra na próxima etapa')">🖨️ Parcial</button><button class="ok" onclick="closeTUI()">Fechar conta</button></div></div></div>`;
+  renderProducts('t');renderTItems();
+}
+
+function renderProducts(where){
+  let q=(document.getElementById(where=='t'?'tq':'bq')?.value||'').toLowerCase(),el=document.getElementById(where=='t'?'tp':'bp');
+  if(!el)return;
+  el.innerHTML=PRODUCTS.filter(p=>(p.name+' '+p.category+' '+p.desc).toLowerCase().includes(q)).slice(0,90).map(p=>`<div class="prod"><h4>${esc(p.name)}</h4><div class="small">${esc(p.category)}</div>${p.broto!=null?`<div class="prodBtns"><button class="ok" onclick='addP(${JSON.stringify(p)},"Broto",${p.broto},"${where}")'>Broto ${money(p.broto)}</button><button class="yellow" onclick='addP(${JSON.stringify(p)},"Grande",${p.grande},"${where}")'>Grande ${money(p.grande)}</button></div>`:`<div class="prodBtns" style="grid-template-columns:1fr"><button class="ok" onclick='addP(${JSON.stringify(p)},"",${p.price||0},"${where}")'>Adicionar ${money(p.price||0)}</button></div>`}</div>`).join('');
+}
+
+async function addP(p,size,price,w){
+  if(w==='b'){
+    bCart.push({produto_nome:p.name,tamanho:size,sabor_1:p.name,sabor_2:null,quantidade:1,preco_unitario:price,adicionais:0,total:price,observacoes:p.category});
+    return renderBCart();
+  }
+  let a=await api('comanda_itens',{method:'POST',body:JSON.stringify({comanda_id:curC.id,produto_nome:p.name,tamanho:size||null,sabor_1:p.name,sabor_2:null,quantidade:1,preco_unitario:price,adicionais:0,total:price,observacoes:p.category})});
+  sitems.push(a[0]); await recalc(); renderTItems();
+}
+
+function pizzaProducts(){return PRODUCTS.filter(p=>p.broto!=null && !['Bebidas','Calzones','Crostinis','Pizza Rolls'].includes(p.category))}
+
+function openHalfHalf(where){
+  const ps=pizzaProducts();
+  const opts=ps.map((p,i)=>`<option value="${i}">${esc(p.name)}</option>`).join('');
+  modal.innerHTML=`<div class="modalbg"><div class="modal"><div class="row"><h2>Pizza meio a meio</h2><span class="grow"></span><button class="dark" onclick="${where==='t'?'showT()':'closeM()'}">Fechar</button></div><div class="small">Preço = 50% do sabor 1 + 50% do sabor 2.</div><div class="field"><select id="hhsize"><option value="Broto">Broto</option><option value="Grande">Grande</option></select></div><div class="field"><label>1º sabor</label><select id="hh1">${opts}</select></div><div class="field"><label>2º sabor</label><select id="hh2">${opts}</select></div><div class="actions field"><button class="dark" onclick="${where==='t'?'showT()':'closeM()'}">Cancelar</button><button class="ok" onclick="addHalfHalf('${where}')">Adicionar 50/50</button></div></div></div>`;
+}
+
+async function addHalfHalf(where){
+  const ps=pizzaProducts(),p1=ps[Number(hh1.value)],p2=ps[Number(hh2.value)],size=hhsize.value;
+  const k=size==='Broto'?'broto':'grande';
+  const price=(Number(p1[k])+Number(p2[k]))/2;
+  const obj={produto_nome:`½ ${p1.name} + ½ ${p2.name}`,tamanho:size,sabor_1:p1.name,sabor_2:p2.name,quantidade:1,preco_unitario:price,adicionais:0,total:price,observacoes:'Pizza meio a meio 50/50'};
+  if(where==='b'){bCart.push(obj);closeM();renderBCart();return}
+  let a=await api('comanda_itens',{method:'POST',body:JSON.stringify({comanda_id:curC.id,...obj})});
+  sitems.push(a[0]);await recalc();showT();
+}
+
+async function recalc(){
+  let s=sitems.reduce((a,x)=>a+Number(x.total),0);
+  await api(`comandas?id=eq.${curC.id}`,{method:'PATCH',body:JSON.stringify({subtotal:s,total:s})});
+}
+
+function renderTItems(){
+  titems.innerHTML=sitems.map(x=>`<div class="item"><div class="row"><div class="grow"><b>${x.quantidade}x ${esc(x.produto_nome)}</b><div class="small">${esc(x.tamanho||'')} — ${money(x.total)}</div></div><button class="red" onclick="delI('${x.id}')">×</button></div></div>`).join('');
+  ttot.textContent=money(sitems.reduce((a,x)=>a+Number(x.total),0));
+}
+
+async function delI(id){
+  await api(`comanda_itens?id=eq.${id}`,{method:'DELETE'});
+  sitems=sitems.filter(x=>String(x.id)!==String(id)); await recalc(); renderTItems();
+}
+
+function closeTUI(){
+  let total=sitems.reduce((a,x)=>a+Number(x.total),0);
+  modal.innerHTML=`<div class="modalbg"><div class="modal"><h2>Fechar Mesa ${esc(curT.numero)}</h2><div class="total">Total: ${money(total)}</div><div class="field"><select id="tpay"><option>Pix</option><option>Dinheiro</option><option>Cartão Débito</option><option>Cartão Crédito</option></select></div><div class="field"><input id="disc" value="0" inputmode="decimal" placeholder="Desconto"></div><div class="actions"><button class="dark" onclick="showT()">Voltar</button><button class="ok" onclick="finishT()">Confirmar</button></div></div></div>`;
+}
+
+async function finishT(){
+  let sub=sitems.reduce((a,x)=>a+Number(x.total),0),d=Number(String(disc.value).replace(',','.'))||0,total=Math.max(0,sub-d);
+  await api(`comandas?id=eq.${curC.id}`,{method:'PATCH',body:JSON.stringify({status:'fechada',fechada_em:new Date().toISOString(),subtotal:sub,desconto:d,total,forma_pagamento:tpay.value})});
+  await api(`mesas?id=eq.${curT.id}`,{method:'PATCH',body:JSON.stringify({status:'livre'})});
+  closeM(); await load(); alert('Mesa fechada. Total: '+money(total));
+}
+
+function renderBCart(){
+  bitems.innerHTML=bCart.map((x,i)=>`<div class="item"><div class="row"><div class="grow"><b>${x.quantidade}x ${esc(x.produto_nome)}</b><div class="small">${esc(x.tamanho||'')} — ${money(x.total)}</div></div><button class="red" onclick="bCart.splice(${i},1);renderBCart()">×</button></div></div>`).join('');
+  btot.textContent=money(bCart.reduce((a,x)=>a+Number(x.total),0));
+}
+
+async function finishB(){
+  if(!bCart.length)return alert('Adicione itens.');
+  let total=bCart.reduce((a,x)=>a+Number(x.total),0);
+  let a=await api('comandas',{method:'POST',body:JSON.stringify({tipo:'balcao',mesa_id:null,cliente_nome:bc.value.trim()||null,status:'fechada',subtotal:total,desconto:0,acrescimo:0,total,forma_pagamento:bpay.value,fechada_em:new Date().toISOString()})});
+  const c=a[0];
+  await api('comanda_itens',{method:'POST',body:JSON.stringify(bCart.map(x=>({comanda_id:c.id,...x})))});
+  alert('Venda de balcão finalizada. Total: '+money(total));
+  bCart=[];renderBCart();bc.value='';
+}
+
+function closeM(){modal.innerHTML='';curT=curC=null;sitems=[]}
+
+// botão meio a meio também no Balcão
+const oldTab=tab;
+const oldRenderProducts=renderProducts;
+setTimeout(()=>{
+  const c=document.querySelector('#balcao .card');
+  if(c && !document.getElementById('bhh')){
+    const b=document.createElement('button');b.id='bhh';b.className='yellow';b.style='width:100%;margin-top:9px';b.textContent='🍕 Pizza meio a meio 50/50';b.onclick=()=>openHalfHalf('b');
+    c.insertBefore(b,document.getElementById('bp'));
+  }
+},0);
+
+load();
+</script></body></html>
