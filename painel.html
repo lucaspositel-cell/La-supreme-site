@@ -103,7 +103,9 @@ function nextButton(o){
   return `<button class="done" disabled>✓ Concluído</button>`;
 }
 async function statusOrder(id,status){
-  await api(`orders?id=eq.${encodeURIComponent(id)}`,{method:'PATCH',body:JSON.stringify({status})});
+  const payload={status};
+  if(status==='concluido')payload.concluded_at=new Date().toISOString();
+  await api(`orders?id=eq.${encodeURIComponent(id)}`,{method:'PATCH',body:JSON.stringify(payload)});
   loadOrders();
 }
 function receipt(o){
