@@ -10,8 +10,25 @@
 }
 @media(max-width:380px){
   .report-filters{grid-template-columns:1fr 1fr}
-}</style></head><body>
-<header><div class="h"><h1>LA <span class="gold">SUPREME</span> — PDV</h1></div></header><main class="wrap"><div class="tabs"><button class="tab" onclick="location.href='painel.html'">Delivery</button><button class="tab" id="tb" onclick="tab('balcao')">Balcão</button><button class="tab on" id="tm" onclick="tab('mesas')">Mesas</button><button class="tab" id="tc" onclick="tab('caixa')">Caixa</button><button class="tab" id="tr" onclick="tab('relatorios')">Relatórios</button></div><div id="notice" class="notice">Conectando...</div><section id="mesas"><div id="tables" class="tables"></div></section><section id="balcao" class="hidden"><div class="counter"><div class="card"><h2>Balcão</h2><input id="bq" placeholder="Buscar produto" oninput="renderProducts('b')"><div id="bp" class="products"></div></div><div class="card"><h2>Comanda</h2><div class="field"><input id="bc" placeholder="Cliente (opcional)"></div><div id="bitems"></div><div class="total">Total: <span id="btot">R$ 0,00</span></div><div class="field"><select id="bpay"><option>Pix</option><option>Dinheiro</option><option>Cartão Débito</option><option>Cartão Crédito</option></select></div><div class="actions"><button class="dark" onclick="bCart=[];renderBCart()">Limpar</button><button class="ok" onclick="finishB()">Fechar venda</button></div></div></div></section><section id="caixa" class="hidden"><div id="cashbox" class="card"><h2>Caixa</h2><div class="small">Carregando...</div></div></section><section id="relatorios" class="hidden"><div id="reports" class="card"><h2>Relatórios</h2><div class="small">Carregando...</div></div></section></main><div id="modal"></div>
+}
+@media print{
+  @page{margin:3mm}
+  body *{visibility:hidden!important}
+  #printTicket,#printTicket *{visibility:visible!important}
+  #printTicket{
+    position:absolute;left:0;top:0;width:100%;
+    background:#fff!important;color:#000!important;
+    font-family:Arial,sans-serif;font-size:12pt;line-height:1.25;padding:0!important
+  }
+  #printTicket .pt-center{text-align:center}
+  #printTicket .pt-big{font-size:17pt;font-weight:900}
+  #printTicket .pt-line{border-top:1px dashed #000;margin:7px 0}
+  #printTicket .pt-item{margin:8px 0}
+  #printTicket .pt-item b{font-size:14pt}
+  #printTicket .pt-note{font-weight:700}
+}
+</style></head><body>
+<header><div class="h"><h1>LA <span class="gold">SUPREME</span> — PDV</h1></div></header><main class="wrap"><div class="tabs"><button class="tab" onclick="location.href='painel.html'">Delivery</button><button class="tab" id="tb" onclick="tab('balcao')">Balcão</button><button class="tab on" id="tm" onclick="tab('mesas')">Mesas</button><button class="tab" id="tc" onclick="tab('caixa')">Caixa</button><button class="tab" id="tr" onclick="tab('relatorios')">Relatórios</button></div><div id="notice" class="notice">Conectando...</div><section id="mesas"><div id="tables" class="tables"></div></section><section id="balcao" class="hidden"><div class="counter"><div class="card"><h2>Balcão</h2><input id="bq" placeholder="Buscar produto" oninput="renderProducts('b')"><div id="bp" class="products"></div></div><div class="card"><h2>Comanda</h2><div class="field"><input id="bc" placeholder="Cliente (opcional)"></div><div id="bitems"></div><div class="total">Total: <span id="btot">R$ 0,00</span></div><div class="field"><select id="bpay"><option>Pix</option><option>Dinheiro</option><option>Cartão Débito</option><option>Cartão Crédito</option></select></div><button class="yellow" style="width:100%;margin-top:10px" onclick="imprimirBalcao()">🖨️ Imprimir cozinha</button><div class="actions" style="margin-top:8px"><button class="dark" onclick="bCart=[];renderBCart()">Limpar</button><button class="ok" onclick="finishB()">Fechar venda</button></div></div></div></section><section id="caixa" class="hidden"><div id="cashbox" class="card"><h2>Caixa</h2><div class="small">Carregando...</div></div></section><section id="relatorios" class="hidden"><div id="reports" class="card"><h2>Relatórios</h2><div class="small">Carregando...</div></div></section></main><div id="modal"></div><div id="printTicket" style="display:none"></div>
 <script>
 const SUPABASE_URL='https://stacwvpsfjvyvbjwagtd.supabase.co';
 const SUPABASE_ANON_KEY='sb_publishable_uM7vsWn839Zmj1lTk3yKyg_b5Vj501Z';
@@ -75,7 +92,7 @@ async function startT(){
 }
 
 function showT(){
-  modal.innerHTML=`<div class="modalbg"><div class="modal"><div class="row"><h2>Mesa ${esc(curT.numero)}</h2><span class="grow"></span><button class="dark" onclick="closeM()">Fechar</button></div><div class="small">${curC.cliente_nome?'Cliente: '+esc(curC.cliente_nome):'Comanda aberta'}</div><div class="field"><input id="tq" placeholder="Buscar produto" oninput="renderProducts('t')"></div><div class="row field"><button class="yellow grow" onclick="openHalfHalf('t')">🍕 Pizza meio a meio 50/50</button></div><div id="tp" class="products"></div><h3>Itens</h3><div id="titems"></div><div class="total">Total: <span id="ttot">R$ 0,00</span></div><div class="actions"><button class="yellow" onclick="alert('Impressão parcial entra na próxima etapa')">🖨️ Parcial</button><button class="ok" onclick="closeTUI()">Fechar conta</button></div></div></div>`;
+  modal.innerHTML=`<div class="modalbg"><div class="modal"><div class="row"><h2>Mesa ${esc(curT.numero)}</h2><span class="grow"></span><button class="dark" onclick="closeM()">Fechar</button></div><div class="small">${curC.cliente_nome?'Cliente: '+esc(curC.cliente_nome):'Comanda aberta'}</div><div class="field"><input id="tq" placeholder="Buscar produto" oninput="renderProducts('t')"></div><div class="row field"><button class="yellow grow" onclick="openHalfHalf('t')">🍕 Pizza meio a meio 50/50</button></div><div id="tp" class="products"></div><h3>Itens</h3><div id="titems"></div><div class="total">Total: <span id="ttot">R$ 0,00</span></div><div class="actions"><button class="yellow" onclick="imprimirMesa()">🖨️ Imprimir cozinha</button><button class="ok" onclick="closeTUI()">Fechar conta</button></div></div></div>`;
   renderProducts('t');renderTItems();
 }
 
@@ -318,6 +335,29 @@ async function loadRelatorios(){
       <div class="card" style="margin-top:10px"><h3>Vendas realizadas</h3><div class="small" style="margin-bottom:8px">Toque em uma venda para consultar os itens.</div>${vendasHtml}</div>
       <div class="card" style="margin-top:10px"><h3>Histórico de caixas</h3>${cxHtml}</div>`;
   }catch(e){reports.innerHTML='<h2>Relatórios</h2>'+reportFilterBar()+'<div class="notice">Erro: '+esc(e.message)+'</div>'}
+}
+
+
+function cozinhaTicket(titulo,cliente,itens){
+  const agora=new Date();
+  const linhas=(itens||[]).map(x=>{
+    let sabores='';
+    if(x.sabor_2) sabores=`<div>½ ${esc(x.sabor_1)} + ½ ${esc(x.sabor_2)}</div>`;
+    let obs=x.observacoes?`<div class="pt-note">Obs: ${esc(x.observacoes)}</div>`:'';
+    return `<div class="pt-item"><b>${Number(x.quantidade||1)}x ${esc(x.produto_nome||'Produto')}</b>${x.tamanho?`<div>Tamanho: ${esc(x.tamanho)}</div>`:''}${sabores}${obs}</div>`;
+  }).join('');
+  printTicket.innerHTML=`<div class="pt-center pt-big">LA SUPREME</div><div class="pt-center"><b>COMANDA DA COZINHA</b></div><div class="pt-line"></div><div class="pt-big">${esc(titulo)}</div>${cliente?`<div>Cliente: <b>${esc(cliente)}</b></div>`:''}<div>Horário: ${agora.toLocaleString('pt-BR')}</div><div class="pt-line"></div>${linhas||'<div>Sem itens.</div>'}<div class="pt-line"></div><div class="pt-center"><b>FIM DA COMANDA</b></div>`;
+  printTicket.style.display='block';
+  window.print();
+  setTimeout(()=>{printTicket.style.display='none'},500);
+}
+function imprimirMesa(){
+  if(!sitems.length)return alert('Não há itens para imprimir.');
+  cozinhaTicket('MESA '+esc(curT?.numero||''),curC?.cliente_nome||'',sitems);
+}
+function imprimirBalcao(){
+  if(!bCart.length)return alert('Adicione itens antes de imprimir.');
+  cozinhaTicket('BALCÃO',document.getElementById('bc')?.value.trim()||'',bCart);
 }
 
 function closeM(){modal.innerHTML='';curT=curC=null;sitems=[]}
