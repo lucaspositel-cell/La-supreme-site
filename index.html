@@ -142,6 +142,8 @@ a{color:inherit}
   @page{size:58mm auto;margin:0}
 }
 
+
+.print-lock-note{font-size:11px;color:var(--muted);text-align:center;margin-top:7px}
 </style>
 </head>
 <body>
@@ -1668,7 +1670,7 @@ a{color:inherit}
     <div id="receiptPrintArea" class="receipt-preview"></div>
     <div class="receipt-actions">
       <button class="receipt-close" onclick="closeReceipt()">Fechar</button>
-      <button class="receipt-print" onclick="printReceipt()">🖨️ Imprimir 58 mm</button>
+      <button id="receiptPrintBtn" class="receipt-print" onclick="printReceipt()">🖨️ Imprimir 58 mm</button>
     </div>
   </div>
 </div>
@@ -1887,7 +1889,46 @@ function showReceipt(o){
   document.getElementById('receiptOverlay').classList.add('open');
 }
 function closeReceipt(){document.getElementById('receiptOverlay').classList.remove('open');}
-function printReceipt(){window.print();}
+let _printLock=false;
+let _lastPrintedOrder='';
+let _printUnlockTimer=null;
+
+function printReceipt(){
+  const badge=document.getElementById('receiptOrderBadge');
+  const orderNo=(badge?.textContent||'').replace(/^Pedido\s+/i,'').trim();
+
+  if(_printLock){
+    showToast('Impressão já enviada. Aguarde.');
+    return;
+  }
+
+  if(orderNo && _lastPrintedOrder===orderNo){
+    const ok=confirm('Este pedido já foi enviado para impressão. Deseja imprimir novamente?');
+    if(!ok)return;
+  }
+
+  _printLock=true;
+  _lastPrintedOrder=orderNo||_lastPrintedOrder;
+
+  const btn=document.getElementById('receiptPrintBtn');
+  if(btn){
+    btn.disabled=true;
+    btn.textContent='Enviado para impressão';
+    btn.style.opacity='.65';
+  }
+
+  window.print();
+
+  clearTimeout(_printUnlockTimer);
+  _printUnlockTimer=setTimeout(()=>{
+    _printLock=false;
+    if(btn){
+      btn.disabled=false;
+      btn.textContent='🖨️ Imprimir 58 mm';
+      btn.style.opacity='1';
+    }
+  },8000);
+}
 function checkoutWhatsApp(){
   const order=buildOrderData();
   if(!order)return;
@@ -1905,6 +1946,23 @@ window.addEventListener('DOMContentLoaded',setupOrdering);
 document.getElementById('productOverlay').addEventListener('click',e=>{if(e.target.id==='productOverlay')closeProduct();});
 document.getElementById('cartOverlay').addEventListener('click',e=>{if(e.target.id==='cartOverlay')closeCart();});
 document.getElementById('receiptOverlay').addEventListener('click',e=>{if(e.target.id==='receiptOverlay')closeReceipt();});
+
+
+window.addEventListener('beforeprint',()=>{
+  const btn=document.getElementById('receiptPrintBtn');
+  if(btn) btn.disabled=true;
+});
+window.addEventListener('afterprint',()=>{
+  const btn=document.getElementById('receiptPrintBtn');
+  setTimeout(()=>{
+    _printLock=false;
+    if(btn){
+      btn.disabled=false;
+      btn.textContent='🖨️ Imprimir 58 mm';
+      btn.style.opacity='1';
+    }
+  },1500);
+});
 
 </script>
 </body>
