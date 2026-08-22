@@ -241,13 +241,32 @@ function applyCustomReport(){
   if(reportIni>reportFim)return alert('A data inicial não pode ser maior que a final.');
   loadRelatorios();
 }
+
+function vendaDetalheHtml(v,itensVenda){
+  const origemNome=k=>String(k||'outro').replace('balcao','Balcão').replace('mesa','Mesa').replace('delivery','Delivery');
+  const lista=itensVenda.length?itensVenda.map(x=>`<div class="item"><b>${Number(x.quantidade||1)}x ${esc(x.produto_nome||'Produto')}</b><div class="small">${esc(x.tamanho||'')}${x.sabor_2?' · ½ '+esc(x.sabor_1)+' + ½ '+esc(x.sabor_2):''} · ${money(x.total)}</div></div>`).join(''):'<div class="small">Sem itens registrados.</div>';
+  modal.innerHTML=`<div class="modalbg"><div class="modal"><div class="row"><h2>Detalhes da venda</h2><span class="grow"></span><button class="dark" onclick="closeM()">Fechar</button></div>
+    <div class="card">
+      ${reportRow('Data',new Date(v.fechada_em).toLocaleString('pt-BR'))}
+      ${reportRow('Origem',origemNome(v.tipo))}
+      ${v.cliente_nome?reportRow('Cliente',esc(v.cliente_nome)):''}
+      ${reportRow('Pagamento',esc(v.forma_pagamento||'Não informado'))}
+      ${reportRow('Subtotal',money(v.subtotal))}
+      ${reportRow('Desconto',money(v.desconto))}
+      ${reportRow('Total',money(v.total))}
+    </div>
+    <h3>Itens da venda</h3>${lista}
+    <button class="ok" style="width:100%;margin-top:12px" onclick="closeM()">Fechar</button>
+  </div></div>`;
+}
+
 async function loadRelatorios(){
   reports.innerHTML='<h2>Relatórios</h2>'+reportFilterBar()+'<div class="small" style="margin-top:10px">Carregando...</div>';
   try{
     const rg=reportRange();
     if(!rg)return;
     const ini=encodeURIComponent(rg.start.toISOString()), fim=encodeURIComponent(rg.end.toISOString());
-    const vendas=await api(`comandas?status=eq.fechada&fechada_em=gte.${ini}&fechada_em=lte.${fim}&select=id,tipo,total,subtotal,desconto,forma_pagamento,fechada_em`);
+    const vendas=await api(`comandas?status=eq.fechada&fechada_em=gte.${ini}&fechada_em=lte.${fim}&select=id,tipo,cliente_nome,total,subtotal,desconto,forma_pagamento,fechada_em`);
     const ids=vendas.map(v=>v.id);
     let itens=[];
     if(ids.length)itens=await api(`comanda_itens?comanda_id=in.(${ids.join(',')})&select=comanda_id,produto_nome,tamanho,sabor_1,sabor_2,quantidade,total`);
@@ -275,6 +294,16 @@ async function loadRelatorios(){
     const sabores=Object.entries(sabMap).sort((a,b)=>b[1]-a[1]).slice(0,10);
     const sabHtml=sabores.length?sabores.map(([s,q],i)=>`<div class="item"><b>${i+1}. ${esc(s)}</b><div class="small">${q} ocorrência(s)</div></div>`).join(''):'<div class="small">Sem sabores.</div>';
 
+    
+    window._reportVendas=vendas;
+    window._reportItens=itens;
+    const vendasHtml=vendas.length?vendas.slice().sort((a,b)=>new Date(b.fechada_em)-new Date(a.fechada_em)).map((v,i)=>{
+      const origem=String(v.tipo||'outro').replace('balcao','Balcão').replace('mesa','Mesa').replace('delivery','Delivery');
+      const hora=new Date(v.fechada_em).toLocaleTimeString('pt-BR',{hour:'2-digit',minute:'2-digit'});
+      const qtd=itens.filter(x=>String(x.comanda_id)===String(v.id)).reduce((n,x)=>n+Number(x.quantidade||1),0);
+      return `<div class="item" style="cursor:pointer" onclick="vendaDetalheHtml(window._reportVendas.find(x=>String(x.id)==='${v.id}'),window._reportItens.filter(x=>String(x.comanda_id)==='${v.id}'))"><div class="row"><div class="grow"><b>${hora} · ${origem}</b><div class="small">${esc(v.forma_pagamento||'Não informado')} · ${qtd} item(ns)${v.cliente_nome?' · '+esc(v.cliente_nome):''}</div></div><b>${money(v.total)}</b></div><div class="small">Toque para ver os detalhes</div></div>`;
+    }).join(''):'<div class="small">Sem vendas no período.</div>';
+
     const cxHtml=caixas.length?caixas.map(x=>`<div class="item"><b>${esc(x.operador||'Operador')} — ${String(x.status).toUpperCase()}</b><div class="small">Abertura: ${new Date(x.aberto_em).toLocaleString('pt-BR')}${x.fechado_em?' · Fechamento: '+new Date(x.fechado_em).toLocaleString('pt-BR'):''}</div><div class="small">Inicial ${money(x.valor_abertura)}${x.valor_fechamento_informado!=null?' · Informado '+money(x.valor_fechamento_informado)+' · Diferença '+money(x.diferenca):''}</div></div>`).join(''):'<div class="small">Sem caixas no período.</div>';
 
     const label=rg.start.toLocaleDateString('pt-BR')+(localDateStr(rg.start)!==localDateStr(rg.end)?' até '+rg.end.toLocaleDateString('pt-BR'):'');
@@ -286,6 +315,7 @@ async function loadRelatorios(){
       <div class="card" style="margin-top:10px"><h3>Vendas por dia</h3>${diasHtml}</div>
       <div class="card" style="margin-top:10px"><h3>Produtos mais vendidos</h3>${prodHtml}</div>
       <div class="card" style="margin-top:10px"><h3>Sabores mais vendidos</h3>${sabHtml}</div>
+      <div class="card" style="margin-top:10px"><h3>Vendas realizadas</h3><div class="small" style="margin-bottom:8px">Toque em uma venda para consultar os itens.</div>${vendasHtml}</div>
       <div class="card" style="margin-top:10px"><h3>Histórico de caixas</h3>${cxHtml}</div>`;
   }catch(e){reports.innerHTML='<h2>Relatórios</h2>'+reportFilterBar()+'<div class="notice">Erro: '+esc(e.message)+'</div>'}
 }
