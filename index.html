@@ -1929,13 +1929,33 @@ function printReceipt(){
     }
   },8000);
 }
-function checkoutWhatsApp(){
+async function checkoutWhatsApp(){
   const order=buildOrderData();
   if(!order)return;
+
   localStorage.setItem('ls_last_order_v1',JSON.stringify(order));
   const history=JSON.parse(localStorage.getItem('ls_order_history_v1')||'[]');
   history.unshift(order);
   localStorage.setItem('ls_order_history_v1',JSON.stringify(history.slice(0,30)));
+
+  const btn=document.querySelector('.finish-btn');
+  const oldText=btn?.textContent;
+  if(btn){btn.disabled=true;btn.textContent='Registrando pedido...';}
+
+  try{
+    const saved=await saveOrderOnline(order);
+    if(saved.ok){
+      showToast('Pedido registrado na La Supreme!');
+    }else if(saved.reason==='not_configured'){
+      console.warn('Banco online ainda não configurado.');
+    }
+  }catch(err){
+    console.error(err);
+    alert('Não conseguimos registrar o pedido online. O WhatsApp será aberto normalmente para você não perder o pedido.');
+  }finally{
+    if(btn){btn.disabled=false;btn.textContent=oldText||'✅ Gerar pedido e abrir WhatsApp';}
+  }
+
   showReceipt(order);
   const msg=orderWhatsAppMessage(order);
   window.open(`https://wa.me/${LS_PHONE}?text=${encodeURIComponent(msg)}`,'_blank');
@@ -1963,6 +1983,55 @@ window.addEventListener('afterprint',()=>{
     }
   },1500);
 });
+
+
+/* ===== LA SUPREME - PEDIDOS ONLINE =====
+   Preencha SUPABASE_URL e SUPABASE_ANON_KEY depois de criar o projeto.
+*/
+const SUPABASE_URL = 'COLE_AQUI_SUPABASE_URL';
+const SUPABASE_ANON_KEY = 'COLE_AQUI_SUPABASE_ANON_KEY';
+
+function supabaseConfigured(){
+  return SUPABASE_URL.startsWith('https://') &&
+         !SUPABASE_URL.includes('COLE_AQUI') &&
+         SUPABASE_ANON_KEY &&
+         !SUPABASE_ANON_KEY.includes('COLE_AQUI');
+}
+
+async function saveOrderOnline(order){
+  if(!supabaseConfigured()) return {ok:false, reason:'not_configured'};
+  const payload={
+    order_no: order.orderNo,
+    created_at: order.createdAt,
+    customer_name: order.customer.name,
+    customer_phone: order.customer.phone || '',
+    fulfillment: order.fulfillment,
+    address: order.address || '',
+    payment: order.payment || '',
+    general_obs: order.generalObs || '',
+    subtotal: Number(order.subtotal || 0),
+    delivery_fee: null,
+    total: Number(order.subtotal || 0),
+    status: 'novo',
+    printed: false,
+    items: order.items
+  };
+  const r=await fetch(`${SUPABASE_URL}/rest/v1/orders`,{
+    method:'POST',
+    headers:{
+      'apikey':SUPABASE_ANON_KEY,
+      'Authorization':`Bearer ${SUPABASE_ANON_KEY}`,
+      'Content-Type':'application/json',
+      'Prefer':'return=representation'
+    },
+    body:JSON.stringify(payload)
+  });
+  if(!r.ok){
+    const detail=await r.text().catch(()=> '');
+    throw new Error(`Falha ao registrar pedido (${r.status}) ${detail}`);
+  }
+  return {ok:true, data:await r.json()};
+}
 
 </script>
 </body>
