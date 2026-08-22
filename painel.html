@@ -1,0 +1,136 @@
+<!doctype html>
+<html lang="pt-BR">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width,initial-scale=1,viewport-fit=cover">
+<title>La Supreme — Painel de Pedidos</title>
+<style>
+:root{--bg:#120f0d;--panel:#211a17;--panel2:#2b211d;--text:#fff8ed;--muted:#c8b9ad;--gold:#dfb25b;--green:#1d8b54;--red:#b6282c;--line:#41332c}
+*{box-sizing:border-box}body{margin:0;background:var(--bg);color:var(--text);font-family:Arial,sans-serif}
+header{position:sticky;top:0;z-index:5;background:#100d0cf5;border-bottom:1px solid var(--line);padding:12px}
+.head{max-width:1100px;margin:auto;display:flex;align-items:center;gap:10px}
+h1{font:700 23px Georgia;margin:0}.brand{color:var(--gold)}.spacer{flex:1}
+button{cursor:pointer}.arm{border:0;border-radius:10px;padding:10px 12px;background:var(--green);color:white;font-weight:900}
+.wrap{max-width:1100px;margin:auto;padding:14px 12px 80px}
+.statusbar{display:flex;gap:8px;overflow:auto;margin-bottom:14px}
+.pill{white-space:nowrap;background:#211a17;border:1px solid var(--line);border-radius:999px;padding:8px 11px;color:white}
+.grid{display:grid;grid-template-columns:repeat(2,minmax(0,1fr));gap:12px}
+.card{background:linear-gradient(180deg,var(--panel2),var(--panel));border:1px solid var(--line);border-radius:16px;padding:14px}
+.card.new{border-color:var(--gold);box-shadow:0 0 0 1px #dfb25b55}.row{display:flex;gap:8px;align-items:flex-start}.order{font:700 20px Georgia}.time{color:var(--muted);font-size:12px}.grow{flex:1}.tag{font-size:11px;font-weight:900;border-radius:999px;padding:5px 8px;background:#171210}.customer{margin:12px 0 5px;font-weight:900}.muted{color:var(--muted);font-size:13px;line-height:1.45}
+.items{margin-top:10px;border-top:1px dashed #4d3b32;padding-top:8px}.item{padding:7px 0;border-bottom:1px dashed #3b2e28}.item:last-child{border-bottom:0}
+.total{font-size:18px;font-weight:900;margin:12px 0}.actions{display:grid;grid-template-columns:1fr 1fr;gap:8px}
+.actions button{border:0;border-radius:10px;padding:11px;font-weight:900}.print{background:var(--gold);color:#271904}.next{background:var(--green);color:#fff}.done{background:#3c302a;color:#fff}.empty{text-align:center;color:var(--muted);padding:50px 10px}
+.notice{background:#251c18;border:1px solid var(--line);border-radius:12px;padding:12px;margin-bottom:14px;color:var(--muted);font-size:13px}
+@media(max-width:720px){.grid{grid-template-columns:1fr}}
+</style>
+</head>
+<body>
+<header><div class="head"><h1>LA <span class="brand">SUPREME</span> — Pedidos</h1><div class="spacer"></div><button class="arm" onclick="armAudio()">🔔 Ativar alertas</button></div></header>
+<main class="wrap">
+<div class="notice" id="notice">Painel preparado. Falta inserir as chaves do banco online no código.</div>
+<div class="statusbar">
+<button class="pill" onclick="setFilter('novo')">Novos</button>
+<button class="pill" onclick="setFilter('preparo')">Em preparo</button>
+<button class="pill" onclick="setFilter('entrega')">Saiu p/ entrega</button>
+<button class="pill" onclick="setFilter('concluido')">Concluídos</button>
+<button class="pill" onclick="setFilter('todos')">Todos</button>
+</div>
+<div id="orders" class="grid"></div>
+</main>
+<script>
+const SUPABASE_URL='https://stacwvpsfjvyvbjwagtd.supabase.co';
+const SUPABASE_ANON_KEY='COLE_AQUI_SUPABASE_ANON_KEY';
+let filter='novo', lastSeen=new Set(), audioArmed=false, firstLoad=true;
+
+const money=v=>'R$ '+Number(v||0).toFixed(2).replace('.',',');
+const esc=s=>String(s??'').replace(/[&<>"']/g,m=>({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&#039;'}[m]));
+function configured(){return SUPABASE_URL.startsWith('https://')&&!SUPABASE_URL.includes('COLE_AQUI')&&!SUPABASE_ANON_KEY.includes('COLE_AQUI')}
+function setFilter(v){filter=v;loadOrders();}
+function armAudio(){audioArmed=true;beep();document.querySelector('.arm').textContent='🔔 Alertas ativos';}
+function beep(){if(!audioArmed)return;try{const a=new (window.AudioContext||window.webkitAudioContext)();const o=a.createOscillator(),g=a.createGain();o.frequency.value=880;o.connect(g);g.connect(a.destination);g.gain.value=.12;o.start();setTimeout(()=>{o.stop();a.close()},250)}catch(e){}}
+
+async function api(path,opts={}){
+  const r=await fetch(`${SUPABASE_URL}/rest/v1/${path}`,{
+    ...opts,
+    headers:{apikey:SUPABASE_ANON_KEY,Authorization:`Bearer ${SUPABASE_ANON_KEY}`,'Content-Type':'application/json',Prefer:'return=representation',...(opts.headers||{})}
+  });
+  if(!r.ok)throw new Error(await r.text());
+  const t=await r.text();return t?JSON.parse(t):null;
+}
+async function loadOrders(){
+  if(!configured()){
+    document.getElementById('notice').textContent='Falta configurar SUPABASE_URL e SUPABASE_ANON_KEY.';
+    document.getElementById('orders').innerHTML='<div class="empty">Banco online ainda não conectado.</div>';
+    return;
+  }
+  document.getElementById('notice').textContent='🟢 Online — verificando novos pedidos automaticamente.';
+  let q='orders?select=*&order=created_at.desc&limit=60';
+  if(filter!=='todos')q+=`&status=eq.${filter}`;
+  try{
+    const rows=await api(q);
+    if(!firstLoad && filter==='novo'){
+      rows.forEach(o=>{if(!lastSeen.has(o.id)){beep();}});
+    }
+    rows.forEach(o=>lastSeen.add(o.id)); firstLoad=false;
+    render(rows);
+  }catch(e){
+    document.getElementById('notice').textContent='Erro ao carregar pedidos: '+e.message;
+  }
+}
+function render(rows){
+  const el=document.getElementById('orders');
+  if(!rows.length){el.innerHTML='<div class="empty">Nenhum pedido nesta etapa.</div>';return}
+  el.innerHTML=rows.map(o=>{
+    const items=Array.isArray(o.items)?o.items:[];
+    return `<article class="card ${o.status==='novo'?'new':''}">
+      <div class="row"><div><div class="order">${esc(o.order_no)}</div><div class="time">${new Date(o.created_at).toLocaleString('pt-BR')}</div></div><div class="grow"></div><span class="tag">${esc(o.status)}</span></div>
+      <div class="customer">${esc(o.customer_name)}</div>
+      <div class="muted">${o.customer_phone?esc(o.customer_phone)+'<br>':''}${o.fulfillment==='delivery'?'🛵 '+esc(o.address):'🏪 Retirada'}<br>Pagamento: ${esc(o.payment)}</div>
+      <div class="items">${items.map(x=>`<div class="item"><b>${x.qty||1}x ${esc(x.name)}</b>${x.size?'<br><span class="muted">'+esc(x.size)+'</span>':''}${x.crust?'<br><span class="muted">Borda: '+esc(x.crust)+'</span>':''}${x.obs?'<br><span class="muted">Obs.: '+esc(x.obs)+'</span>':''}</div>`).join('')}</div>
+      ${o.general_obs?`<div class="muted" style="margin-top:8px"><b>Obs. gerais:</b> ${esc(o.general_obs)}</div>`:''}
+      <div class="total">Subtotal: ${money(o.subtotal)}</div>
+      <div class="actions">
+        <button class="print" onclick='printOrder(${JSON.stringify(o).replace(/'/g,"&#39;")})'>🖨️ Imprimir</button>
+        ${nextButton(o)}
+      </div>
+    </article>`;
+  }).join('');
+}
+function nextButton(o){
+  if(o.status==='novo')return `<button class="next" onclick="statusOrder('${o.id}','preparo')">▶ Em preparo</button>`;
+  if(o.status==='preparo')return `<button class="next" onclick="statusOrder('${o.id}','entrega')">🛵 Saiu</button>`;
+  if(o.status==='entrega')return `<button class="next" onclick="statusOrder('${o.id}','concluido')">✓ Concluir</button>`;
+  return `<button class="done" disabled>✓ Concluído</button>`;
+}
+async function statusOrder(id,status){
+  await api(`orders?id=eq.${encodeURIComponent(id)}`,{method:'PATCH',body:JSON.stringify({status})});
+  loadOrders();
+}
+function receipt(o){
+  const W=32,L='-'.repeat(W),D='='.repeat(W),c=s=>' '.repeat(Math.max(0,Math.floor((W-String(s).length)/2)))+s;
+  const wrap=(s,w=30)=>{let a=[],cur='';String(s||'').split(/\s+/).forEach(x=>{if((cur+' '+x).trim().length>w){if(cur)a.push(cur);cur=x}else cur=(cur+' '+x).trim()});if(cur)a.push(cur);return a};
+  let r=[D,c('LA SUPREME'),c('PEDIDO '+o.order_no),D,new Date(o.created_at).toLocaleString('pt-BR'),`CLIENTE: ${o.customer_name}`];
+  if(o.customer_phone)r.push(`FONE: ${o.customer_phone}`);r.push(`TIPO: ${o.fulfillment==='delivery'?'ENTREGA':'RETIRADA'}`,L);
+  (o.items||[]).forEach(x=>{wrap(`${x.qty||1}x ${x.name}`).forEach(v=>r.push(v.toUpperCase()));if(x.size)r.push('  '+x.size.toUpperCase());if(x.crust)r.push('  BORDA: '+x.crust.toUpperCase());if(x.obs)wrap('  OBS: '+x.obs).forEach(v=>r.push(v.toUpperCase()));r.push('  '+money((x.unit||0)*(x.qty||1)),'')});
+  r.push(L,'SUBTOTAL: '+money(o.subtotal));if(o.fulfillment==='delivery')r.push('ENTREGA: A CONFIRMAR');r.push(L,'PAGAMENTO: '+String(o.payment||'').toUpperCase());
+  if(o.fulfillment==='delivery'){r.push('','ENDERECO:');wrap(o.address).forEach(v=>r.push(v.toUpperCase()))}
+  if(o.general_obs){r.push('','OBS. GERAIS:');wrap(o.general_obs).forEach(v=>r.push(v.toUpperCase()))}
+  r.push(D,c('SABOR QUE VIRA TRADICAO!'),D,'','','');return r.join('\n');
+}
+function printOrder(o){
+  // Impressão via RawBT custom scheme. Em Android, abre o RawBT com o texto do cupom.
+  // Mantemos deduplicação local para evitar reenvios acidentais.
+  const key='ls_printed_'+o.id;
+  if(localStorage.getItem(key)){
+    if(!confirm('Este pedido já foi enviado à impressão neste aparelho. Imprimir novamente?'))return;
+  }
+  localStorage.setItem(key,String(Date.now()));
+  const txt=receipt(o);
+  const url='rawbt:'+encodeURIComponent(txt);
+  window.location.href=url;
+  // Atualiza flag no banco sem depender do retorno do app.
+  api(`orders?id=eq.${encodeURIComponent(o.id)}`,{method:'PATCH',body:JSON.stringify({printed:true})}).catch(()=>{});
+}
+loadOrders();setInterval(loadOrders,5000);
+</script>
+</body></html>
