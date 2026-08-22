@@ -181,17 +181,25 @@ async function loadCaixa(){
       return;
     }
     const c=a[0], inicio=encodeURIComponent(c.aberto_em);
-    const vendas=await api(`comandas?status=eq.fechada&fechada_em=gte.${inicio}&select=total,forma_pagamento,fechada_em`);
+    const vendasInternas=await api(`comandas?status=eq.fechada&fechada_em=gte.${inicio}&select=total,forma_pagamento,fechada_em,tipo`);
+    const vendasDelivery=await api(`orders?status=eq.concluido&concluded_at=gte.${inicio}&select=total,payment,concluded_at`);
+    const vendas=[
+      ...vendasInternas.map(v=>({total:v.total,forma_pagamento:v.forma_pagamento,origem:v.tipo||'interno'})),
+      ...vendasDelivery.map(v=>({total:v.total,forma_pagamento:v.payment,origem:'delivery'}))
+    ];
     const movs=await api(`caixa_movimentos?caixa_id=eq.${c.id}&select=*&order=criado_em.desc`);
     const soma=pg=>vendas.filter(v=>v.forma_pagamento===pg).reduce((n,v)=>n+Number(v.total||0),0);
     const pix=soma('Pix'), din=soma('Dinheiro'), deb=soma('Cartão Débito'), cred=soma('Cartão Crédito');
     const vendasTotal=vendas.reduce((n,v)=>n+Number(v.total||0),0);
+    const deliveryTotal=vendas.filter(v=>v.origem==='delivery').reduce((n,v)=>n+Number(v.total||0),0);
+    const internoTotal=vendasTotal-deliveryTotal;
     const supr=movs.filter(m=>m.tipo==='suprimento').reduce((n,m)=>n+Number(m.valor||0),0);
     const sang=movs.filter(m=>m.tipo==='sangria').reduce((n,m)=>n+Number(m.valor||0),0);
     const esperado=Number(c.valor_abertura||0)+din+supr-sang;
     cashbox.innerHTML=`<div class="row"><h2>Caixa aberto</h2><span class="grow"></span><b class="gold">${esc(c.operador||'Operador')}</b></div>
       <div class="small">Aberto em ${new Date(c.aberto_em).toLocaleString('pt-BR')}</div>
       <div class="total">Vendas do turno: ${money(vendasTotal)}</div>
+      <div class="card" style="margin-top:10px"><div class="row"><span class="grow">Mesas + Balcão</span><b>${money(internoTotal)}</b></div><div class="row"><span class="grow">Delivery</span><b>${money(deliveryTotal)}</b></div></div>
       <div class="card" style="margin-top:10px"><div class="row"><span class="grow">Dinheiro</span><b>${money(din)}</b></div><div class="row"><span class="grow">Pix</span><b>${money(pix)}</b></div><div class="row"><span class="grow">Débito</span><b>${money(deb)}</b></div><div class="row"><span class="grow">Crédito</span><b>${money(cred)}</b></div></div>
       <div class="card" style="margin-top:10px"><div class="row"><span class="grow">Abertura</span><b>${money(c.valor_abertura)}</b></div><div class="row"><span class="grow">Suprimentos</span><b>${money(supr)}</b></div><div class="row"><span class="grow">Sangrias</span><b>-${money(sang)}</b></div><div class="row"><span class="grow"><b>Dinheiro esperado</b></span><b>${money(esperado)}</b></div></div>
       <div class="actions" style="margin-top:10px"><button class="yellow" onclick="movCaixa('suprimento',${c.id})">+ Suprimento</button><button class="red" onclick="movCaixa('sangria',${c.id})">− Sangria</button></div>
@@ -289,7 +297,7 @@ async function loadRelatorios(){
     if(ids.length)itens=await api(`comanda_itens?comanda_id=in.(${ids.join(',')})&select=comanda_id,produto_nome,tamanho,sabor_1,sabor_2,quantidade,total`);
 
     // Delivery: só entra no faturamento quando o pedido estiver concluído.
-    const pedidosDelivery=await api(`orders?status=eq.concluido&created_at=gte.${ini}&created_at=lte.${fim}&select=id,order_no,created_at,customer_name,payment,subtotal,delivery_fee,total,items`);
+    const pedidosDelivery=await api(`orders?status=eq.concluido&concluded_at=gte.${ini}&concluded_at=lte.${fim}&select=id,order_no,created_at,concluded_at,customer_name,payment,subtotal,delivery_fee,total,items`);
     const vendasDelivery=pedidosDelivery.map(o=>({
       id:'delivery_'+o.id,
       tipo:'delivery',
@@ -298,7 +306,7 @@ async function loadRelatorios(){
       subtotal:Number(o.subtotal||0),
       desconto:0,
       forma_pagamento:o.payment||'Não informado',
-      fechada_em:o.created_at,
+      fechada_em:o.concluded_at||o.created_at,
       _order_no:o.order_no,
       _delivery:true
     }));
