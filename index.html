@@ -1939,35 +1939,24 @@ function printReceipt(){
 async function checkoutWhatsApp(){
   const order=buildOrderData();
   if(!order)return;
-
-  localStorage.setItem('ls_last_order_v1',JSON.stringify(order));
-  const history=JSON.parse(localStorage.getItem('ls_order_history_v1')||'[]');
-  history.unshift(order);
-  localStorage.setItem('ls_order_history_v1',JSON.stringify(history.slice(0,30)));
-
   const btn=document.querySelector('.finish-btn');
   const oldText=btn?.textContent;
   if(btn){btn.disabled=true;btn.textContent='Registrando pedido...';}
-
   try{
     const saved=await saveOrderOnline(order);
-    if(saved.ok){
-      showToast('Pedido registrado na La Supreme!');
-    }else if(saved.reason==='not_configured'){
-      console.warn('Banco online ainda não configurado.');
-    }
+    if(!saved.ok) throw new Error('Supabase não configurado');
+    localStorage.setItem('ls_last_order_v1',JSON.stringify(order));
+    const history=JSON.parse(localStorage.getItem('ls_order_history_v1')||'[]');
+    history.unshift(order);
+    localStorage.setItem('ls_order_history_v1',JSON.stringify(history.slice(0,30)));
+    cart=[]; saveCart(); renderCart(); closeCart();
+    alert(`✅ Pedido ${order.orderNo} confirmado!\n\nRecebemos seu pedido na La Supreme.`);
   }catch(err){
     console.error(err);
-    alert('Não conseguimos registrar o pedido online. O WhatsApp será aberto normalmente para você não perder o pedido.');
+    alert('Não foi possível registrar o pedido. Tente novamente. Seu carrinho foi mantido.');
   }finally{
-    if(btn){btn.disabled=false;btn.textContent=oldText||'✅ Gerar pedido e abrir WhatsApp';}
+    if(btn){btn.disabled=false;btn.textContent=oldText||'✅ Finalizar pedido';}
   }
-
-  // O cupom não é exibido ao cliente na finalização.
-  showToast('Pedido finalizado com sucesso!');
-  closeCart();
-  const msg=orderWhatsAppMessage(order);
-  window.open(`https://wa.me/${LS_PHONE}?text=${encodeURIComponent(msg)}`,'_blank');
 }
 function escapeHtml(s){return String(s||'').replace(/[&<>'"]/g,c=>({'&':'&amp;','<':'&lt;','>':'&gt;',"'":'&#39;','"':'&quot;'}[c]));}
 function showToast(msg){const t=document.getElementById('toast');t.textContent=msg;t.classList.add('show');setTimeout(()=>t.classList.remove('show'),1800);}
@@ -1997,8 +1986,8 @@ window.addEventListener('afterprint',()=>{
 /* ===== LA SUPREME - PEDIDOS ONLINE =====
    Preencha SUPABASE_URL e SUPABASE_ANON_KEY depois de criar o projeto.
 */
-const SUPABASE_URL = 'COLE_AQUI_SUPABASE_URL';
-const SUPABASE_ANON_KEY = 'COLE_AQUI_SUPABASE_ANON_KEY';
+const SUPABASE_URL = 'https://stacwvpsfjvyvbjwagtd.supabase.co';
+const SUPABASE_ANON_KEY = 'sb_publishable_uM7vsWn839Zmj1lTk3yKyg_b5Vj501Z';
 
 function supabaseConfigured(){
   return SUPABASE_URL.startsWith('https://') &&
