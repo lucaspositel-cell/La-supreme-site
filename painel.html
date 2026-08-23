@@ -150,17 +150,88 @@ function receipt(o){
 function deliveryReceipt(o){
   const W=32,L='-'.repeat(W),D='='.repeat(W),c=s=>' '.repeat(Math.max(0,Math.floor((W-String(s).length)/2)))+s;
   const wrap=(s,w=30)=>{let a=[],cur='';String(s||'').split(/\s+/).forEach(x=>{if((cur+' '+x).trim().length>w){if(cur)a.push(cur);cur=x}else cur=(cur+' '+x).trim()});if(cur)a.push(cur);return a};
-  let r=[D,c('LA SUPREME'),c('ENTREGA / MOTOBOY'),D,
+  const brl=v=>'R$ '+Number(v||0).toFixed(2).replace('.',',');
+  const items=Array.isArray(o.items)?o.items:[];
+  const subtotal=Number(o.subtotal||0);
+  const fee=Number(o.delivery_fee||0);
+  const total=Number(o.total!=null ? o.total : subtotal+fee);
+
+  let r=[
+    D,
+    c('LA SUPREME'),
+    c('CUPOM DELIVERY / MOTOBOY'),
+    D,
     `PEDIDO: ${o.order_no}`,
     `HORARIO: ${new Date(o.created_at).toLocaleString('pt-BR')}`,
     L,
-    'CLIENTE:'];
+    'CLIENTE:'
+  ];
+
   wrap(o.customer_name||'').forEach(v=>r.push(v.toUpperCase()));
-  if(o.customer_phone)r.push(`FONE: ${o.customer_phone}`);
+  if(o.customer_phone) r.push(`FONE: ${o.customer_phone}`);
+
+  r.push(L,'ITENS / SABORES:');
+
+  if(!items.length){
+    r.push('SEM ITENS REGISTRADOS');
+  }else{
+    items.forEach(x=>{
+      const qtd=Number(x.qty ?? x.quantidade ?? 1);
+      const nome=String(x.name ?? x.produto_nome ?? x.sabor ?? 'Produto');
+
+      let unit=Number(
+        x.unit ??
+        x.preco_unitario ??
+        x.price ??
+        0
+      );
+
+      if(!unit && x.total!=null){
+        unit=Number(x.total)/Math.max(qtd,1);
+      }
+
+      const itemTotal=Number(
+        x.total!=null ? x.total : unit*qtd
+      );
+
+      wrap(`${qtd}x ${nome}`).forEach(v=>r.push(v.toUpperCase()));
+
+      if(x.size || x.tamanho)
+        r.push(`  TAMANHO: ${String(x.size||x.tamanho).toUpperCase()}`);
+
+      if(x.crust || x.borda)
+        r.push(`  BORDA: ${String(x.crust||x.borda).toUpperCase()}`);
+
+      if(x.sabor_1 && x.sabor_2){
+        wrap(`  SABORES: 1/2 ${x.sabor_1} + 1/2 ${x.sabor_2}`)
+          .forEach(v=>r.push(v.toUpperCase()));
+      }
+
+      if(x.obs || x.observacoes){
+        wrap(`  OBS: ${x.obs||x.observacoes}`)
+          .forEach(v=>r.push(v.toUpperCase()));
+      }
+
+      r.push(`  VALOR: ${brl(itemTotal)}`);
+      r.push('');
+    });
+  }
+
+  r.push(L);
+  r.push(`SUBTOTAL: ${brl(subtotal)}`);
+  if(fee>0) r.push(`TAXA ENTREGA: ${brl(fee)}`);
+  r.push(`TOTAL: ${brl(total)}`);
+
   r.push(L,'ENDERECO DE ENTREGA:');
   wrap(o.address||'ENDERECO NAO INFORMADO').forEach(v=>r.push(v.toUpperCase()));
+
   r.push(L,`PAGAMENTO: ${String(o.payment||'').toUpperCase()}`);
-  if(o.general_obs){r.push(L,'OBSERVACOES:');wrap(o.general_obs).forEach(v=>r.push(v.toUpperCase()));}
+
+  if(o.general_obs){
+    r.push(L,'OBSERVACOES:');
+    wrap(o.general_obs).forEach(v=>r.push(v.toUpperCase()));
+  }
+
   r.push(D,c('ENTREGA LA SUPREME'),D,'','','');
   return r.join('\n');
 }
