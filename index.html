@@ -1963,7 +1963,9 @@ async function checkoutWhatsApp(){
     if(btn){btn.disabled=false;btn.textContent=oldText||'✅ Gerar pedido e abrir WhatsApp';}
   }
 
-  showReceipt(order);
+  // O cupom não é exibido ao cliente na finalização.
+  showToast('Pedido finalizado com sucesso!');
+  closeCart();
   const msg=orderWhatsAppMessage(order);
   window.open(`https://wa.me/${LS_PHONE}?text=${encodeURIComponent(msg)}`,'_blank');
 }
@@ -1995,8 +1997,8 @@ window.addEventListener('afterprint',()=>{
 /* ===== LA SUPREME - PEDIDOS ONLINE =====
    Preencha SUPABASE_URL e SUPABASE_ANON_KEY depois de criar o projeto.
 */
-const SUPABASE_URL = 'https://stacwvpsfjvyvbjwagtd.supabase.co';
-const SUPABASE_ANON_KEY = 'sb_publishable_uM7vsWn839Zmj1lTk3yKyg_b5Vj501Z';
+const SUPABASE_URL = 'COLE_AQUI_SUPABASE_URL';
+const SUPABASE_ANON_KEY = 'COLE_AQUI_SUPABASE_ANON_KEY';
 
 function supabaseConfigured(){
   return SUPABASE_URL.startsWith('https://') &&
