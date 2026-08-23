@@ -117,14 +117,18 @@ function pizzaProducts(){return PRODUCTS.filter(p=>p.broto!=null && !['Bebidas',
 function openHalfHalf(where){
   const ps=pizzaProducts();
   const opts=ps.map((p,i)=>`<option value="${i}">${esc(p.name)}</option>`).join('');
-  modal.innerHTML=`<div class="modalbg"><div class="modal"><div class="row"><h2>Pizza meio a meio</h2><span class="grow"></span><button class="dark" onclick="${where==='t'?'showT()':'closeM()'}">Fechar</button></div><div class="small">Preço = 50% do sabor 1 + 50% do sabor 2.</div><div class="field"><select id="hhsize"><option value="Broto">Broto</option><option value="Grande">Grande</option></select></div><div class="field"><label>1º sabor</label><select id="hh1">${opts}</select></div><div class="field"><label>2º sabor</label><select id="hh2">${opts}</select></div><div class="actions field"><button class="dark" onclick="${where==='t'?'showT()':'closeM()'}">Cancelar</button><button class="ok" onclick="addHalfHalf('${where}')">Adicionar 50/50</button></div></div></div>`;
+  modal.innerHTML=`<div class="modalbg"><div class="modal"><div class="row"><h2>Pizza meio a meio</h2><span class="grow"></span><button class="dark" onclick="${where==='t'?'showT()':'closeM()'}">Fechar</button></div><div class="small">Preço = 50% do sabor 1 + 50% do sabor 2. A borda é somada depois.</div><div class="field"><label>Tamanho</label><select id="hhsize"><option value="Broto">Broto</option><option value="Grande">Grande</option></select></div><div class="field"><label>1º sabor</label><select id="hh1">${opts}</select></div><div class="field"><label>2º sabor</label><select id="hh2">${opts}</select></div><div class="field"><label>Borda recheada</label><select id="hhcrust"><option value="">Sem borda</option><option value="Catupiry">Catupiry + R$ 12,00</option><option value="Cheddar">Cheddar + R$ 12,00</option></select></div><div class="actions field"><button class="dark" onclick="${where==='t'?'showT()':'closeM()'}">Cancelar</button><button class="ok" onclick="addHalfHalf('${where}')">Adicionar 50/50</button></div></div></div>`;
 }
 
 async function addHalfHalf(where){
   const ps=pizzaProducts(),p1=ps[Number(hh1.value)],p2=ps[Number(hh2.value)],size=hhsize.value;
   const k=size==='Broto'?'broto':'grande';
-  const price=(Number(p1[k])+Number(p2[k]))/2;
-  const obj={produto_nome:`½ ${p1.name} + ½ ${p2.name}`,tamanho:size,sabor_1:p1.name,sabor_2:p2.name,quantidade:1,preco_unitario:price,adicionais:0,total:price,observacoes:'Pizza meio a meio 50/50'};
+  const crust=document.getElementById('hhcrust')?.value||'';
+  const base=(Number(p1[k])+Number(p2[k]))/2;
+  const crustPrice=crust?12:0;
+  const price=base+crustPrice;
+  const obs=crust?`Pizza meio a meio 50/50 | Borda: ${crust}`:'Pizza meio a meio 50/50';
+  const obj={produto_nome:`½ ${p1.name} + ½ ${p2.name}`,tamanho:size,sabor_1:p1.name,sabor_2:p2.name,quantidade:1,preco_unitario:price,adicionais:crustPrice,total:price,observacoes:obs};
   if(where==='b'){bCart.push(obj);closeM();renderBCart();return}
   let a=await api('comanda_itens',{method:'POST',body:JSON.stringify({comanda_id:curC.id,...obj})});
   sitems.push(a[0]);await recalc();showT();
@@ -158,7 +162,7 @@ async function finishT(){
 }
 
 function renderBCart(){
-  bitems.innerHTML=bCart.map((x,i)=>`<div class="item"><div class="row"><div class="grow"><b>${x.quantidade}x ${esc(x.produto_nome)}</b><div class="small">${esc(x.tamanho||'')} — ${money(x.total)}</div></div><button class="red" onclick="bCart.splice(${i},1);renderBCart()">×</button></div></div>`).join('');
+  bitems.innerHTML=bCart.map((x,i)=>`<div class="item"><div class="row"><div class="grow"><b>${x.quantidade}x ${esc(x.produto_nome)}</b><div class="small">${esc(x.tamanho||'')} — ${money(x.total)}</div>${x.observacoes&&x.observacoes.includes('Borda:')?`<div class="small">${esc(x.observacoes.split('|').slice(1).join('|').trim())}</div>`:''}</div><button class="red" onclick="bCart.splice(${i},1);renderBCart()">×</button></div></div>`).join('');
   btot.textContent=money(bCart.reduce((a,x)=>a+Number(x.total),0));
 }
 
