@@ -1676,6 +1676,78 @@ a{color:inherit}
 </div>
 
 
+
+<style id="lsTrackStyles">
+#lsTrackFab{
+  position:fixed; left:16px; bottom:18px; z-index:9997;
+  border:0; border-radius:999px; padding:12px 16px;
+  background:#111827; color:#fff; font-weight:800; font-size:14px;
+  box-shadow:0 8px 24px rgba(0,0,0,.22); cursor:pointer
+}
+#lsTrackOverlay{
+  position:fixed; inset:0; z-index:9999; background:rgba(0,0,0,.62);
+  display:none; align-items:center; justify-content:center; padding:18px
+}
+#lsTrackOverlay.open{display:flex}
+#lsTrackCard{
+  width:min(480px,100%); max-height:90vh; overflow:auto;
+  background:#fff; color:#111827; border-radius:22px; padding:20px;
+  box-shadow:0 20px 60px rgba(0,0,0,.35)
+}
+#lsTrackHead{display:flex;align-items:center;gap:10px}
+#lsTrackHead h2{margin:0;font-size:22px}
+#lsTrackClose{margin-left:auto;border:0;background:#eee;border-radius:50%;width:38px;height:38px;font-size:22px}
+.ls-track-muted{color:#6b7280;font-size:13px}
+.ls-track-fields{display:grid;gap:10px;margin:16px 0}
+.ls-track-fields input{
+  width:100%;box-sizing:border-box;border:1px solid #d1d5db;border-radius:12px;
+  padding:12px 13px;font-size:16px
+}
+#lsTrackSearch{
+  width:100%;border:0;border-radius:12px;padding:13px;
+  background:#16a34a;color:#fff;font-weight:800;font-size:16px
+}
+#lsTrackResult{margin-top:18px}
+.ls-track-order{font-weight:900;font-size:18px;margin-bottom:4px}
+.ls-steps{display:grid;gap:10px;margin-top:16px}
+.ls-step{
+  display:flex;align-items:center;gap:12px;padding:12px;border-radius:14px;
+  background:#f3f4f6;color:#6b7280
+}
+.ls-step .dot{
+  width:34px;height:34px;flex:0 0 34px;border-radius:50%;
+  display:flex;align-items:center;justify-content:center;background:#d1d5db;color:#fff;font-weight:900
+}
+.ls-step.done{background:#ecfdf5;color:#166534}
+.ls-step.done .dot{background:#16a34a}
+.ls-step.current{outline:2px solid #16a34a;background:#f0fdf4;color:#14532d}
+.ls-track-statusbox{
+  margin-top:14px;padding:12px;border-radius:12px;background:#f9fafb;border:1px solid #e5e7eb
+}
+</style>
+
+<button id="lsTrackFab" type="button" onclick="openOrderTracking()">📍 Acompanhar pedido</button>
+
+<div id="lsTrackOverlay" aria-hidden="true">
+  <div id="lsTrackCard">
+    <div id="lsTrackHead">
+      <div>
+        <h2>Acompanhe seu pedido</h2>
+        <div class="ls-track-muted">Atualização automática a cada 5 segundos.</div>
+      </div>
+      <button id="lsTrackClose" type="button" onclick="closeOrderTracking()">×</button>
+    </div>
+
+    <div class="ls-track-fields">
+      <input id="lsTrackOrderNo" placeholder="Número do pedido">
+      <input id="lsTrackPhone" inputmode="tel" placeholder="Telefone usado no pedido">
+      <button id="lsTrackSearch" type="button" onclick="trackOrderNow(true)">Consultar pedido</button>
+    </div>
+
+    <div id="lsTrackResult"></div>
+  </div>
+</div>
+
 <script>
 function filterMenu(){
   const q = document.getElementById('search').value.trim().toLowerCase();
@@ -1950,7 +2022,8 @@ async function checkoutWhatsApp(){
     history.unshift(order);
     localStorage.setItem('ls_order_history_v1',JSON.stringify(history.slice(0,30)));
     cart=[]; saveCart(); renderCart(); closeCart();
-    alert(`✅ Pedido ${order.orderNo} confirmado!\n\nRecebemos seu pedido na La Supreme.`);
+    showToast(`Pedido ${order.orderNo} confirmado!`);
+    setTimeout(()=>openOrderTracking(order),250);
   }catch(err){
     console.error(err);
     alert('Não foi possível registrar o pedido. Tente novamente. Seu carrinho foi mantido.');
@@ -2030,6 +2103,145 @@ async function saveOrderOnline(order){
   }
   return {ok:true, data:await r.json()};
 }
+
+
+
+/* ===== LA SUPREME - ACOMPANHAMENTO DO PEDIDO ===== */
+let _lsTrackTimer=null;
+let _lsTrackLastStatus='';
+
+function lsOnlyDigits(v){ return String(v||'').replace(/\D/g,''); }
+
+function openOrderTracking(order){
+  const ov=document.getElementById('lsTrackOverlay');
+  if(!ov)return;
+  ov.classList.add('open');
+  ov.setAttribute('aria-hidden','false');
+
+  let last=order;
+  if(!last){
+    try{ last=JSON.parse(localStorage.getItem('ls_last_order_v1')||'null'); }catch(e){}
+  }
+  if(last){
+    document.getElementById('lsTrackOrderNo').value=last.orderNo||'';
+    document.getElementById('lsTrackPhone').value=(last.customer&&last.customer.phone)||'';
+    trackOrderNow(false);
+  }
+}
+
+function closeOrderTracking(){
+  const ov=document.getElementById('lsTrackOverlay');
+  if(ov){ov.classList.remove('open');ov.setAttribute('aria-hidden','true');}
+  if(_lsTrackTimer){clearTimeout(_lsTrackTimer);_lsTrackTimer=null;}
+}
+
+function lsStatusIndex(status){
+  return ({novo:0,preparo:1,entrega:2,concluido:3})[status] ?? 0;
+}
+function lsStatusLabel(status){
+  return ({
+    novo:'Pedido recebido',
+    preparo:'Em preparo',
+    entrega:'Saiu para entrega',
+    concluido:'Pedido concluído'
+  })[status] || 'Pedido recebido';
+}
+
+function renderTrackedOrder(o){
+  const box=document.getElementById('lsTrackResult');
+  const status=String(o.status||'novo').toLowerCase();
+  const idx=lsStatusIndex(status);
+  const delivery=(o.fulfillment==='delivery');
+  const steps=delivery
+    ? [
+        ['✓','Pedido recebido','Recebemos seu pedido.'],
+        ['🍕','Em preparo','Sua pizza está sendo preparada.'],
+        ['🛵','Saiu para entrega','Seu pedido está a caminho.'],
+        ['🏁','Concluído','Pedido finalizado.']
+      ]
+    : [
+        ['✓','Pedido recebido','Recebemos seu pedido.'],
+        ['🍕','Em preparo','Seu pedido está sendo preparado.'],
+        ['🏪','Pronto / retirada','Aguarde a liberação para retirada.'],
+        ['🏁','Concluído','Pedido finalizado.']
+      ];
+
+  box.innerHTML=`
+    <div class="ls-track-order">Pedido ${escapeHtml(o.order_no||'')}</div>
+    <div class="ls-track-muted">${o.created_at?new Date(o.created_at).toLocaleString('pt-BR'):''}</div>
+    <div class="ls-track-statusbox"><b>Status atual:</b> ${escapeHtml(lsStatusLabel(status))}</div>
+    <div class="ls-steps">
+      ${steps.map((s,i)=>`
+        <div class="ls-step ${i<=idx?'done':''} ${i===idx?'current':''}">
+          <div class="dot">${s[0]}</div>
+          <div><b>${s[1]}</b><div class="ls-track-muted">${s[2]}</div></div>
+        </div>`).join('')}
+    </div>
+  `;
+
+  if(_lsTrackLastStatus && _lsTrackLastStatus!==status && navigator.vibrate){
+    try{navigator.vibrate(120)}catch(e){}
+  }
+  _lsTrackLastStatus=status;
+}
+
+async function trackOrderNow(manual){
+  const no=(document.getElementById('lsTrackOrderNo')?.value||'').trim();
+  const phone=(document.getElementById('lsTrackPhone')?.value||'').trim();
+  const result=document.getElementById('lsTrackResult');
+
+  if(!no || !phone){
+    if(manual) result.innerHTML='<div class="ls-track-statusbox">Informe o número do pedido e o telefone usado na compra.</div>';
+    return;
+  }
+  if(!supabaseConfigured()){
+    result.innerHTML='<div class="ls-track-statusbox">Acompanhamento temporariamente indisponível.</div>';
+    return;
+  }
+
+  try{
+    const qNo=encodeURIComponent(no);
+    const r=await fetch(`${SUPABASE_URL}/rest/v1/orders?select=order_no,created_at,status,fulfillment&order_no=eq.${qNo}&limit=10`,{
+      headers:{
+        'apikey':SUPABASE_ANON_KEY,
+        'Authorization':`Bearer ${SUPABASE_ANON_KEY}`
+      }
+    });
+    if(!r.ok) throw new Error(await r.text());
+    const rows=await r.json();
+
+    // Confere o telefone usando uma segunda consulta somente do pedido exato.
+    const r2=await fetch(`${SUPABASE_URL}/rest/v1/orders?select=order_no,created_at,status,fulfillment,customer_phone&order_no=eq.${qNo}&limit=10`,{
+      headers:{
+        'apikey':SUPABASE_ANON_KEY,
+        'Authorization':`Bearer ${SUPABASE_ANON_KEY}`
+      }
+    });
+    if(!r2.ok) throw new Error(await r2.text());
+    const full=await r2.json();
+
+    const wanted=lsOnlyDigits(phone);
+    const o=(full||[]).find(x=>lsOnlyDigits(x.customer_phone)===wanted);
+
+    if(!o){
+      result.innerHTML='<div class="ls-track-statusbox">Pedido não encontrado. Confira o número e o telefone.</div>';
+    }else{
+      renderTrackedOrder(o);
+    }
+  }catch(err){
+    console.error('Falha ao acompanhar pedido:',err);
+    result.innerHTML='<div class="ls-track-statusbox">Não foi possível atualizar agora. Tente novamente em alguns segundos.</div>';
+  }
+
+  if(_lsTrackTimer)clearTimeout(_lsTrackTimer);
+  if(document.getElementById('lsTrackOverlay')?.classList.contains('open')){
+    _lsTrackTimer=setTimeout(()=>trackOrderNow(false),5000);
+  }
+}
+
+document.getElementById('lsTrackOverlay')?.addEventListener('click',e=>{
+  if(e.target.id==='lsTrackOverlay')closeOrderTracking();
+});
 
 </script>
 </body>
