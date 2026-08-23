@@ -170,6 +170,7 @@ a{color:inherit}
   </div>
   <div class="actions">
     <a class="primary" href="https://wa.me/5515997398019?text=Ol%C3%A1%21%20Vim%20pelo%20card%C3%A1pio%20digital%20da%20La%20Supreme%20e%20quero%20fazer%20um%20pedido." target="_blank" rel="noopener">📲 Fazer pedido</a>
+    <button id="lsTrackFab" type="button" onclick="openOrderTracking()">📍 Acompanhar pedido</button>
     <a class="secondary" href="https://instagram.com/lasupreme_pizza" target="_blank" rel="noopener">📸 @lasupreme_pizza</a>
   </div>
 </header>
@@ -1679,10 +1680,22 @@ a{color:inherit}
 
 <style id="lsTrackStyles">
 #lsTrackFab{
-  position:fixed; left:16px; bottom:18px; z-index:9997;
-  border:0; border-radius:999px; padding:12px 16px;
-  background:#111827; color:#fff; font-weight:800; font-size:14px;
-  box-shadow:0 8px 24px rgba(0,0,0,.22); cursor:pointer
+  position:static; z-index:auto;
+  width:min(92%,560px);
+  margin:14px auto 0;
+  border:2px solid #159447;
+  border-radius:18px;
+  padding:14px 18px;
+  background:#17110e;
+  color:#fff;
+  font-weight:800;
+  font-size:16px;
+  box-shadow:none;
+  cursor:pointer;
+  display:flex;
+  align-items:center;
+  justify-content:center;
+  gap:10px;
 }
 #lsTrackOverlay{
   position:fixed; inset:0; z-index:9999; background:rgba(0,0,0,.62);
@@ -1726,7 +1739,7 @@ a{color:inherit}
 }
 </style>
 
-<button id="lsTrackFab" type="button" onclick="openOrderTracking()">📍 Acompanhar pedido</button>
+
 
 <div id="lsTrackOverlay" aria-hidden="true">
   <div id="lsTrackCard">
