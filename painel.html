@@ -21,6 +21,14 @@ button{cursor:pointer}.arm{border:0;border-radius:10px;padding:10px 12px;backgro
 .total{font-size:18px;font-weight:900;margin:12px 0}.actions{display:grid;grid-template-columns:1fr 1fr;gap:8px}
 .actions button{border:0;border-radius:10px;padding:11px;font-weight:900}.print{background:var(--gold);color:#271904}.next{background:var(--green);color:#fff}.done{background:#3c302a;color:#fff}.empty{text-align:center;color:var(--muted);padding:50px 10px}
 .notice{background:#251c18;border:1px solid var(--line);border-radius:12px;padding:12px;margin-bottom:14px;color:var(--muted);font-size:13px}
+@media print{
+  body{background:#fff!important;color:#000!important;margin:0!important;padding:0!important}
+  body>*:not(#iosPrintArea){display:none!important}
+  #iosPrintArea{display:block!important;width:58mm!important;max-width:58mm!important;margin:0!important;padding:2mm!important;background:#fff!important;color:#000!important}
+  #iosPrintArea pre{white-space:pre-wrap!important;word-break:break-word!important;margin:0!important;font-family:ui-monospace,SFMono-Regular,Menlo,Consolas,monospace!important;font-size:10pt!important;line-height:1.18!important}
+  @page{size:58mm auto;margin:0}
+}
+#iosPrintArea{display:none}
 @media(max-width:720px){.grid{grid-template-columns:1fr}}
 </style>
 </head>
@@ -37,6 +45,7 @@ button{cursor:pointer}.arm{border:0;border-radius:10px;padding:10px 12px;backgro
 </div>
 <div id="orders" class="grid"></div>
 </main>
+<div id="iosPrintArea" aria-hidden="true"><pre id="iosPrintText"></pre></div>
 <script>
 const SUPABASE_URL='https://stacwvpsfjvyvbjwagtd.supabase.co';
 const SUPABASE_ANON_KEY='sb_publishable_uM7vsWn839Zmj1lTk3yKyg_b5Vj501Z';
@@ -136,19 +145,36 @@ function receipt(o){
   r.push(L,c('FIM DA COMANDA'),D,'','','');
   return r.join('\n');
 }
+function isIOS(){
+  return /iPad|iPhone|iPod/.test(navigator.userAgent) || (navigator.platform==='MacIntel' && navigator.maxTouchPoints>1);
+}
+function isAndroid(){return /Android/i.test(navigator.userAgent);}
+function markPrinted(o){
+  api(`orders?id=eq.${encodeURIComponent(o.id)}`,{method:'PATCH',body:JSON.stringify({printed:true})}).catch(()=>{});
+}
 function printOrder(o){
-  // Impressão via RawBT custom scheme. Em Android, abre o RawBT com o texto do cupom.
-  // Mantemos deduplicação local para evitar reenvios acidentais.
   const key='ls_printed_'+o.id;
   if(localStorage.getItem(key)){
     if(!confirm('Este pedido já foi enviado à impressão neste aparelho. Imprimir novamente?'))return;
   }
-  localStorage.setItem(key,String(Date.now()));
   const txt=receipt(o);
-  const url='rawbt:'+encodeURIComponent(txt);
-  window.location.href=url;
-  // Atualiza flag no banco sem depender do retorno do app.
-  api(`orders?id=eq.${encodeURIComponent(o.id)}`,{method:'PATCH',body:JSON.stringify({printed:true})}).catch(()=>{});
+
+  // Android: mantém exatamente o fluxo atual pela RawBT.
+  if(isAndroid()){
+    localStorage.setItem(key,String(Date.now()));
+    window.location.href='rawbt:'+encodeURIComponent(txt);
+    markPrinted(o);
+    return;
+  }
+
+  // iPhone/iPad e demais navegadores: usa a impressão do sistema.
+  // No iOS, a impressora precisa aparecer no seletor de impressão (AirPrint/app compatível).
+  document.getElementById('iosPrintText').textContent=txt;
+  localStorage.setItem(key,String(Date.now()));
+  setTimeout(()=>{
+    window.print();
+    markPrinted(o);
+  },120);
 }
 loadOrders();setInterval(loadOrders,5000);
 </script>
