@@ -1812,8 +1812,16 @@ function openProduct(p){
       <p class="desc">${escapeHtml(p.desc)}</p>
       <div class="form-grid">
         <div class="field full"><label>Tamanho</label><div class="choice-row"><button class="choice active" data-size="broto" onclick="chooseSize(this)">Broto 25 cm<br><small>${money(p.broto)}</small></button><button class="choice" data-size="grande" onclick="chooseSize(this)">Grande 35 cm<br><small>${money(p.grande)}</small></button></div></div>
-        <div class="field full"><label>Segundo sabor (opcional — meio a meio)</label><select id="halfFlavor" onchange="refreshProductPrice()"><option value="">Pizza inteira — ${escapeHtml(p.name)}</option>${options}</select><div class="half-note">No meio a meio, o valor é calculado por 50% de cada sabor.</div></div>
-        <div class="field full"><label>Borda recheada</label><select id="crust" onchange="refreshProductPrice()"><option value="">Sem borda</option><option value="Catupiry">Catupiry + R$ 12,00</option><option value="Cheddar">Cheddar + R$ 12,00</option></select></div>
+        <div class="field full"><label>🍕 Pizza meio a meio — escolha o segundo sabor</label><select id="halfFlavor" onchange="refreshProductPrice()"><option value="">Pizza inteira — ${escapeHtml(p.name)}</option>${options}</select><div class="half-note">No meio a meio, o valor é calculado por 50% de cada sabor.</div></div>
+        <div class="field full" id="crustField">
+          <label>Escolha a borda</label>
+          <select id="crust" onchange="refreshProductPrice()">
+            <option value="">Sem borda</option>
+            <option value="Catupiry">Catupiry + R$ 12,00</option>
+            <option value="Cheddar">Cheddar + R$ 12,00</option>
+          </select>
+          <div class="half-note">A borda escolhida vale para a pizza inteira, inclusive nas pizzas meio a meio.</div>
+        </div>
         <div class="field full"><label>Observações</label><textarea id="itemObs" placeholder="Ex.: sem cebola, pouco orégano..."></textarea></div>
       </div>
       <div class="modal-price"><span>Valor</span><strong id="productPrice"></strong></div>
