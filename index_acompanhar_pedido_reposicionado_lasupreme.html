@@ -1,0 +1,2269 @@
+<!doctype html>
+<html lang="pt-BR">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width,initial-scale=1,viewport-fit=cover">
+<meta name="theme-color" content="#15110f">
+<title>La Supreme Pizzaria — Cardápio Digital</title>
+<meta name="description" content="Cardápio digital da La Supreme Pizzaria. Pizzas artesanais, doces, calzones, bebidas e pedidos pelo WhatsApp.">
+<meta property="og:title" content="La Supreme Pizzaria — Cardápio Digital">
+<meta property="og:description" content="Confira sabores, ingredientes e preços e faça seu pedido pelo WhatsApp.">
+<meta property="og:type" content="website">
+<style>
+:root {
+  --bg:#15110f; --panel:#211a17; --panel2:#2a211d; --text:#fff7ea;
+  --muted:#cdbfb1; --gold:#e0b45d; --red:#b21f24; --line:#3c302a;
+  --green:#1e8c54;
+}
+*{box-sizing:border-box}
+html{scroll-behavior:smooth}
+body{margin:0;background:linear-gradient(180deg,#100d0c 0%,var(--bg) 34%,#0e0b0a 100%);color:var(--text);font-family:Arial,Helvetica,sans-serif}
+a{color:inherit}
+.hero{padding:34px 18px 22px;text-align:center;border-bottom:1px solid var(--line);background:radial-gradient(circle at 50% 0%,#43251f 0%,#171210 58%)}
+.stars{color:var(--gold);letter-spacing:5px;font-size:17px}
+.brand{font-family:Georgia,serif;font-size:38px;line-height:1;margin:10px 0 5px;letter-spacing:1.5px}
+.brand span{color:var(--gold)}
+.tagline{margin:0;color:var(--muted);font-size:14px}
+.hero-badges{display:flex;gap:8px;justify-content:center;flex-wrap:wrap;margin-top:18px}
+.hero-badges span{border:1px solid var(--line);background:#1c1614;padding:8px 11px;border-radius:999px;font-size:12px}
+.actions{display:flex;gap:10px;justify-content:center;margin-top:17px;flex-wrap:wrap}
+.primary,.secondary{display:inline-flex;align-items:center;justify-content:center;text-decoration:none;font-weight:800;padding:12px 16px;border-radius:12px}
+.primary{background:var(--green);color:white}
+.secondary{background:var(--red);color:white}
+.wrap{max-width:1100px;margin:auto;padding:0 14px 95px}
+.search-wrap{position:sticky;top:0;z-index:20;padding:12px 0;background:linear-gradient(var(--bg) 76%,transparent)}
+.search{width:100%;padding:13px 15px;border-radius:14px;border:1px solid var(--line);background:#211a17;color:white;font-size:16px;outline:none}
+.category-nav{display:flex;gap:8px;overflow-x:auto;padding:4px 0 14px;scrollbar-width:none}
+.category-nav::-webkit-scrollbar{display:none}
+.cat-btn{white-space:nowrap;background:#231c19;border:1px solid var(--line);color:var(--text);padding:9px 11px;border-radius:999px;font-weight:700}
+.note{background:#221a17;border:1px solid #49372d;border-radius:14px;padding:13px 14px;color:var(--muted);font-size:13px;line-height:1.45;margin:4px 0 24px}
+.menu-section{scroll-margin-top:88px;margin:30px 0}
+.section-title{display:flex;align-items:center;gap:10px;margin:0 0 12px;border-left:4px solid var(--gold);padding-left:10px}
+.section-title span{font-size:22px}
+.section-title h2{font-family:Georgia,serif;font-size:25px;margin:0}
+.grid{display:grid;grid-template-columns:repeat(2,minmax(0,1fr));gap:12px}
+.item{background:linear-gradient(180deg,var(--panel2),var(--panel));border:1px solid var(--line);border-radius:16px;padding:15px;box-shadow:0 8px 24px rgba(0,0,0,.16)}
+.item-top{display:flex;align-items:flex-start;justify-content:space-between;gap:8px}
+.item h3{font-family:Georgia,serif;font-size:19px;margin:0;color:#fff}
+.badge{font-size:10px;text-transform:uppercase;letter-spacing:.4px;background:var(--gold);color:#2c1b07;font-weight:900;border-radius:999px;padding:5px 7px;white-space:nowrap}
+.desc{color:var(--muted);font-size:13px;line-height:1.45;min-height:38px;margin:8px 0 12px}
+.obs{color:var(--gold);font-size:12px;margin:-4px 0 10px}
+.prices{display:grid;grid-template-columns:1fr 1fr;gap:8px;margin-top:5px}
+.prices.single{grid-template-columns:1fr}
+.prices div{background:#171210;border:1px solid #3d3029;border-radius:10px;padding:9px}
+.prices span{display:block;color:#bfb0a3;font-size:11px;margin-bottom:4px}
+.prices strong{font-size:15px}
+.order-btn{display:block;margin-top:11px;text-align:center;text-decoration:none;background:#1e8c54;color:#fff;font-size:13px;font-weight:900;padding:10px;border-radius:10px}
+.footer{text-align:center;color:#aa9c90;font-size:12px;padding:28px 12px 10px}
+.bottom-bar{position:fixed;left:0;right:0;bottom:0;z-index:30;background:rgba(16,13,12,.96);backdrop-filter:blur(8px);border-top:1px solid var(--line);padding:9px 12px calc(9px + env(safe-area-inset-bottom))}
+.bottom-inner{max-width:700px;margin:auto;display:grid;grid-template-columns:1fr 1fr;gap:8px}
+.bottom-inner a{text-align:center;text-decoration:none;font-weight:900;border-radius:11px;padding:11px}
+.wa{background:var(--green)} .insta{background:var(--red)}
+.empty{display:none;text-align:center;color:var(--muted);padding:30px 10px}
+@media(max-width:680px){
+  .grid{grid-template-columns:1fr}
+  .brand{font-size:34px}
+  .item{padding:14px}
+  .desc{min-height:0}
+}
+
+.site-nav{position:sticky;top:0;z-index:50;background:rgba(16,13,12,.96);backdrop-filter:blur(10px);border-bottom:1px solid var(--line)}
+.site-nav-inner{max-width:1100px;margin:auto;min-height:58px;padding:8px 14px;display:flex;align-items:center;gap:18px}
+.mini-brand{text-decoration:none;font-family:Georgia,serif;font-weight:800;font-size:18px;white-space:nowrap}
+.mini-brand span{color:var(--gold)}
+.nav-links{display:flex;gap:16px;align-items:center;margin-left:auto}
+.nav-links a{color:var(--muted);text-decoration:none;font-size:13px;font-weight:700}
+.nav-links a:hover{color:#fff}
+.nav-order{background:var(--green);color:#fff;text-decoration:none;font-weight:900;font-size:12px;padding:9px 12px;border-radius:10px}
+.info-section{scroll-margin-top:74px;margin:34px 0}
+.info-grid{display:grid;grid-template-columns:repeat(2,minmax(0,1fr));gap:12px}
+.info-card{display:block;background:linear-gradient(180deg,var(--panel2),var(--panel));border:1px solid var(--line);border-radius:16px;padding:18px;text-decoration:none}
+.info-card h3{margin:0 0 8px;font-family:Georgia,serif;font-size:19px}
+.info-card p{margin:4px 0;color:var(--muted);line-height:1.5}
+.info-card .small{font-size:13px}
+.link-card:hover{border-color:var(--gold);transform:translateY(-1px)}
+@media(max-width:760px){
+  .nav-links{display:none}
+  .site-nav-inner{gap:10px}
+  .nav-order{margin-left:auto}
+  .info-grid{grid-template-columns:1fr}
+}
+
+
+/* ===== Sistema de pedidos La Supreme ===== */
+.order-btn{cursor:pointer;border:0;font-family:inherit;width:100%}
+.cart-fab{position:fixed;right:14px;bottom:78px;z-index:60;border:0;border-radius:999px;background:var(--gold);color:#24170c;font-weight:900;padding:13px 16px;box-shadow:0 10px 30px rgba(0,0,0,.35);cursor:pointer}
+.cart-count{display:inline-flex;min-width:22px;height:22px;align-items:center;justify-content:center;background:#24170c;color:#fff;border-radius:99px;margin-left:5px;font-size:12px}
+.order-overlay{display:none;position:fixed;inset:0;background:rgba(0,0,0,.74);z-index:80;padding:14px;overflow:auto}
+.order-overlay.open{display:flex;align-items:flex-start;justify-content:center}
+.order-modal{width:min(650px,100%);margin:auto;background:#181311;border:1px solid var(--line);border-radius:18px;padding:18px;box-shadow:0 24px 80px rgba(0,0,0,.5)}
+.modal-head{display:flex;justify-content:space-between;gap:12px;align-items:center;margin-bottom:14px}.modal-head h2{border:0;padding:0;margin:0;font-size:24px}.close-x{border:0;background:#30251f;color:#fff;width:36px;height:36px;border-radius:10px;font-size:22px;cursor:pointer}
+.form-grid{display:grid;grid-template-columns:1fr 1fr;gap:10px}.field{display:flex;flex-direction:column;gap:6px}.field.full{grid-column:1/-1}.field label{font-size:12px;color:var(--muted);font-weight:800}.field input,.field select,.field textarea{width:100%;padding:12px;border:1px solid var(--line);border-radius:10px;background:#211a17;color:#fff;font:inherit}.field textarea{min-height:75px;resize:vertical}
+.choice-row{display:grid;grid-template-columns:1fr 1fr;gap:8px}.choice{border:1px solid var(--line);background:#211a17;color:#fff;padding:11px;border-radius:10px;cursor:pointer;font-weight:800}.choice.active{border-color:var(--gold);background:#34271e}
+.modal-price{margin:14px 0;padding:12px;border-radius:12px;background:#211a17;display:flex;justify-content:space-between;gap:12px}.modal-price strong{color:var(--gold);font-size:20px}.modal-actions{display:grid;grid-template-columns:1fr 1fr;gap:8px}.btn-muted,.btn-main{border:0;border-radius:11px;padding:12px;font-weight:900;cursor:pointer}.btn-muted{background:#30251f;color:#fff}.btn-main{background:var(--green);color:#fff}
+.cart-list{display:flex;flex-direction:column;gap:9px}.cart-row{border:1px solid var(--line);background:#211a17;border-radius:12px;padding:12px;display:grid;grid-template-columns:1fr auto;gap:8px}.cart-row h4{margin:0 0 4px;font-size:15px}.cart-row p{margin:2px 0;color:var(--muted);font-size:12px;line-height:1.4}.qty-controls{display:flex;align-items:center;gap:6px;justify-content:flex-end}.qty-controls button{border:0;background:#352a25;color:#fff;width:29px;height:29px;border-radius:8px;font-weight:900}.remove-item{border:0;background:none;color:#eaa;font-size:12px;cursor:pointer;padding:2px 0}.cart-summary{margin-top:14px;border-top:1px solid var(--line);padding-top:12px}.sum-line{display:flex;justify-content:space-between;gap:12px;margin:7px 0}.sum-line.total{font-size:20px;font-weight:900;color:var(--gold)}.small-note{color:var(--muted);font-size:11px;line-height:1.4}.checkout-block{margin-top:16px;padding-top:14px;border-top:1px solid var(--line)}
+.empty-cart{text-align:center;color:var(--muted);padding:24px 10px}.half-note{font-size:11px;color:var(--muted);margin:5px 0 0}.toast{position:fixed;left:50%;bottom:145px;transform:translateX(-50%) translateY(20px);opacity:0;z-index:100;background:#fff;color:#211a17;padding:10px 14px;border-radius:99px;font-weight:900;transition:.2s;pointer-events:none}.toast.show{opacity:1;transform:translateX(-50%) translateY(0)}
+@media(max-width:600px){.form-grid,.choice-row,.modal-actions{grid-template-columns:1fr}.field.full{grid-column:auto}.order-overlay{padding:8px}.order-modal{padding:14px;border-radius:14px}.cart-fab{bottom:74px;right:10px}}
+
+
+/* ===== Cupom térmico 58 mm ===== */
+.receipt-preview{
+  width:100%;
+  max-width:320px;
+  margin:0 auto;
+  background:#fff;
+  color:#000;
+  border-radius:10px;
+  padding:14px 12px;
+  font-family:"Courier New",monospace;
+  font-size:12px;
+  line-height:1.28;
+  white-space:pre-wrap;
+  overflow-wrap:anywhere;
+}
+.receipt-actions{display:grid;grid-template-columns:1fr 1fr;gap:9px;margin-top:12px}
+.receipt-actions button{border:0;border-radius:10px;padding:12px;font-weight:900;cursor:pointer}
+.receipt-print{background:var(--green);color:#fff}
+.receipt-close{background:#3a302b;color:#fff}
+.order-confirm-number{
+  display:inline-block;background:var(--gold);color:#2d1d08;font-weight:900;
+  border-radius:999px;padding:6px 10px;margin-bottom:10px
+}
+@media print{
+  body *{visibility:hidden!important}
+  #receiptPrintArea,#receiptPrintArea *{visibility:visible!important}
+  #receiptPrintArea{
+    position:absolute!important;left:0!important;top:0!important;
+    width:48mm!important;max-width:48mm!important;margin:0!important;
+    padding:0 1.5mm!important;border:0!important;border-radius:0!important;
+    font-family:"Courier New",monospace!important;font-size:9.5pt!important;
+    line-height:1.15!important;color:#000!important;background:#fff!important;
+  }
+  @page{size:58mm auto;margin:0}
+}
+
+
+.print-lock-note{font-size:11px;color:var(--muted);text-align:center;margin-top:7px}
+</style>
+</head>
+<body>
+
+<nav class="site-nav">
+  <div class="site-nav-inner">
+    <a class="mini-brand" href="#inicio">LA <span>SUPREME</span></a>
+    <div class="nav-links">
+      <a href="#inicio">Início</a>
+      <a href="#cardapio">Cardápio</a>
+      <a href="#entregas">Entregas</a>
+      <a href="#contato">Contato</a>
+    </div>
+    <a class="nav-order" href="https://wa.me/5515997398019?text=Ol%C3%A1%21%20Vim%20pelo%20site%20da%20La%20Supreme%20e%20quero%20fazer%20um%20pedido." target="_blank" rel="noopener">Pedir agora</a>
+  </div>
+</nav>
+
+<header class="hero" id="inicio">
+  <div class="stars">★★★★★</div>
+  <div class="brand">LA <span>SUPREME</span></div>
+  <p class="tagline">Sabor que vira tradição! • Massa artesanal, nossa receita original.</p>
+  <div class="hero-badges">
+    <span>🍕 Broto 25 cm</span><span>🍕 Grande 35 cm</span><span>🛵 Delivery</span>
+  </div>
+  <div class="actions">
+    <a class="primary" href="https://wa.me/5515997398019?text=Ol%C3%A1%21%20Vim%20pelo%20card%C3%A1pio%20digital%20da%20La%20Supreme%20e%20quero%20fazer%20um%20pedido." target="_blank" rel="noopener">📲 Fazer pedido</a>
+    <button id="lsTrackFab" type="button" onclick="openOrderTracking()">📍 Acompanhar pedido</button>
+    <a class="secondary" href="https://instagram.com/lasupreme_pizza" target="_blank" rel="noopener">📸 @lasupreme_pizza</a>
+  </div>
+</header>
+
+<main class="wrap" id="cardapio">
+  <div class="search-wrap">
+    <input id="search" class="search" type="search" placeholder="🔎 Buscar sabor ou ingrediente..." oninput="filterMenu()">
+  </div>
+  <nav class="category-nav"><button class="cat-btn" onclick="document.getElementById('cat-tradicionais').scrollIntoView({behavior:'smooth',block:'start'})">🍕 Tradicionais</button><button class="cat-btn" onclick="document.getElementById('cat-queijos').scrollIntoView({behavior:'smooth',block:'start'})">🧀 Queijos</button><button class="cat-btn" onclick="document.getElementById('cat-carnes').scrollIntoView({behavior:'smooth',block:'start'})">🥩 Carnes</button><button class="cat-btn" onclick="document.getElementById('cat-verduras-e-legumes').scrollIntoView({behavior:'smooth',block:'start'})">🥬 Verduras e Legumes</button><button class="cat-btn" onclick="document.getElementById('cat-frutos-do-mar').scrollIntoView({behavior:'smooth',block:'start'})">🦐 Frutos do Mar</button><button class="cat-btn" onclick="document.getElementById('cat-pizzas-doces').scrollIntoView({behavior:'smooth',block:'start'})">🍫 Pizzas Doces</button><button class="cat-btn" onclick="document.getElementById('cat-calzones').scrollIntoView({behavior:'smooth',block:'start'})">🥟 Calzones</button><button class="cat-btn" onclick="document.getElementById('cat-crostinis').scrollIntoView({behavior:'smooth',block:'start'})">🥖 Crostinis</button><button class="cat-btn" onclick="document.getElementById('cat-pizza-rolls').scrollIntoView({behavior:'smooth',block:'start'})">🍕 Pizza Rolls</button><button class="cat-btn" onclick="document.getElementById('cat-bebidas').scrollIntoView({behavior:'smooth',block:'start'})">🥤 Bebidas</button></nav>
+  <div class="note">
+    <strong>Como pedir:</strong> escolha o sabor e toque em <strong>“Pedir pelo WhatsApp”</strong>.
+    <br><strong>Bordas recheadas:</strong> Catupiry ou Cheddar — <strong>+ R$ 12,00</strong>.<br><strong>Pizza meio a meio:</strong> 50% do valor de cada sabor.
+    Entregas em Maristela, Laranjal Paulista e Pereiras — consulte condições e taxa no atendimento.
+  </div>
+
+  
+    </div>
+
+  <section class="menu-section" id="bordas">
+    <div class="section-title"><span>🧀</span><h2>Bordas Recheadas</h2></div>
+    <div class="grid">
+      <article class="item" data-search="borda catupiry cheddar">
+        <div class="item-top"><h3>Escolha sua borda</h3></div>
+        <p class="desc">Catupiry ou Cheddar</p>
+        <div class="prices single"><div><span>Adicional</span><strong>+ R$ 12,00</strong></div></div>
+        <a class="order-btn" href="https://wa.me/5515997398019?text=Ol%C3%A1%21%20Quero%20adicionar%20uma%20borda%20recheada%20ao%20meu%20pedido%20da%20La%20Supreme." target="_blank" rel="noopener">Adicionar ao pedido</a>
+      </article>
+    </div>
+  </section>
+
+  <section id="cat-tradicionais" class="menu-section">
+      <div class="section-title">
+        <span>🍕</span>
+        <h2>Tradicionais</h2>
+      </div>
+      <div class="grid">
+            <article class="item" data-search="portuguesa especial molho, presunto, milho, ervilha, palmito, ovos, cebola, mussarela, azeitonas e orégano">
+              <div class="item-top">
+                <h3>Portuguesa Especial</h3>
+                
+              </div>
+              <p class="desc">Molho, presunto, milho, ervilha, palmito, ovos, cebola, mussarela, azeitonas e orégano</p>
+              
+              <div class="prices">
+                <div><span>Broto 25 cm</span><strong>R$ 40,00</strong></div>
+                <div><span>Grande 35 cm</span><strong>R$ 80,00</strong></div>
+              </div>
+              <a class="order-btn" href="https://wa.me/5515997398019?text=Ol%C3%A1%21%20Quero%20fazer%20um%20pedido%20na%20La%20Supreme.%0A%0AItem%3A%20Portuguesa%20Especial%0A%0APode%20me%20ajudar%20a%20finalizar%20o%20pedido%3F" target="_blank" rel="noopener">Pedir pelo WhatsApp</a>
+            </article>
+            
+            <article class="item" data-search="portuguesa supreme molho, lombo, milho, ervilha, palmito, ovos, cebola, mussarela, azeitonas e orégano catupiry">
+              <div class="item-top">
+                <h3>Portuguesa Supreme</h3>
+                
+              </div>
+              <p class="desc">Molho, lombo, milho, ervilha, palmito, ovos, cebola, Catupiry, mussarela, azeitonas e orégano</p>
+              
+              <div class="prices">
+                <div><span>Broto 25 cm</span><strong>R$ 44,00</strong></div>
+                <div><span>Grande 35 cm</span><strong>R$ 88,00</strong></div>
+              </div>
+              <a class="order-btn" href="https://wa.me/5515997398019?text=Ol%C3%A1%21%20Quero%20fazer%20um%20pedido%20na%20La%20Supreme.%0A%0AItem%3A%20Portuguesa%20Supreme%0A%0APode%20me%20ajudar%20a%20finalizar%20o%20pedido%3F" target="_blank" rel="noopener">Pedir pelo WhatsApp</a>
+            </article>
+            
+            <article class="item" data-search="mista molho, presunto, tomate, cebola, mussarela, azeitonas e orégano">
+              <div class="item-top">
+                <h3>Mista</h3>
+                
+              </div>
+              <p class="desc">Molho, presunto, tomate, cebola, mussarela, azeitonas e orégano</p>
+              
+              <div class="prices">
+                <div><span>Broto 25 cm</span><strong>R$ 32,50</strong></div>
+                <div><span>Grande 35 cm</span><strong>R$ 65,00</strong></div>
+              </div>
+              <a class="order-btn" href="https://wa.me/5515997398019?text=Ol%C3%A1%21%20Quero%20fazer%20um%20pedido%20na%20La%20Supreme.%0A%0AItem%3A%20Mista%0A%0APode%20me%20ajudar%20a%20finalizar%20o%20pedido%3F" target="_blank" rel="noopener">Pedir pelo WhatsApp</a>
+            </article>
+            
+            <article class="item" data-search="mista especial molho, presunto, tomate, cebola, catupiry, mussarela, azeitonas e orégano">
+              <div class="item-top">
+                <h3>Mista Especial</h3>
+                
+              </div>
+              <p class="desc">Molho, presunto, tomate, cebola, Catupiry, mussarela, azeitonas e orégano</p>
+              
+              <div class="prices">
+                <div><span>Broto 25 cm</span><strong>R$ 35,00</strong></div>
+                <div><span>Grande 35 cm</span><strong>R$ 70,00</strong></div>
+              </div>
+              <a class="order-btn" href="https://wa.me/5515997398019?text=Ol%C3%A1%21%20Quero%20fazer%20um%20pedido%20na%20La%20Supreme.%0A%0AItem%3A%20Mista%20Especial%0A%0APode%20me%20ajudar%20a%20finalizar%20o%20pedido%3F" target="_blank" rel="noopener">Pedir pelo WhatsApp</a>
+            </article>
+            
+            <article class="item" data-search="frango molho, frango, mussarela, azeitonas e orégano">
+              <div class="item-top">
+                <h3>Frango</h3>
+                
+              </div>
+              <p class="desc">Molho, frango, mussarela, azeitonas e orégano</p>
+              
+              <div class="prices">
+                <div><span>Broto 25 cm</span><strong>R$ 35,00</strong></div>
+                <div><span>Grande 35 cm</span><strong>R$ 70,00</strong></div>
+              </div>
+              <a class="order-btn" href="https://wa.me/5515997398019?text=Ol%C3%A1%21%20Quero%20fazer%20um%20pedido%20na%20La%20Supreme.%0A%0AItem%3A%20Frango%0A%0APode%20me%20ajudar%20a%20finalizar%20o%20pedido%3F" target="_blank" rel="noopener">Pedir pelo WhatsApp</a>
+            </article>
+            
+            <article class="item" data-search="frango catupiry molho, frango, catupiry, azeitonas e orégano">
+              <div class="item-top">
+                <h3>Frango Catupiry</h3>
+                
+              </div>
+              <p class="desc">Molho, frango, Catupiry, azeitonas e orégano</p>
+              
+              <div class="prices">
+                <div><span>Broto 25 cm</span><strong>R$ 38,00</strong></div>
+                <div><span>Grande 35 cm</span><strong>R$ 76,00</strong></div>
+              </div>
+              <a class="order-btn" href="https://wa.me/5515997398019?text=Ol%C3%A1%21%20Quero%20fazer%20um%20pedido%20na%20La%20Supreme.%0A%0AItem%3A%20Frango%20Catupiry%0A%0APode%20me%20ajudar%20a%20finalizar%20o%20pedido%3F" target="_blank" rel="noopener">Pedir pelo WhatsApp</a>
+            </article>
+            
+            <article class="item" data-search="frango cheddar molho, frango, cheddar, azeitonas e orégano">
+              <div class="item-top">
+                <h3>Frango Cheddar</h3>
+                
+              </div>
+              <p class="desc">Molho, frango, cheddar, azeitonas e orégano</p>
+              
+              <div class="prices">
+                <div><span>Broto 25 cm</span><strong>R$ 38,00</strong></div>
+                <div><span>Grande 35 cm</span><strong>R$ 76,00</strong></div>
+              </div>
+              <a class="order-btn" href="https://wa.me/5515997398019?text=Ol%C3%A1%21%20Quero%20fazer%20um%20pedido%20na%20La%20Supreme.%0A%0AItem%3A%20Frango%20Cheddar%0A%0APode%20me%20ajudar%20a%20finalizar%20o%20pedido%3F" target="_blank" rel="noopener">Pedir pelo WhatsApp</a>
+            </article>
+            
+            <article class="item" data-search="frango especial molho, frango, catupiry, milho, mussarela, azeitonas e orégano">
+              <div class="item-top">
+                <h3>Frango Especial</h3>
+                
+              </div>
+              <p class="desc">Molho, frango, Catupiry, milho, mussarela, azeitonas e orégano</p>
+              
+              <div class="prices">
+                <div><span>Broto 25 cm</span><strong>R$ 44,00</strong></div>
+                <div><span>Grande 35 cm</span><strong>R$ 88,00</strong></div>
+              </div>
+              <a class="order-btn" href="https://wa.me/5515997398019?text=Ol%C3%A1%21%20Quero%20fazer%20um%20pedido%20na%20La%20Supreme.%0A%0AItem%3A%20Frango%20Especial%0A%0APode%20me%20ajudar%20a%20finalizar%20o%20pedido%3F" target="_blank" rel="noopener">Pedir pelo WhatsApp</a>
+            </article>
+            
+            <article class="item" data-search="frango bacon molho, frango, catupiry, bacon, azeitonas e orégano">
+              <div class="item-top">
+                <h3>Frango Bacon</h3>
+                
+              </div>
+              <p class="desc">Molho, frango, Catupiry, bacon, azeitonas e orégano</p>
+              
+              <div class="prices">
+                <div><span>Broto 25 cm</span><strong>R$ 40,00</strong></div>
+                <div><span>Grande 35 cm</span><strong>R$ 80,00</strong></div>
+              </div>
+              <a class="order-btn" href="https://wa.me/5515997398019?text=Ol%C3%A1%21%20Quero%20fazer%20um%20pedido%20na%20La%20Supreme.%0A%0AItem%3A%20Frango%20Bacon%0A%0APode%20me%20ajudar%20a%20finalizar%20o%20pedido%3F" target="_blank" rel="noopener">Pedir pelo WhatsApp</a>
+            </article>
+            
+            <article class="item" data-search="calabresa molho, calabresa, mussarela, cebola, azeitonas e orégano">
+              <div class="item-top">
+                <h3>Calabresa</h3>
+                
+              </div>
+              <p class="desc">Molho, calabresa, mussarela, cebola, azeitonas e orégano</p>
+              
+              <div class="prices">
+                <div><span>Broto 25 cm</span><strong>R$ 40,00</strong></div>
+                <div><span>Grande 35 cm</span><strong>R$ 80,00</strong></div>
+              </div>
+              <a class="order-btn" href="https://wa.me/5515997398019?text=Ol%C3%A1%21%20Quero%20fazer%20um%20pedido%20na%20La%20Supreme.%0A%0AItem%3A%20Calabresa%0A%0APode%20me%20ajudar%20a%20finalizar%20o%20pedido%3F" target="_blank" rel="noopener">Pedir pelo WhatsApp</a>
+            </article>
+            
+            <article class="item" data-search="calabresa especial molho, calabresa, catupiry, mussarela, azeitonas e orégano">
+              <div class="item-top">
+                <h3>Calabresa Especial</h3>
+                
+              </div>
+              <p class="desc">Molho, calabresa, Catupiry, mussarela, azeitonas e orégano</p>
+              
+              <div class="prices">
+                <div><span>Broto 25 cm</span><strong>R$ 45,00</strong></div>
+                <div><span>Grande 35 cm</span><strong>R$ 90,00</strong></div>
+              </div>
+              <a class="order-btn" href="https://wa.me/5515997398019?text=Ol%C3%A1%21%20Quero%20fazer%20um%20pedido%20na%20La%20Supreme.%0A%0AItem%3A%20Calabresa%20Especial%0A%0APode%20me%20ajudar%20a%20finalizar%20o%20pedido%3F" target="_blank" rel="noopener">Pedir pelo WhatsApp</a>
+            </article>
+            
+            <article class="item" data-search="calábria molho, calabresa fatiada, ovos, cebola, catupiry, mussarela, azeitonas e orégano">
+              <div class="item-top">
+                <h3>Calábria</h3>
+                
+              </div>
+              <p class="desc">Molho, calabresa fatiada, ovos, cebola, Catupiry, mussarela, azeitonas e orégano</p>
+              
+              <div class="prices">
+                <div><span>Broto 25 cm</span><strong>R$ 45,00</strong></div>
+                <div><span>Grande 35 cm</span><strong>R$ 90,00</strong></div>
+              </div>
+              <a class="order-btn" href="https://wa.me/5515997398019?text=Ol%C3%A1%21%20Quero%20fazer%20um%20pedido%20na%20La%20Supreme.%0A%0AItem%3A%20Cal%C3%A1bria%0A%0APode%20me%20ajudar%20a%20finalizar%20o%20pedido%3F" target="_blank" rel="noopener">Pedir pelo WhatsApp</a>
+            </article>
+            
+            <article class="item" data-search="calabresa supreme molho, mussarela, calabresa, cebola roxa, gorgonzola, azeitonas e orégano">
+              <div class="item-top">
+                <h3>Calabresa Supreme</h3>
+                
+              </div>
+              <p class="desc">Molho, mussarela, calabresa, cebola roxa, gorgonzola, azeitonas e orégano</p>
+              
+              <div class="prices">
+                <div><span>Broto 25 cm</span><strong>R$ 50,00</strong></div>
+                <div><span>Grande 35 cm</span><strong>R$ 100,00</strong></div>
+              </div>
+              <a class="order-btn" href="https://wa.me/5515997398019?text=Ol%C3%A1%21%20Quero%20fazer%20um%20pedido%20na%20La%20Supreme.%0A%0AItem%3A%20Calabresa%20Supreme%0A%0APode%20me%20ajudar%20a%20finalizar%20o%20pedido%3F" target="_blank" rel="noopener">Pedir pelo WhatsApp</a>
+            </article>
+            
+            <article class="item" data-search="catupyresa molho, calabresa, catupiry, azeitonas e orégano">
+              <div class="item-top">
+                <h3>Catupyresa</h3>
+                
+              </div>
+              <p class="desc">Molho, calabresa, Catupiry, azeitonas e orégano</p>
+              
+              <div class="prices">
+                <div><span>Broto 25 cm</span><strong>R$ 38,00</strong></div>
+                <div><span>Grande 35 cm</span><strong>R$ 76,00</strong></div>
+              </div>
+              <a class="order-btn" href="https://wa.me/5515997398019?text=Ol%C3%A1%21%20Quero%20fazer%20um%20pedido%20na%20La%20Supreme.%0A%0AItem%3A%20Catupyresa%0A%0APode%20me%20ajudar%20a%20finalizar%20o%20pedido%3F" target="_blank" rel="noopener">Pedir pelo WhatsApp</a>
+            </article>
+            
+            <article class="item" data-search="palmito molho, palmito, mussarela, azeitonas e orégano">
+              <div class="item-top">
+                <h3>Palmito</h3>
+                
+              </div>
+              <p class="desc">Molho, palmito, mussarela, azeitonas e orégano</p>
+              
+              <div class="prices">
+                <div><span>Broto 25 cm</span><strong>R$ 40,00</strong></div>
+                <div><span>Grande 35 cm</span><strong>R$ 80,00</strong></div>
+              </div>
+              <a class="order-btn" href="https://wa.me/5515997398019?text=Ol%C3%A1%21%20Quero%20fazer%20um%20pedido%20na%20La%20Supreme.%0A%0AItem%3A%20Palmito%0A%0APode%20me%20ajudar%20a%20finalizar%20o%20pedido%3F" target="_blank" rel="noopener">Pedir pelo WhatsApp</a>
+            </article>
+            
+            <article class="item" data-search="palmito especial molho, palmito, mussarela, catupiry, azeitonas e orégano">
+              <div class="item-top">
+                <h3>Palmito Especial</h3>
+                
+              </div>
+              <p class="desc">Molho, palmito, mussarela, Catupiry, azeitonas e orégano</p>
+              
+              <div class="prices">
+                <div><span>Broto 25 cm</span><strong>R$ 42,00</strong></div>
+                <div><span>Grande 35 cm</span><strong>R$ 84,00</strong></div>
+              </div>
+              <a class="order-btn" href="https://wa.me/5515997398019?text=Ol%C3%A1%21%20Quero%20fazer%20um%20pedido%20na%20La%20Supreme.%0A%0AItem%3A%20Palmito%20Especial%0A%0APode%20me%20ajudar%20a%20finalizar%20o%20pedido%3F" target="_blank" rel="noopener">Pedir pelo WhatsApp</a>
+            </article>
+            
+            <article class="item" data-search="palmito supreme molho, palmito, mussarela, cream cheese, bacon, azeitonas e orégano">
+              <div class="item-top">
+                <h3>Palmito Supreme</h3>
+                
+              </div>
+              <p class="desc">Molho, palmito, mussarela, cream cheese, bacon, azeitonas e orégano</p>
+              
+              <div class="prices">
+                <div><span>Broto 25 cm</span><strong>R$ 50,00</strong></div>
+                <div><span>Grande 35 cm</span><strong>R$ 100,00</strong></div>
+              </div>
+              <a class="order-btn" href="https://wa.me/5515997398019?text=Ol%C3%A1%21%20Quero%20fazer%20um%20pedido%20na%20La%20Supreme.%0A%0AItem%3A%20Palmito%20Supreme%0A%0APode%20me%20ajudar%20a%20finalizar%20o%20pedido%3F" target="_blank" rel="noopener">Pedir pelo WhatsApp</a>
+            </article>
+            
+            <article class="item" data-search="atum molho, atum, mussarela, azeitonas e orégano">
+              <div class="item-top">
+                <h3>Atum</h3>
+                
+              </div>
+              <p class="desc">Molho, atum, mussarela, azeitonas e orégano</p>
+              
+              <div class="prices">
+                <div><span>Broto 25 cm</span><strong>R$ 35,00</strong></div>
+                <div><span>Grande 35 cm</span><strong>R$ 70,00</strong></div>
+              </div>
+              <a class="order-btn" href="https://wa.me/5515997398019?text=Ol%C3%A1%21%20Quero%20fazer%20um%20pedido%20na%20La%20Supreme.%0A%0AItem%3A%20Atum%0A%0APode%20me%20ajudar%20a%20finalizar%20o%20pedido%3F" target="_blank" rel="noopener">Pedir pelo WhatsApp</a>
+            </article>
+            
+            <article class="item" data-search="atum especial molho, atum, cebola, catupiry, mussarela, azeitonas e orégano">
+              <div class="item-top">
+                <h3>Atum Especial</h3>
+                
+              </div>
+              <p class="desc">Molho, atum, cebola, Catupiry, mussarela, azeitonas e orégano</p>
+              
+              <div class="prices">
+                <div><span>Broto 25 cm</span><strong>R$ 37,50</strong></div>
+                <div><span>Grande 35 cm</span><strong>R$ 75,00</strong></div>
+              </div>
+              <a class="order-btn" href="https://wa.me/5515997398019?text=Ol%C3%A1%21%20Quero%20fazer%20um%20pedido%20na%20La%20Supreme.%0A%0AItem%3A%20Atum%20Especial%0A%0APode%20me%20ajudar%20a%20finalizar%20o%20pedido%3F" target="_blank" rel="noopener">Pedir pelo WhatsApp</a>
+            </article>
+            
+            <article class="item" data-search="atum supreme molho, atum, tomate, palmito, cebola roxa, mussarela, azeitonas e orégano">
+              <div class="item-top">
+                <h3>Atum Supreme</h3>
+                
+              </div>
+              <p class="desc">Molho, atum, tomate, palmito, cebola roxa, mussarela, azeitonas e orégano</p>
+              
+              <div class="prices">
+                <div><span>Broto 25 cm</span><strong>R$ 42,00</strong></div>
+                <div><span>Grande 35 cm</span><strong>R$ 84,00</strong></div>
+              </div>
+              <a class="order-btn" href="https://wa.me/5515997398019?text=Ol%C3%A1%21%20Quero%20fazer%20um%20pedido%20na%20La%20Supreme.%0A%0AItem%3A%20Atum%20Supreme%0A%0APode%20me%20ajudar%20a%20finalizar%20o%20pedido%3F" target="_blank" rel="noopener">Pedir pelo WhatsApp</a>
+            </article>
+            
+            <article class="item" data-search="bacon molho, mussarela, bacon, azeitonas e orégano">
+              <div class="item-top">
+                <h3>Bacon</h3>
+                
+              </div>
+              <p class="desc">Molho, mussarela, bacon, azeitonas e orégano</p>
+              
+              <div class="prices">
+                <div><span>Broto 25 cm</span><strong>R$ 40,00</strong></div>
+                <div><span>Grande 35 cm</span><strong>R$ 80,00</strong></div>
+              </div>
+              <a class="order-btn" href="https://wa.me/5515997398019?text=Ol%C3%A1%21%20Quero%20fazer%20um%20pedido%20na%20La%20Supreme.%0A%0AItem%3A%20Bacon%0A%0APode%20me%20ajudar%20a%20finalizar%20o%20pedido%3F" target="_blank" rel="noopener">Pedir pelo WhatsApp</a>
+            </article>
+            
+            <article class="item" data-search="baiana molho, calabresa moída, ovos, parmesão, pimenta, azeitonas e orégano">
+              <div class="item-top">
+                <h3>Baiana</h3>
+                
+              </div>
+              <p class="desc">Molho, calabresa moída, ovos, parmesão, pimenta, azeitonas e orégano</p>
+              
+              <div class="prices">
+                <div><span>Broto 25 cm</span><strong>R$ 40,00</strong></div>
+                <div><span>Grande 35 cm</span><strong>R$ 80,00</strong></div>
+              </div>
+              <a class="order-btn" href="https://wa.me/5515997398019?text=Ol%C3%A1%21%20Quero%20fazer%20um%20pedido%20na%20La%20Supreme.%0A%0AItem%3A%20Baiana%0A%0APode%20me%20ajudar%20a%20finalizar%20o%20pedido%3F" target="_blank" rel="noopener">Pedir pelo WhatsApp</a>
+            </article>
+            
+            <article class="item" data-search="baiana especial molho, calabresa moída, ovos, catupiry, parmesão, pimenta, azeitonas e orégano">
+              <div class="item-top">
+                <h3>Baiana Especial</h3>
+                
+              </div>
+              <p class="desc">Molho, calabresa moída, ovos, Catupiry, parmesão, pimenta, azeitonas e orégano</p>
+              
+              <div class="prices">
+                <div><span>Broto 25 cm</span><strong>R$ 44,00</strong></div>
+                <div><span>Grande 35 cm</span><strong>R$ 88,00</strong></div>
+              </div>
+              <a class="order-btn" href="https://wa.me/5515997398019?text=Ol%C3%A1%21%20Quero%20fazer%20um%20pedido%20na%20La%20Supreme.%0A%0AItem%3A%20Baiana%20Especial%0A%0APode%20me%20ajudar%20a%20finalizar%20o%20pedido%3F" target="_blank" rel="noopener">Pedir pelo WhatsApp</a>
+            </article>
+            
+            <article class="item" data-search="baiana supreme molho, calabresa moída, ovos, catupiry, gorgonzola, pimenta, azeitonas e orégano">
+              <div class="item-top">
+                <h3>Baiana Supreme</h3>
+                
+              </div>
+              <p class="desc">Molho, calabresa moída, ovos, Catupiry, gorgonzola, pimenta, azeitonas e orégano</p>
+              
+              <div class="prices">
+                <div><span>Broto 25 cm</span><strong>R$ 49,00</strong></div>
+                <div><span>Grande 35 cm</span><strong>R$ 98,00</strong></div>
+              </div>
+              <a class="order-btn" href="https://wa.me/5515997398019?text=Ol%C3%A1%21%20Quero%20fazer%20um%20pedido%20na%20La%20Supreme.%0A%0AItem%3A%20Baiana%20Supreme%0A%0APode%20me%20ajudar%20a%20finalizar%20o%20pedido%3F" target="_blank" rel="noopener">Pedir pelo WhatsApp</a>
+            </article>
+            
+            <article class="item" data-search="hot dog molho, purê de batata, salsicha, catupiry, mussarela, azeitonas e orégano">
+              <div class="item-top">
+                <h3>Hot Dog</h3>
+                
+              </div>
+              <p class="desc">Molho, purê de batata, salsicha, Catupiry, mussarela, azeitonas e orégano</p>
+              
+              <div class="prices">
+                <div><span>Broto 25 cm</span><strong>R$ 45,00</strong></div>
+                <div><span>Grande 35 cm</span><strong>R$ 90,00</strong></div>
+              </div>
+              <a class="order-btn" href="https://wa.me/5515997398019?text=Ol%C3%A1%21%20Quero%20fazer%20um%20pedido%20na%20La%20Supreme.%0A%0AItem%3A%20Hot%20Dog%0A%0APode%20me%20ajudar%20a%20finalizar%20o%20pedido%3F" target="_blank" rel="noopener">Pedir pelo WhatsApp</a>
+            </article>
+            
+            <article class="item" data-search="lombo molho, lombo, tomate, cebola, mussarela, azeitonas e orégano">
+              <div class="item-top">
+                <h3>Lombo</h3>
+                
+              </div>
+              <p class="desc">Molho, lombo, tomate, cebola, mussarela, azeitonas e orégano</p>
+              
+              <div class="prices">
+                <div><span>Broto 25 cm</span><strong>R$ 40,00</strong></div>
+                <div><span>Grande 35 cm</span><strong>R$ 80,00</strong></div>
+              </div>
+              <a class="order-btn" href="https://wa.me/5515997398019?text=Ol%C3%A1%21%20Quero%20fazer%20um%20pedido%20na%20La%20Supreme.%0A%0AItem%3A%20Lombo%0A%0APode%20me%20ajudar%20a%20finalizar%20o%20pedido%3F" target="_blank" rel="noopener">Pedir pelo WhatsApp</a>
+            </article>
+            
+            <article class="item" data-search="lombo especial molho, lombo, cebola, catupiry, parmesão, manjericão, azeitonas e orégano">
+              <div class="item-top">
+                <h3>Lombo Especial</h3>
+                
+              </div>
+              <p class="desc">Molho, lombo, cebola, Catupiry, parmesão, manjericão, azeitonas e orégano</p>
+              
+              <div class="prices">
+                <div><span>Broto 25 cm</span><strong>R$ 47,50</strong></div>
+                <div><span>Grande 35 cm</span><strong>R$ 95,00</strong></div>
+              </div>
+              <a class="order-btn" href="https://wa.me/5515997398019?text=Ol%C3%A1%21%20Quero%20fazer%20um%20pedido%20na%20La%20Supreme.%0A%0AItem%3A%20Lombo%20Especial%0A%0APode%20me%20ajudar%20a%20finalizar%20o%20pedido%3F" target="_blank" rel="noopener">Pedir pelo WhatsApp</a>
+            </article>
+            
+            <article class="item" data-search="lombo supreme molho, lombo, tomate, palmito, cebola, cheddar, mussarela, bacon, azeitonas e orégano">
+              <div class="item-top">
+                <h3>Lombo Supreme</h3>
+                
+              </div>
+              <p class="desc">Molho, lombo, tomate, palmito, cebola, cheddar, mussarela, bacon, azeitonas e orégano</p>
+              
+              <div class="prices">
+                <div><span>Broto 25 cm</span><strong>R$ 57,50</strong></div>
+                <div><span>Grande 35 cm</span><strong>R$ 115,00</strong></div>
+              </div>
+              <a class="order-btn" href="https://wa.me/5515997398019?text=Ol%C3%A1%21%20Quero%20fazer%20um%20pedido%20na%20La%20Supreme.%0A%0AItem%3A%20Lombo%20Supreme%0A%0APode%20me%20ajudar%20a%20finalizar%20o%20pedido%3F" target="_blank" rel="noopener">Pedir pelo WhatsApp</a>
+            </article>
+            
+            <article class="item" data-search="supreme defumada molho, lombo, champignon, catupiry, bacon, azeitonas e orégano">
+              <div class="item-top">
+                <h3>Supreme Defumada</h3>
+                
+              </div>
+              <p class="desc">Molho, lombo, champignon, Catupiry, bacon, azeitonas e orégano</p>
+              
+              <div class="prices">
+                <div><span>Broto 25 cm</span><strong>R$ 47,50</strong></div>
+                <div><span>Grande 35 cm</span><strong>R$ 95,00</strong></div>
+              </div>
+              <a class="order-btn" href="https://wa.me/5515997398019?text=Ol%C3%A1%21%20Quero%20fazer%20um%20pedido%20na%20La%20Supreme.%0A%0AItem%3A%20Supreme%20Defumada%0A%0APode%20me%20ajudar%20a%20finalizar%20o%20pedido%3F" target="_blank" rel="noopener">Pedir pelo WhatsApp</a>
+            </article>
+            
+            <article class="item" data-search="nova delícia molho, lombo, calabresa moída, mussarela, bacon, azeitonas e orégano">
+              <div class="item-top">
+                <h3>Nova Delícia</h3>
+                
+              </div>
+              <p class="desc">Molho, lombo, calabresa moída, mussarela, bacon, azeitonas e orégano</p>
+              
+              <div class="prices">
+                <div><span>Broto 25 cm</span><strong>R$ 47,00</strong></div>
+                <div><span>Grande 35 cm</span><strong>R$ 94,00</strong></div>
+              </div>
+              <a class="order-btn" href="https://wa.me/5515997398019?text=Ol%C3%A1%21%20Quero%20fazer%20um%20pedido%20na%20La%20Supreme.%0A%0AItem%3A%20Nova%20Del%C3%ADcia%0A%0APode%20me%20ajudar%20a%20finalizar%20o%20pedido%3F" target="_blank" rel="noopener">Pedir pelo WhatsApp</a>
+            </article>
+            
+            <article class="item" data-search="pepperoni molho, mussarela, catupiry, pepperoni, azeitonas e orégano">
+              <div class="item-top">
+                <h3>Pepperoni</h3>
+                
+              </div>
+              <p class="desc">Molho, mussarela, Catupiry, pepperoni, azeitonas e orégano</p>
+              
+              <div class="prices">
+                <div><span>Broto 25 cm</span><strong>R$ 47,00</strong></div>
+                <div><span>Grande 35 cm</span><strong>R$ 94,00</strong></div>
+              </div>
+              <a class="order-btn" href="https://wa.me/5515997398019?text=Ol%C3%A1%21%20Quero%20fazer%20um%20pedido%20na%20La%20Supreme.%0A%0AItem%3A%20Pepperoni%0A%0APode%20me%20ajudar%20a%20finalizar%20o%20pedido%3F" target="_blank" rel="noopener">Pedir pelo WhatsApp</a>
+            </article>
+            
+            <article class="item" data-search="pepperoni especial molho, mussarela, pepperoni, cebola, catupiry, azeitonas e orégano">
+              <div class="item-top">
+                <h3>Pepperoni Especial</h3>
+                
+              </div>
+              <p class="desc">Molho, mussarela, pepperoni, cebola, Catupiry, azeitonas e orégano</p>
+              
+              <div class="prices">
+                <div><span>Broto 25 cm</span><strong>R$ 50,00</strong></div>
+                <div><span>Grande 35 cm</span><strong>R$ 100,00</strong></div>
+              </div>
+              <a class="order-btn" href="https://wa.me/5515997398019?text=Ol%C3%A1%21%20Quero%20fazer%20um%20pedido%20na%20La%20Supreme.%0A%0AItem%3A%20Pepperoni%20Especial%0A%0APode%20me%20ajudar%20a%20finalizar%20o%20pedido%3F" target="_blank" rel="noopener">Pedir pelo WhatsApp</a>
+            </article>
+            
+            <article class="item" data-search="pepperoni supreme molho, 5 queijos, pepperoni, azeitonas e orégano">
+              <div class="item-top">
+                <h3>Pepperoni Supreme</h3>
+                
+              </div>
+              <p class="desc">Molho, 5 queijos, pepperoni, azeitonas e orégano</p>
+              
+              <div class="prices">
+                <div><span>Broto 25 cm</span><strong>R$ 57,50</strong></div>
+                <div><span>Grande 35 cm</span><strong>R$ 115,00</strong></div>
+              </div>
+              <a class="order-btn" href="https://wa.me/5515997398019?text=Ol%C3%A1%21%20Quero%20fazer%20um%20pedido%20na%20La%20Supreme.%0A%0AItem%3A%20Pepperoni%20Supreme%0A%0APode%20me%20ajudar%20a%20finalizar%20o%20pedido%3F" target="_blank" rel="noopener">Pedir pelo WhatsApp</a>
+            </article>
+            </div>
+    </section>
+    
+    <section id="cat-queijos" class="menu-section">
+      <div class="section-title">
+        <span>🧀</span>
+        <h2>Queijos</h2>
+      </div>
+      <div class="grid">
+            <article class="item" data-search="marguerita molho, mussarela, parmesão, tomate, manjericão in natura, azeitonas e orégano">
+              <div class="item-top">
+                <h3>Marguerita</h3>
+                
+              </div>
+              <p class="desc">Molho, mussarela, parmesão, tomate, manjericão in natura, azeitonas e orégano</p>
+              
+              <div class="prices">
+                <div><span>Broto 25 cm</span><strong>R$ 44,00</strong></div>
+                <div><span>Grande 35 cm</span><strong>R$ 88,00</strong></div>
+              </div>
+              <a class="order-btn" href="https://wa.me/5515997398019?text=Ol%C3%A1%21%20Quero%20fazer%20um%20pedido%20na%20La%20Supreme.%0A%0AItem%3A%20Marguerita%0A%0APode%20me%20ajudar%20a%20finalizar%20o%20pedido%3F" target="_blank" rel="noopener">Pedir pelo WhatsApp</a>
+            </article>
+            
+            <article class="item" data-search="mussarela molho, mussarela, azeitonas e orégano">
+              <div class="item-top">
+                <h3>Mussarela</h3>
+                
+              </div>
+              <p class="desc">Molho, mussarela, azeitonas e orégano</p>
+              
+              <div class="prices">
+                <div><span>Broto 25 cm</span><strong>R$ 40,00</strong></div>
+                <div><span>Grande 35 cm</span><strong>R$ 80,00</strong></div>
+              </div>
+              <a class="order-btn" href="https://wa.me/5515997398019?text=Ol%C3%A1%21%20Quero%20fazer%20um%20pedido%20na%20La%20Supreme.%0A%0AItem%3A%20Mussarela%0A%0APode%20me%20ajudar%20a%20finalizar%20o%20pedido%3F" target="_blank" rel="noopener">Pedir pelo WhatsApp</a>
+            </article>
+            
+            <article class="item" data-search="2 queijos molho, mussarela, catupiry, azeitonas e orégano">
+              <div class="item-top">
+                <h3>2 Queijos</h3>
+                
+              </div>
+              <p class="desc">Molho, mussarela, Catupiry, azeitonas e orégano</p>
+              
+              <div class="prices">
+                <div><span>Broto 25 cm</span><strong>R$ 44,00</strong></div>
+                <div><span>Grande 35 cm</span><strong>R$ 88,00</strong></div>
+              </div>
+              <a class="order-btn" href="https://wa.me/5515997398019?text=Ol%C3%A1%21%20Quero%20fazer%20um%20pedido%20na%20La%20Supreme.%0A%0AItem%3A%202%20Queijos%0A%0APode%20me%20ajudar%20a%20finalizar%20o%20pedido%3F" target="_blank" rel="noopener">Pedir pelo WhatsApp</a>
+            </article>
+            
+            <article class="item" data-search="3 queijos molho, mussarela, catupiry, parmesão, azeitonas e orégano">
+              <div class="item-top">
+                <h3>3 Queijos</h3>
+                
+              </div>
+              <p class="desc">Molho, mussarela, Catupiry, parmesão, azeitonas e orégano</p>
+              
+              <div class="prices">
+                <div><span>Broto 25 cm</span><strong>R$ 46,00</strong></div>
+                <div><span>Grande 35 cm</span><strong>R$ 92,00</strong></div>
+              </div>
+              <a class="order-btn" href="https://wa.me/5515997398019?text=Ol%C3%A1%21%20Quero%20fazer%20um%20pedido%20na%20La%20Supreme.%0A%0AItem%3A%203%20Queijos%0A%0APode%20me%20ajudar%20a%20finalizar%20o%20pedido%3F" target="_blank" rel="noopener">Pedir pelo WhatsApp</a>
+            </article>
+            
+            <article class="item" data-search="4 queijos molho, mussarela, catupiry, parmesão, provolone, azeitonas e orégano">
+              <div class="item-top">
+                <h3>4 Queijos</h3>
+                
+              </div>
+              <p class="desc">Molho, mussarela, Catupiry, parmesão, provolone, azeitonas e orégano</p>
+              
+              <div class="prices">
+                <div><span>Broto 25 cm</span><strong>R$ 49,00</strong></div>
+                <div><span>Grande 35 cm</span><strong>R$ 98,00</strong></div>
+              </div>
+              <a class="order-btn" href="https://wa.me/5515997398019?text=Ol%C3%A1%21%20Quero%20fazer%20um%20pedido%20na%20La%20Supreme.%0A%0AItem%3A%204%20Queijos%0A%0APode%20me%20ajudar%20a%20finalizar%20o%20pedido%3F" target="_blank" rel="noopener">Pedir pelo WhatsApp</a>
+            </article>
+            
+            <article class="item" data-search="5 queijos molho, mussarela, catupiry, parmesão, provolone, gorgonzola, azeitonas e orégano">
+              <div class="item-top">
+                <h3>5 Queijos</h3>
+                
+              </div>
+              <p class="desc">Molho, mussarela, Catupiry, parmesão, provolone, gorgonzola, azeitonas e orégano</p>
+              
+              <div class="prices">
+                <div><span>Broto 25 cm</span><strong>R$ 57,50</strong></div>
+                <div><span>Grande 35 cm</span><strong>R$ 115,00</strong></div>
+              </div>
+              <a class="order-btn" href="https://wa.me/5515997398019?text=Ol%C3%A1%21%20Quero%20fazer%20um%20pedido%20na%20La%20Supreme.%0A%0AItem%3A%205%20Queijos%0A%0APode%20me%20ajudar%20a%20finalizar%20o%20pedido%3F" target="_blank" rel="noopener">Pedir pelo WhatsApp</a>
+            </article>
+            
+            <article class="item" data-search="gorgonzola supreme molho, mussarela, parmesão, gorgonzola, azeitonas e orégano">
+              <div class="item-top">
+                <h3>Gorgonzola Supreme</h3>
+                
+              </div>
+              <p class="desc">Molho, mussarela, parmesão, gorgonzola, azeitonas e orégano</p>
+              
+              <div class="prices">
+                <div><span>Broto 25 cm</span><strong>R$ 54,00</strong></div>
+                <div><span>Grande 35 cm</span><strong>R$ 108,00</strong></div>
+              </div>
+              <a class="order-btn" href="https://wa.me/5515997398019?text=Ol%C3%A1%21%20Quero%20fazer%20um%20pedido%20na%20La%20Supreme.%0A%0AItem%3A%20Gorgonzola%20Supreme%0A%0APode%20me%20ajudar%20a%20finalizar%20o%20pedido%3F" target="_blank" rel="noopener">Pedir pelo WhatsApp</a>
+            </article>
+            </div>
+    </section>
+    
+    <section id="cat-carnes" class="menu-section">
+      <div class="section-title">
+        <span>🥩</span>
+        <h2>Carnes</h2>
+      </div>
+      <div class="grid">
+            <article class="item" data-search="alcatra supreme molho, miolo de alcatra, catupiry, mussarela, parmesão, azeitonas e orégano">
+              <div class="item-top">
+                <h3>Alcatra Supreme</h3>
+                
+              </div>
+              <p class="desc">Molho, miolo de alcatra, Catupiry, mussarela, parmesão, azeitonas e orégano</p>
+              
+              <div class="prices">
+                <div><span>Broto 25 cm</span><strong>R$ 60,00</strong></div>
+                <div><span>Grande 35 cm</span><strong>R$ 120,00</strong></div>
+              </div>
+              <a class="order-btn" href="https://wa.me/5515997398019?text=Ol%C3%A1%21%20Quero%20fazer%20um%20pedido%20na%20La%20Supreme.%0A%0AItem%3A%20Alcatra%20Supreme%0A%0APode%20me%20ajudar%20a%20finalizar%20o%20pedido%3F" target="_blank" rel="noopener">Pedir pelo WhatsApp</a>
+            </article>
+            
+            <article class="item" data-search="coreana molho, frango em cubos, catupiry, mussarela, bacon, azeitonas e orégano">
+              <div class="item-top">
+                <h3>Coreana</h3>
+                
+              </div>
+              <p class="desc">Molho, frango em cubos, Catupiry, mussarela, bacon, azeitonas e orégano</p>
+              
+              <div class="prices">
+                <div><span>Broto 25 cm</span><strong>R$ 49,00</strong></div>
+                <div><span>Grande 35 cm</span><strong>R$ 98,00</strong></div>
+              </div>
+              <a class="order-btn" href="https://wa.me/5515997398019?text=Ol%C3%A1%21%20Quero%20fazer%20um%20pedido%20na%20La%20Supreme.%0A%0AItem%3A%20Coreana%0A%0APode%20me%20ajudar%20a%20finalizar%20o%20pedido%3F" target="_blank" rel="noopener">Pedir pelo WhatsApp</a>
+            </article>
+            
+            <article class="item" data-search="coreana especial molho, frango em cubos, cream cheese, mussarela, bacon, azeitonas e orégano">
+              <div class="item-top">
+                <h3>Coreana Especial</h3>
+                
+              </div>
+              <p class="desc">Molho, frango em cubos, cream cheese, mussarela, bacon, azeitonas e orégano</p>
+              
+              <div class="prices">
+                <div><span>Broto 25 cm</span><strong>R$ 52,00</strong></div>
+                <div><span>Grande 35 cm</span><strong>R$ 104,00</strong></div>
+              </div>
+              <a class="order-btn" href="https://wa.me/5515997398019?text=Ol%C3%A1%21%20Quero%20fazer%20um%20pedido%20na%20La%20Supreme.%0A%0AItem%3A%20Coreana%20Especial%0A%0APode%20me%20ajudar%20a%20finalizar%20o%20pedido%3F" target="_blank" rel="noopener">Pedir pelo WhatsApp</a>
+            </article>
+            
+            <article class="item" data-search="costela molho, costela desfiada, mussarela, azeitonas e orégano. vinagrete para acompanhamento">
+              <div class="item-top">
+                <h3>Costela</h3>
+                
+              </div>
+              <p class="desc">Molho, costela desfiada, mussarela, azeitonas e orégano. Vinagrete para acompanhamento</p>
+              <div class="obs">+vinagrete</div>
+              <div class="prices">
+                <div><span>Broto 25 cm</span><strong>R$ 45,00</strong></div>
+                <div><span>Grande 35 cm</span><strong>R$ 90,00</strong></div>
+              </div>
+              <a class="order-btn" href="https://wa.me/5515997398019?text=Ol%C3%A1%21%20Quero%20fazer%20um%20pedido%20na%20La%20Supreme.%0A%0AItem%3A%20Costela%0A%0APode%20me%20ajudar%20a%20finalizar%20o%20pedido%3F" target="_blank" rel="noopener">Pedir pelo WhatsApp</a>
+            </article>
+            
+            <article class="item" data-search="costela especial molho, costela desfiada, catupiry, mussarela, azeitonas e orégano. vinagrete para acompanhamento">
+              <div class="item-top">
+                <h3>Costela Especial</h3>
+                
+              </div>
+              <p class="desc">Molho, costela desfiada, Catupiry, mussarela, azeitonas e orégano. Vinagrete para acompanhamento</p>
+              <div class="obs">+vinagrete</div>
+              <div class="prices">
+                <div><span>Broto 25 cm</span><strong>R$ 48,00</strong></div>
+                <div><span>Grande 35 cm</span><strong>R$ 96,00</strong></div>
+              </div>
+              <a class="order-btn" href="https://wa.me/5515997398019?text=Ol%C3%A1%21%20Quero%20fazer%20um%20pedido%20na%20La%20Supreme.%0A%0AItem%3A%20Costela%20Especial%0A%0APode%20me%20ajudar%20a%20finalizar%20o%20pedido%3F" target="_blank" rel="noopener">Pedir pelo WhatsApp</a>
+            </article>
+            
+            <article class="item" data-search="costela supreme molho, costela desfiada, cebola roxa, mussarela, gorgonzola, azeitonas e orégano. vinagrete para acompanhamento">
+              <div class="item-top">
+                <h3>Costela Supreme</h3>
+                
+              </div>
+              <p class="desc">Molho, costela desfiada, cebola roxa, mussarela, gorgonzola, azeitonas e orégano. Vinagrete para acompanhamento</p>
+              <div class="obs"> + vinagrete</div>
+              <div class="prices">
+                <div><span>Broto 25 cm</span><strong>R$ 60,00</strong></div>
+                <div><span>Grande 35 cm</span><strong>R$ 120,00</strong></div>
+              </div>
+              <a class="order-btn" href="https://wa.me/5515997398019?text=Ol%C3%A1%21%20Quero%20fazer%20um%20pedido%20na%20La%20Supreme.%0A%0AItem%3A%20Costela%20Supreme%0A%0APode%20me%20ajudar%20a%20finalizar%20o%20pedido%3F" target="_blank" rel="noopener">Pedir pelo WhatsApp</a>
+            </article>
+            
+            <article class="item" data-search="costela acebolada molho, costela desfiada, cebola, mussarela, azeitonas e orégano. vinagrete para acompanhamento">
+              <div class="item-top">
+                <h3>Costela Acebolada</h3>
+                
+              </div>
+              <p class="desc">Molho, costela desfiada, cebola, mussarela, azeitonas e orégano. Vinagrete para acompanhamento</p>
+              <div class="obs">+vinagrete</div>
+              <div class="prices">
+                <div><span>Broto 25 cm</span><strong>R$ 47,50</strong></div>
+                <div><span>Grande 35 cm</span><strong>R$ 95,00</strong></div>
+              </div>
+              <a class="order-btn" href="https://wa.me/5515997398019?text=Ol%C3%A1%21%20Quero%20fazer%20um%20pedido%20na%20La%20Supreme.%0A%0AItem%3A%20Costela%20Acebolada%0A%0APode%20me%20ajudar%20a%20finalizar%20o%20pedido%3F" target="_blank" rel="noopener">Pedir pelo WhatsApp</a>
+            </article>
+            
+            <article class="item" data-search="strogonoff de frango molho, strogonoff de frango, catupiry, champignon, mussarela, azeitonas e orégano">
+              <div class="item-top">
+                <h3>Strogonoff de Frango</h3>
+                
+              </div>
+              <p class="desc">Molho, strogonoff de frango, Catupiry, champignon, mussarela, azeitonas e orégano</p>
+              
+              <div class="prices">
+                <div><span>Broto 25 cm</span><strong>R$ 49,00</strong></div>
+                <div><span>Grande 35 cm</span><strong>R$ 98,00</strong></div>
+              </div>
+              <a class="order-btn" href="https://wa.me/5515997398019?text=Ol%C3%A1%21%20Quero%20fazer%20um%20pedido%20na%20La%20Supreme.%0A%0AItem%3A%20Strogonoff%20de%20Frango%0A%0APode%20me%20ajudar%20a%20finalizar%20o%20pedido%3F" target="_blank" rel="noopener">Pedir pelo WhatsApp</a>
+            </article>
+            
+            <article class="item" data-search="filé supreme molho, filé mignon, catupiry, mussarela, parmesão ralado, azeitonas e orégano">
+              <div class="item-top">
+                <h3>Filé Supreme</h3>
+                
+              </div>
+              <p class="desc">Molho, filé mignon, Catupiry, mussarela, parmesão ralado, azeitonas e orégano</p>
+              
+              <div class="prices">
+                <div><span>Broto 25 cm</span><strong>R$ 62,00</strong></div>
+                <div><span>Grande 35 cm</span><strong>R$ 124,00</strong></div>
+              </div>
+              <a class="order-btn" href="https://wa.me/5515997398019?text=Ol%C3%A1%21%20Quero%20fazer%20um%20pedido%20na%20La%20Supreme.%0A%0AItem%3A%20Fil%C3%A9%20Supreme%0A%0APode%20me%20ajudar%20a%20finalizar%20o%20pedido%3F" target="_blank" rel="noopener">Pedir pelo WhatsApp</a>
+            </article>
+            
+            <article class="item" data-search="chef supreme molho, miolo de alcatra, catupiry, mussarela, gorgonzola, azeitonas e orégano">
+              <div class="item-top">
+                <h3>Chef Supreme</h3>
+                
+              </div>
+              <p class="desc">Molho, miolo de alcatra, Catupiry, mussarela, gorgonzola, azeitonas e orégano</p>
+              
+              <div class="prices">
+                <div><span>Broto 25 cm</span><strong>R$ 68,00</strong></div>
+                <div><span>Grande 35 cm</span><strong>R$ 136,00</strong></div>
+              </div>
+              <a class="order-btn" href="https://wa.me/5515997398019?text=Ol%C3%A1%21%20Quero%20fazer%20um%20pedido%20na%20La%20Supreme.%0A%0AItem%3A%20Chef%20Supreme%0A%0APode%20me%20ajudar%20a%20finalizar%20o%20pedido%3F" target="_blank" rel="noopener">Pedir pelo WhatsApp</a>
+            </article>
+            </div>
+    </section>
+    
+    <section id="cat-verduras-e-legumes" class="menu-section">
+      <div class="section-title">
+        <span>🥬</span>
+        <h2>Verduras e Legumes</h2>
+      </div>
+      <div class="grid">
+            <article class="item" data-search="abobrinha molho, abobrinha, mussarela, parmesão, azeitonas e orégano">
+              <div class="item-top">
+                <h3>Abobrinha</h3>
+                
+              </div>
+              <p class="desc">Molho, abobrinha, mussarela, parmesão, azeitonas e orégano</p>
+              
+              <div class="prices">
+                <div><span>Broto 25 cm</span><strong>R$ 45,00</strong></div>
+                <div><span>Grande 35 cm</span><strong>R$ 90,00</strong></div>
+              </div>
+              <a class="order-btn" href="https://wa.me/5515997398019?text=Ol%C3%A1%21%20Quero%20fazer%20um%20pedido%20na%20La%20Supreme.%0A%0AItem%3A%20Abobrinha%0A%0APode%20me%20ajudar%20a%20finalizar%20o%20pedido%3F" target="_blank" rel="noopener">Pedir pelo WhatsApp</a>
+            </article>
+            
+            <article class="item" data-search="escarola molho, escarola, catupiry, mussarela, azeitonas e orégano">
+              <div class="item-top">
+                <h3>Escarola</h3>
+                
+              </div>
+              <p class="desc">Molho, escarola, Catupiry, mussarela, azeitonas e orégano</p>
+              
+              <div class="prices">
+                <div><span>Broto 25 cm</span><strong>R$ 37,00</strong></div>
+                <div><span>Grande 35 cm</span><strong>R$ 74,00</strong></div>
+              </div>
+              <a class="order-btn" href="https://wa.me/5515997398019?text=Ol%C3%A1%21%20Quero%20fazer%20um%20pedido%20na%20La%20Supreme.%0A%0AItem%3A%20Escarola%0A%0APode%20me%20ajudar%20a%20finalizar%20o%20pedido%3F" target="_blank" rel="noopener">Pedir pelo WhatsApp</a>
+            </article>
+            
+            <article class="item" data-search="escarola especial molho, escarola, catupiry, mussarela, bacon, azeitonas e orégano">
+              <div class="item-top">
+                <h3>Escarola Especial</h3>
+                
+              </div>
+              <p class="desc">Molho, escarola, Catupiry, mussarela, bacon, azeitonas e orégano</p>
+              
+              <div class="prices">
+                <div><span>Broto 25 cm</span><strong>R$ 42,00</strong></div>
+                <div><span>Grande 35 cm</span><strong>R$ 84,00</strong></div>
+              </div>
+              <a class="order-btn" href="https://wa.me/5515997398019?text=Ol%C3%A1%21%20Quero%20fazer%20um%20pedido%20na%20La%20Supreme.%0A%0AItem%3A%20Escarola%20Especial%0A%0APode%20me%20ajudar%20a%20finalizar%20o%20pedido%3F" target="_blank" rel="noopener">Pedir pelo WhatsApp</a>
+            </article>
+            
+            <article class="item" data-search="escarola supreme molho, escarola, catupiry, mussarela, bacon, azeitonas e orégano">
+              <div class="item-top">
+                <h3>Escarola Supreme</h3>
+                
+              </div>
+              <p class="desc">Molho, escarola, Catupiry, mussarela, bacon, azeitonas e orégano</p>
+              
+              <div class="prices">
+                <div><span>Broto 25 cm</span><strong>R$ 47,50</strong></div>
+                <div><span>Grande 35 cm</span><strong>R$ 95,00</strong></div>
+              </div>
+              <a class="order-btn" href="https://wa.me/5515997398019?text=Ol%C3%A1%21%20Quero%20fazer%20um%20pedido%20na%20La%20Supreme.%0A%0AItem%3A%20Escarola%20Supreme%0A%0APode%20me%20ajudar%20a%20finalizar%20o%20pedido%3F" target="_blank" rel="noopener">Pedir pelo WhatsApp</a>
+            </article>
+            
+            <article class="item" data-search="alho-poró molho, alho-poró, mussarela, azeitonas e orégano">
+              <div class="item-top">
+                <h3>Alho-Poró</h3>
+                
+              </div>
+              <p class="desc">Molho, alho-poró, mussarela, azeitonas e orégano</p>
+              
+              <div class="prices">
+                <div><span>Broto 25 cm</span><strong>R$ 40,00</strong></div>
+                <div><span>Grande 35 cm</span><strong>R$ 80,00</strong></div>
+              </div>
+              <a class="order-btn" href="https://wa.me/5515997398019?text=Ol%C3%A1%21%20Quero%20fazer%20um%20pedido%20na%20La%20Supreme.%0A%0AItem%3A%20Alho-Por%C3%B3%0A%0APode%20me%20ajudar%20a%20finalizar%20o%20pedido%3F" target="_blank" rel="noopener">Pedir pelo WhatsApp</a>
+            </article>
+            
+            <article class="item" data-search="alho-poró especial molho, alho-poró, mussarela, catupiry, azeitonas e orégano">
+              <div class="item-top">
+                <h3>Alho-Poró Especial</h3>
+                
+              </div>
+              <p class="desc">Molho, alho-poró, mussarela, Catupiry, azeitonas e orégano</p>
+              
+              <div class="prices">
+                <div><span>Broto 25 cm</span><strong>R$ 42,50</strong></div>
+                <div><span>Grande 35 cm</span><strong>R$ 85,00</strong></div>
+              </div>
+              <a class="order-btn" href="https://wa.me/5515997398019?text=Ol%C3%A1%21%20Quero%20fazer%20um%20pedido%20na%20La%20Supreme.%0A%0AItem%3A%20Alho-Por%C3%B3%20Especial%0A%0APode%20me%20ajudar%20a%20finalizar%20o%20pedido%3F" target="_blank" rel="noopener">Pedir pelo WhatsApp</a>
+            </article>
+            
+            <article class="item" data-search="alho-poró supreme molho, alho-poró, catupiry, bacon, azeitonas e orégano">
+              <div class="item-top">
+                <h3>Alho-Poró Supreme</h3>
+                
+              </div>
+              <p class="desc">Molho, alho-poró, Catupiry, bacon, azeitonas e orégano</p>
+              
+              <div class="prices">
+                <div><span>Broto 25 cm</span><strong>R$ 49,00</strong></div>
+                <div><span>Grande 35 cm</span><strong>R$ 98,00</strong></div>
+              </div>
+              <a class="order-btn" href="https://wa.me/5515997398019?text=Ol%C3%A1%21%20Quero%20fazer%20um%20pedido%20na%20La%20Supreme.%0A%0AItem%3A%20Alho-Por%C3%B3%20Supreme%0A%0APode%20me%20ajudar%20a%20finalizar%20o%20pedido%3F" target="_blank" rel="noopener">Pedir pelo WhatsApp</a>
+            </article>
+            
+            <article class="item" data-search="rúcula molho, mussarela, rúcula, azeitonas e orégano">
+              <div class="item-top">
+                <h3>Rúcula</h3>
+                
+              </div>
+              <p class="desc">Molho, mussarela, rúcula, azeitonas e orégano</p>
+              
+              <div class="prices">
+                <div><span>Broto 25 cm</span><strong>R$ 39,00</strong></div>
+                <div><span>Grande 35 cm</span><strong>R$ 78,00</strong></div>
+              </div>
+              <a class="order-btn" href="https://wa.me/5515997398019?text=Ol%C3%A1%21%20Quero%20fazer%20um%20pedido%20na%20La%20Supreme.%0A%0AItem%3A%20R%C3%BAcula%0A%0APode%20me%20ajudar%20a%20finalizar%20o%20pedido%3F" target="_blank" rel="noopener">Pedir pelo WhatsApp</a>
+            </article>
+            
+            <article class="item" data-search="rúcula especial molho, mussarela, tomate seco, rúcula, azeitonas e orégano">
+              <div class="item-top">
+                <h3>Rúcula Especial</h3>
+                
+              </div>
+              <p class="desc">Molho, mussarela, tomate seco, rúcula, azeitonas e orégano</p>
+              
+              <div class="prices">
+                <div><span>Broto 25 cm</span><strong>R$ 42,00</strong></div>
+                <div><span>Grande 35 cm</span><strong>R$ 84,00</strong></div>
+              </div>
+              <a class="order-btn" href="https://wa.me/5515997398019?text=Ol%C3%A1%21%20Quero%20fazer%20um%20pedido%20na%20La%20Supreme.%0A%0AItem%3A%20R%C3%BAcula%20Especial%0A%0APode%20me%20ajudar%20a%20finalizar%20o%20pedido%3F" target="_blank" rel="noopener">Pedir pelo WhatsApp</a>
+            </article>
+            
+            <article class="item" data-search="rúcula supreme molho, mussarela de búfala, tomate seco, azeitonas e orégano">
+              <div class="item-top">
+                <h3>Rúcula Supreme</h3>
+                
+              </div>
+              <p class="desc">Molho, mussarela de búfala, tomate seco, azeitonas e orégano</p>
+              
+              <div class="prices">
+                <div><span>Broto 25 cm</span><strong>R$ 47,50</strong></div>
+                <div><span>Grande 35 cm</span><strong>R$ 95,00</strong></div>
+              </div>
+              <a class="order-btn" href="https://wa.me/5515997398019?text=Ol%C3%A1%21%20Quero%20fazer%20um%20pedido%20na%20La%20Supreme.%0A%0AItem%3A%20R%C3%BAcula%20Supreme%0A%0APode%20me%20ajudar%20a%20finalizar%20o%20pedido%3F" target="_blank" rel="noopener">Pedir pelo WhatsApp</a>
+            </article>
+            
+            <article class="item" data-search="brócolis molho, mussarela, brócolis, tomate seco, azeitonas e orégano">
+              <div class="item-top">
+                <h3>Brócolis</h3>
+                
+              </div>
+              <p class="desc">Molho, mussarela, brócolis, tomate seco, azeitonas e orégano</p>
+              
+              <div class="prices">
+                <div><span>Broto 25 cm</span><strong>R$ 40,00</strong></div>
+                <div><span>Grande 35 cm</span><strong>R$ 80,00</strong></div>
+              </div>
+              <a class="order-btn" href="https://wa.me/5515997398019?text=Ol%C3%A1%21%20Quero%20fazer%20um%20pedido%20na%20La%20Supreme.%0A%0AItem%3A%20Br%C3%B3colis%0A%0APode%20me%20ajudar%20a%20finalizar%20o%20pedido%3F" target="_blank" rel="noopener">Pedir pelo WhatsApp</a>
+            </article>
+            
+            <article class="item" data-search="brócolis especial molho, mussarela de búfala, brócolis, tomate seco, azeitonas e orégano">
+              <div class="item-top">
+                <h3>Brócolis Especial</h3>
+                
+              </div>
+              <p class="desc">Molho, mussarela de búfala, brócolis, tomate seco, azeitonas e orégano</p>
+              
+              <div class="prices">
+                <div><span>Broto 25 cm</span><strong>R$ 42,50</strong></div>
+                <div><span>Grande 35 cm</span><strong>R$ 85,00</strong></div>
+              </div>
+              <a class="order-btn" href="https://wa.me/5515997398019?text=Ol%C3%A1%21%20Quero%20fazer%20um%20pedido%20na%20La%20Supreme.%0A%0AItem%3A%20Br%C3%B3colis%20Especial%0A%0APode%20me%20ajudar%20a%20finalizar%20o%20pedido%3F" target="_blank" rel="noopener">Pedir pelo WhatsApp</a>
+            </article>
+            
+            <article class="item" data-search="brócolis supreme molho, mussarela, catupiry, brócolis, tomate seco, bacon, azeitonas e orégano">
+              <div class="item-top">
+                <h3>Brócolis Supreme</h3>
+                
+              </div>
+              <p class="desc">Molho, mussarela, Catupiry, brócolis, tomate seco, bacon, azeitonas e orégano</p>
+              
+              <div class="prices">
+                <div><span>Broto 25 cm</span><strong>R$ 49,00</strong></div>
+                <div><span>Grande 35 cm</span><strong>R$ 98,00</strong></div>
+              </div>
+              <a class="order-btn" href="https://wa.me/5515997398019?text=Ol%C3%A1%21%20Quero%20fazer%20um%20pedido%20na%20La%20Supreme.%0A%0AItem%3A%20Br%C3%B3colis%20Supreme%0A%0APode%20me%20ajudar%20a%20finalizar%20o%20pedido%3F" target="_blank" rel="noopener">Pedir pelo WhatsApp</a>
+            </article>
+            
+            <article class="item" data-search="vegetariana molho, tomate, champignon, palmito, cebola, brócolis, azeitonas e orégano">
+              <div class="item-top">
+                <h3>Vegetariana</h3>
+                
+              </div>
+              <p class="desc">Molho, tomate, champignon, palmito, cebola, brócolis, azeitonas e orégano</p>
+              
+              <div class="prices">
+                <div><span>Broto 25 cm</span><strong>R$ 45,00</strong></div>
+                <div><span>Grande 35 cm</span><strong>R$ 90,00</strong></div>
+              </div>
+              <a class="order-btn" href="https://wa.me/5515997398019?text=Ol%C3%A1%21%20Quero%20fazer%20um%20pedido%20na%20La%20Supreme.%0A%0AItem%3A%20Vegetariana%0A%0APode%20me%20ajudar%20a%20finalizar%20o%20pedido%3F" target="_blank" rel="noopener">Pedir pelo WhatsApp</a>
+            </article>
+            
+            <article class="item" data-search="vegetariana supreme molho, tomate, champignon, palmito, cebola, brócolis, azeitonas e orégano">
+              <div class="item-top">
+                <h3>Vegetariana Supreme</h3>
+                
+              </div>
+              <p class="desc">Molho, tomate, champignon, palmito, cebola, brócolis, azeitonas e orégano</p>
+              
+              <div class="prices">
+                <div><span>Broto 25 cm</span><strong>R$ 52,50</strong></div>
+                <div><span>Grande 35 cm</span><strong>R$ 105,00</strong></div>
+              </div>
+              <a class="order-btn" href="https://wa.me/5515997398019?text=Ol%C3%A1%21%20Quero%20fazer%20um%20pedido%20na%20La%20Supreme.%0A%0AItem%3A%20Vegetariana%20Supreme%0A%0APode%20me%20ajudar%20a%20finalizar%20o%20pedido%3F" target="_blank" rel="noopener">Pedir pelo WhatsApp</a>
+            </article>
+            </div>
+    </section>
+    
+    <section id="cat-frutos-do-mar" class="menu-section">
+      <div class="section-title">
+        <span>🦐</span>
+        <h2>Frutos do Mar</h2>
+      </div>
+      <div class="grid">
+            <article class="item" data-search="camarão molho, camarão, catupiry, mussarela, azeitonas e orégano">
+              <div class="item-top">
+                <h3>Camarão</h3>
+                
+              </div>
+              <p class="desc">Molho, camarão, Catupiry, mussarela, azeitonas e orégano</p>
+              
+              <div class="prices">
+                <div><span>Broto 25 cm</span><strong>R$ 60,00</strong></div>
+                <div><span>Grande 35 cm</span><strong>R$ 120,00</strong></div>
+              </div>
+              <a class="order-btn" href="https://wa.me/5515997398019?text=Ol%C3%A1%21%20Quero%20fazer%20um%20pedido%20na%20La%20Supreme.%0A%0AItem%3A%20Camar%C3%A3o%0A%0APode%20me%20ajudar%20a%20finalizar%20o%20pedido%3F" target="_blank" rel="noopener">Pedir pelo WhatsApp</a>
+            </article>
+            
+            <article class="item" data-search="camarão especial molho, camarão, molho branco, mussarela, azeitonas e orégano">
+              <div class="item-top">
+                <h3>Camarão Especial</h3>
+                
+              </div>
+              <p class="desc">Molho, camarão, molho branco, mussarela, azeitonas e orégano</p>
+              
+              <div class="prices">
+                <div><span>Broto 25 cm</span><strong>R$ 65,00</strong></div>
+                <div><span>Grande 35 cm</span><strong>R$ 130,00</strong></div>
+              </div>
+              <a class="order-btn" href="https://wa.me/5515997398019?text=Ol%C3%A1%21%20Quero%20fazer%20um%20pedido%20na%20La%20Supreme.%0A%0AItem%3A%20Camar%C3%A3o%20Especial%0A%0APode%20me%20ajudar%20a%20finalizar%20o%20pedido%3F" target="_blank" rel="noopener">Pedir pelo WhatsApp</a>
+            </article>
+            
+            <article class="item" data-search="strogonoff de camarão molho, strogonoff de camarão, catupiry, champignon, mussarela, azeitonas e orégano">
+              <div class="item-top">
+                <h3>Strogonoff de Camarão</h3>
+                
+              </div>
+              <p class="desc">Molho, strogonoff de camarão, Catupiry, champignon, mussarela, azeitonas e orégano</p>
+              
+              <div class="prices">
+                <div><span>Broto 25 cm</span><strong>R$ 67,50</strong></div>
+                <div><span>Grande 35 cm</span><strong>R$ 135,00</strong></div>
+              </div>
+              <a class="order-btn" href="https://wa.me/5515997398019?text=Ol%C3%A1%21%20Quero%20fazer%20um%20pedido%20na%20La%20Supreme.%0A%0AItem%3A%20Strogonoff%20de%20Camar%C3%A3o%0A%0APode%20me%20ajudar%20a%20finalizar%20o%20pedido%3F" target="_blank" rel="noopener">Pedir pelo WhatsApp</a>
+            </article>
+            </div>
+    </section>
+    
+    <section id="cat-pizzas-doces" class="menu-section">
+      <div class="section-title">
+        <span>🍫</span>
+        <h2>Pizzas Doces</h2>
+      </div>
+      <div class="grid">
+            <article class="item" data-search="abacaxi supreme abacaxi, doce de leite, canela e mel">
+              <div class="item-top">
+                <h3>Abacaxi Supreme</h3>
+                
+              </div>
+              <p class="desc">Abacaxi, doce de leite, canela e mel</p>
+              
+              <div class="prices">
+                <div><span>Broto 25 cm</span><strong>R$ 45,00</strong></div>
+                <div><span>Grande 35 cm</span><strong>R$ 90,00</strong></div>
+              </div>
+              <a class="order-btn" href="https://wa.me/5515997398019?text=Ol%C3%A1%21%20Quero%20fazer%20um%20pedido%20na%20La%20Supreme.%0A%0AItem%3A%20Abacaxi%20Supreme%0A%0APode%20me%20ajudar%20a%20finalizar%20o%20pedido%3F" target="_blank" rel="noopener">Pedir pelo WhatsApp</a>
+            </article>
+            
+            <article class="item" data-search="banana nevada banana, chocolate branco e canela em pó">
+              <div class="item-top">
+                <h3>Banana Nevada</h3>
+                
+              </div>
+              <p class="desc">Banana, chocolate branco e canela em pó</p>
+              
+              <div class="prices">
+                <div><span>Broto 25 cm</span><strong>R$ 36,00</strong></div>
+                <div><span>Grande 35 cm</span><strong>R$ 72,00</strong></div>
+              </div>
+              <a class="order-btn" href="https://wa.me/5515997398019?text=Ol%C3%A1%21%20Quero%20fazer%20um%20pedido%20na%20La%20Supreme.%0A%0AItem%3A%20Banana%20Nevada%0A%0APode%20me%20ajudar%20a%20finalizar%20o%20pedido%3F" target="_blank" rel="noopener">Pedir pelo WhatsApp</a>
+            </article>
+            
+            <article class="item" data-search="banana c/ doce de leite banana, doce de leite e canela em pó">
+              <div class="item-top">
+                <h3>Banana c/ Doce de Leite</h3>
+                
+              </div>
+              <p class="desc">Banana, doce de leite e canela em pó</p>
+              
+              <div class="prices">
+                <div><span>Broto 25 cm</span><strong>R$ 37,50</strong></div>
+                <div><span>Grande 35 cm</span><strong>R$ 75,00</strong></div>
+              </div>
+              <a class="order-btn" href="https://wa.me/5515997398019?text=Ol%C3%A1%21%20Quero%20fazer%20um%20pedido%20na%20La%20Supreme.%0A%0AItem%3A%20Banana%20c/%20Doce%20de%20Leite%0A%0APode%20me%20ajudar%20a%20finalizar%20o%20pedido%3F" target="_blank" rel="noopener">Pedir pelo WhatsApp</a>
+            </article>
+            
+            <article class="item" data-search="banana c/ nutella banana e nutella">
+              <div class="item-top">
+                <h3>Banana c/ Nutella</h3>
+                
+              </div>
+              <p class="desc">Banana e Nutella</p>
+              
+              <div class="prices">
+                <div><span>Broto 25 cm</span><strong>R$ 47,50</strong></div>
+                <div><span>Grande 35 cm</span><strong>R$ 95,00</strong></div>
+              </div>
+              <a class="order-btn" href="https://wa.me/5515997398019?text=Ol%C3%A1%21%20Quero%20fazer%20um%20pedido%20na%20La%20Supreme.%0A%0AItem%3A%20Banana%20c/%20Nutella%0A%0APode%20me%20ajudar%20a%20finalizar%20o%20pedido%3F" target="_blank" rel="noopener">Pedir pelo WhatsApp</a>
+            </article>
+            
+            <article class="item" data-search="brigadeiro chocolate em ganache e chocolate granulado">
+              <div class="item-top">
+                <h3>Brigadeiro</h3>
+                
+              </div>
+              <p class="desc">Chocolate em ganache e chocolate granulado</p>
+              
+              <div class="prices">
+                <div><span>Broto 25 cm</span><strong>R$ 40,00</strong></div>
+                <div><span>Grande 35 cm</span><strong>R$ 80,00</strong></div>
+              </div>
+              <a class="order-btn" href="https://wa.me/5515997398019?text=Ol%C3%A1%21%20Quero%20fazer%20um%20pedido%20na%20La%20Supreme.%0A%0AItem%3A%20Brigadeiro%0A%0APode%20me%20ajudar%20a%20finalizar%20o%20pedido%3F" target="_blank" rel="noopener">Pedir pelo WhatsApp</a>
+            </article>
+            
+            <article class="item" data-search="romeu e julieta goiabada e mussarela">
+              <div class="item-top">
+                <h3>Romeu e Julieta</h3>
+                
+              </div>
+              <p class="desc">Goiabada e mussarela</p>
+              
+              <div class="prices">
+                <div><span>Broto 25 cm</span><strong>R$ 39,00</strong></div>
+                <div><span>Grande 35 cm</span><strong>R$ 78,00</strong></div>
+              </div>
+              <a class="order-btn" href="https://wa.me/5515997398019?text=Ol%C3%A1%21%20Quero%20fazer%20um%20pedido%20na%20La%20Supreme.%0A%0AItem%3A%20Romeu%20e%20Julieta%0A%0APode%20me%20ajudar%20a%20finalizar%20o%20pedido%3F" target="_blank" rel="noopener">Pedir pelo WhatsApp</a>
+            </article>
+            
+            <article class="item" data-search="confeti chocolate em ganache e confetes">
+              <div class="item-top">
+                <h3>Confeti</h3>
+                
+              </div>
+              <p class="desc">Chocolate em ganache e confetes</p>
+              
+              <div class="prices">
+                <div><span>Broto 25 cm</span><strong>R$ 40,00</strong></div>
+                <div><span>Grande 35 cm</span><strong>R$ 80,00</strong></div>
+              </div>
+              <a class="order-btn" href="https://wa.me/5515997398019?text=Ol%C3%A1%21%20Quero%20fazer%20um%20pedido%20na%20La%20Supreme.%0A%0AItem%3A%20Confeti%0A%0APode%20me%20ajudar%20a%20finalizar%20o%20pedido%3F" target="_blank" rel="noopener">Pedir pelo WhatsApp</a>
+            </article>
+            
+            <article class="item" data-search="paçoca chocolate em ganache e paçoca">
+              <div class="item-top">
+                <h3>Paçoca</h3>
+                
+              </div>
+              <p class="desc">Chocolate em ganache e paçoca</p>
+              
+              <div class="prices">
+                <div><span>Broto 25 cm</span><strong>R$ 40,00</strong></div>
+                <div><span>Grande 35 cm</span><strong>R$ 80,00</strong></div>
+              </div>
+              <a class="order-btn" href="https://wa.me/5515997398019?text=Ol%C3%A1%21%20Quero%20fazer%20um%20pedido%20na%20La%20Supreme.%0A%0AItem%3A%20Pa%C3%A7oca%0A%0APode%20me%20ajudar%20a%20finalizar%20o%20pedido%3F" target="_blank" rel="noopener">Pedir pelo WhatsApp</a>
+            </article>
+            
+            <article class="item" data-search="morango chocolate em ganache e morangos">
+              <div class="item-top">
+                <h3>Morango</h3>
+                
+              </div>
+              <p class="desc">Chocolate em ganache e morangos</p>
+              
+              <div class="prices">
+                <div><span>Broto 25 cm</span><strong>R$ 45,00</strong></div>
+                <div><span>Grande 35 cm</span><strong>R$ 90,00</strong></div>
+              </div>
+              <a class="order-btn" href="https://wa.me/5515997398019?text=Ol%C3%A1%21%20Quero%20fazer%20um%20pedido%20na%20La%20Supreme.%0A%0AItem%3A%20Morango%0A%0APode%20me%20ajudar%20a%20finalizar%20o%20pedido%3F" target="_blank" rel="noopener">Pedir pelo WhatsApp</a>
+            </article>
+            
+            <article class="item" data-search="nutella nutella">
+              <div class="item-top">
+                <h3>Nutella</h3>
+                
+              </div>
+              <p class="desc">Nutella</p>
+              
+              <div class="prices">
+                <div><span>Broto 25 cm</span><strong>R$ 50,00</strong></div>
+                <div><span>Grande 35 cm</span><strong>R$ 100,00</strong></div>
+              </div>
+              <a class="order-btn" href="https://wa.me/5515997398019?text=Ol%C3%A1%21%20Quero%20fazer%20um%20pedido%20na%20La%20Supreme.%0A%0AItem%3A%20Nutella%0A%0APode%20me%20ajudar%20a%20finalizar%20o%20pedido%3F" target="_blank" rel="noopener">Pedir pelo WhatsApp</a>
+            </article>
+            
+            <article class="item" data-search="nutella c/ morango nutella e morangos">
+              <div class="item-top">
+                <h3>Nutella c/ Morango</h3>
+                
+              </div>
+              <p class="desc">Nutella e morangos</p>
+              
+              <div class="prices">
+                <div><span>Broto 25 cm</span><strong>R$ 55,00</strong></div>
+                <div><span>Grande 35 cm</span><strong>R$ 110,00</strong></div>
+              </div>
+              <a class="order-btn" href="https://wa.me/5515997398019?text=Ol%C3%A1%21%20Quero%20fazer%20um%20pedido%20na%20La%20Supreme.%0A%0AItem%3A%20Nutella%20c/%20Morango%0A%0APode%20me%20ajudar%20a%20finalizar%20o%20pedido%3F" target="_blank" rel="noopener">Pedir pelo WhatsApp</a>
+            </article>
+            
+            <article class="item" data-search="cereja chocolate em ganache e cerejas">
+              <div class="item-top">
+                <h3>Cereja</h3>
+                
+              </div>
+              <p class="desc">Chocolate em ganache e cerejas</p>
+              
+              <div class="prices">
+                <div><span>Broto 25 cm</span><strong>R$ 40,00</strong></div>
+                <div><span>Grande 35 cm</span><strong>R$ 80,00</strong></div>
+              </div>
+              <a class="order-btn" href="https://wa.me/5515997398019?text=Ol%C3%A1%21%20Quero%20fazer%20um%20pedido%20na%20La%20Supreme.%0A%0AItem%3A%20Cereja%0A%0APode%20me%20ajudar%20a%20finalizar%20o%20pedido%3F" target="_blank" rel="noopener">Pedir pelo WhatsApp</a>
+            </article>
+            
+            <article class="item" data-search="ferrero rocher chocolate em ganache e ferrero rocher">
+              <div class="item-top">
+                <h3>Ferrero Rocher</h3>
+                
+              </div>
+              <p class="desc">Chocolate em ganache e Ferrero Rocher</p>
+              
+              <div class="prices">
+                <div><span>Broto 25 cm</span><strong>R$ 59,00</strong></div>
+                <div><span>Grande 35 cm</span><strong>R$ 118,00</strong></div>
+              </div>
+              <a class="order-btn" href="https://wa.me/5515997398019?text=Ol%C3%A1%21%20Quero%20fazer%20um%20pedido%20na%20La%20Supreme.%0A%0AItem%3A%20Ferrero%20Rocher%0A%0APode%20me%20ajudar%20a%20finalizar%20o%20pedido%3F" target="_blank" rel="noopener">Pedir pelo WhatsApp</a>
+            </article>
+            
+            <article class="item" data-search="kit kat chocolate em ganache e kit kat">
+              <div class="item-top">
+                <h3>Kit Kat</h3>
+                
+              </div>
+              <p class="desc">Chocolate em ganache e Kit Kat</p>
+              
+              <div class="prices">
+                <div><span>Broto 25 cm</span><strong>R$ 42,00</strong></div>
+                <div><span>Grande 35 cm</span><strong>R$ 84,00</strong></div>
+              </div>
+              <a class="order-btn" href="https://wa.me/5515997398019?text=Ol%C3%A1%21%20Quero%20fazer%20um%20pedido%20na%20La%20Supreme.%0A%0AItem%3A%20Kit%20Kat%0A%0APode%20me%20ajudar%20a%20finalizar%20o%20pedido%3F" target="_blank" rel="noopener">Pedir pelo WhatsApp</a>
+            </article>
+            
+            <article class="item" data-search="kinder bueno chocolate em ganache e kinder bueno">
+              <div class="item-top">
+                <h3>Kinder Bueno</h3>
+                
+              </div>
+              <p class="desc">Chocolate em ganache e Kinder Bueno</p>
+              
+              <div class="prices">
+                <div><span>Broto 25 cm</span><strong>R$ 42,50</strong></div>
+                <div><span>Grande 35 cm</span><strong>R$ 85,00</strong></div>
+              </div>
+              <a class="order-btn" href="https://wa.me/5515997398019?text=Ol%C3%A1%21%20Quero%20fazer%20um%20pedido%20na%20La%20Supreme.%0A%0AItem%3A%20Kinder%20Bueno%0A%0APode%20me%20ajudar%20a%20finalizar%20o%20pedido%3F" target="_blank" rel="noopener">Pedir pelo WhatsApp</a>
+            </article>
+            
+            <article class="item" data-search="prestígio chocolate em ganache e flocos de coco">
+              <div class="item-top">
+                <h3>Prestígio</h3>
+                
+              </div>
+              <p class="desc">Chocolate em ganache e flocos de coco</p>
+              
+              <div class="prices">
+                <div><span>Broto 25 cm</span><strong>R$ 38,00</strong></div>
+                <div><span>Grande 35 cm</span><strong>R$ 76,00</strong></div>
+              </div>
+              <a class="order-btn" href="https://wa.me/5515997398019?text=Ol%C3%A1%21%20Quero%20fazer%20um%20pedido%20na%20La%20Supreme.%0A%0AItem%3A%20Prest%C3%ADgio%0A%0APode%20me%20ajudar%20a%20finalizar%20o%20pedido%3F" target="_blank" rel="noopener">Pedir pelo WhatsApp</a>
+            </article>
+            </div>
+    </section>
+    
+    <section id="cat-calzones" class="menu-section">
+      <div class="section-title">
+        <span>🥟</span>
+        <h2>Calzones</h2>
+      </div>
+      <div class="grid">
+            <article class="item" data-search="frango catupiry frango desfiado, mussarela e catupiry">
+              <div class="item-top"><h3>Frango Catupiry</h3></div>
+              <p class="desc">Frango desfiado, mussarela e Catupiry</p>
+              <div class="prices single">
+                <div><span>Preço</span><strong>R$ 80,00</strong></div>
+              </div>
+              <a class="order-btn" href="https://wa.me/5515997398019?text=Ol%C3%A1%21%20Quero%20fazer%20um%20pedido%20na%20La%20Supreme.%0A%0AItem%3A%20Frango%20Catupiry%0A%0APode%20me%20ajudar%20a%20finalizar%20o%20pedido%3F" target="_blank" rel="noopener">Pedir pelo WhatsApp</a>
+            </article>
+            
+            <article class="item" data-search="calabresa calabresa, cebola e mussarela">
+              <div class="item-top"><h3>Calabresa</h3></div>
+              <p class="desc">Calabresa, cebola e mussarela</p>
+              <div class="prices single">
+                <div><span>Preço</span><strong>R$ 80,00</strong></div>
+              </div>
+              <a class="order-btn" href="https://wa.me/5515997398019?text=Ol%C3%A1%21%20Quero%20fazer%20um%20pedido%20na%20La%20Supreme.%0A%0AItem%3A%20Calabresa%0A%0APode%20me%20ajudar%20a%20finalizar%20o%20pedido%3F" target="_blank" rel="noopener">Pedir pelo WhatsApp</a>
+            </article>
+            
+            <article class="item" data-search="4 queijos mussarela, catupiry, provolone e parmesão">
+              <div class="item-top"><h3>4 Queijos</h3></div>
+              <p class="desc">Mussarela, Catupiry, provolone e parmesão</p>
+              <div class="prices single">
+                <div><span>Preço</span><strong>R$ 90,00</strong></div>
+              </div>
+              <a class="order-btn" href="https://wa.me/5515997398019?text=Ol%C3%A1%21%20Quero%20fazer%20um%20pedido%20na%20La%20Supreme.%0A%0AItem%3A%204%20Queijos%0A%0APode%20me%20ajudar%20a%20finalizar%20o%20pedido%3F" target="_blank" rel="noopener">Pedir pelo WhatsApp</a>
+            </article>
+            
+            <article class="item" data-search="alho-poró alho-poró, catupiry e mussarela">
+              <div class="item-top"><h3>Alho-Poró</h3></div>
+              <p class="desc">Alho-poró, Catupiry e mussarela</p>
+              <div class="prices single">
+                <div><span>Preço</span><strong>R$ 80,00</strong></div>
+              </div>
+              <a class="order-btn" href="https://wa.me/5515997398019?text=Ol%C3%A1%21%20Quero%20fazer%20um%20pedido%20na%20La%20Supreme.%0A%0AItem%3A%20Alho-Por%C3%B3%0A%0APode%20me%20ajudar%20a%20finalizar%20o%20pedido%3F" target="_blank" rel="noopener">Pedir pelo WhatsApp</a>
+            </article>
+            
+            <article class="item" data-search="filé mignon filé mignon em tiras, catupiry e mussarela">
+              <div class="item-top"><h3>Filé Mignon</h3></div>
+              <p class="desc">Filé mignon em tiras, Catupiry e mussarela</p>
+              <div class="prices single">
+                <div><span>Preço</span><strong>R$ 120,00</strong></div>
+              </div>
+              <a class="order-btn" href="https://wa.me/5515997398019?text=Ol%C3%A1%21%20Quero%20fazer%20um%20pedido%20na%20La%20Supreme.%0A%0AItem%3A%20Fil%C3%A9%20Mignon%0A%0APode%20me%20ajudar%20a%20finalizar%20o%20pedido%3F" target="_blank" rel="noopener">Pedir pelo WhatsApp</a>
+            </article>
+            
+            <article class="item" data-search="alcatra miolo de alcatra em cubos, catupiry e mussarela">
+              <div class="item-top"><h3>Alcatra</h3></div>
+              <p class="desc">Miolo de alcatra em cubos, Catupiry e mussarela</p>
+              <div class="prices single">
+                <div><span>Preço</span><strong>R$ 120,00</strong></div>
+              </div>
+              <a class="order-btn" href="https://wa.me/5515997398019?text=Ol%C3%A1%21%20Quero%20fazer%20um%20pedido%20na%20La%20Supreme.%0A%0AItem%3A%20Alcatra%0A%0APode%20me%20ajudar%20a%20finalizar%20o%20pedido%3F" target="_blank" rel="noopener">Pedir pelo WhatsApp</a>
+            </article>
+            </div>
+    </section>
+    
+    <section id="cat-crostinis" class="menu-section">
+      <div class="section-title">
+        <span>🥖</span>
+        <h2>Crostinis</h2>
+      </div>
+      <div class="grid">
+            <article class="item" data-search="gorgonzola e azeite ">
+              <div class="item-top"><h3>Gorgonzola e azeite</h3></div>
+              
+              <div class="prices single">
+                <div><span>Preço</span><strong>R$ 50,00</strong></div>
+              </div>
+              <a class="order-btn" href="https://wa.me/5515997398019?text=Ol%C3%A1%21%20Quero%20fazer%20um%20pedido%20na%20La%20Supreme.%0A%0AItem%3A%20Gorgonzola%20e%20azeite%0A%0APode%20me%20ajudar%20a%20finalizar%20o%20pedido%3F" target="_blank" rel="noopener">Pedir pelo WhatsApp</a>
+            </article>
+            
+            <article class="item" data-search="parmesão e azeite ">
+              <div class="item-top"><h3>Parmesão e azeite</h3></div>
+              
+              <div class="prices single">
+                <div><span>Preço</span><strong>R$ 50,00</strong></div>
+              </div>
+              <a class="order-btn" href="https://wa.me/5515997398019?text=Ol%C3%A1%21%20Quero%20fazer%20um%20pedido%20na%20La%20Supreme.%0A%0AItem%3A%20Parmes%C3%A3o%20e%20azeite%0A%0APode%20me%20ajudar%20a%20finalizar%20o%20pedido%3F" target="_blank" rel="noopener">Pedir pelo WhatsApp</a>
+            </article>
+            </div>
+    </section>
+    
+    <section id="cat-pizza-rolls" class="menu-section">
+      <div class="section-title">
+        <span>🍕</span>
+        <h2>Pizza Rolls</h2>
+      </div>
+      <div class="grid">
+            <article class="item" data-search="gorgo peppe gorgonzola, mussarela e pepperoni">
+              <div class="item-top"><h3>Gorgo Peppe</h3></div>
+              <p class="desc">Gorgonzola, mussarela e pepperoni</p>
+              <div class="prices single">
+                <div><span>Preço</span><strong>R$ 50,00</strong></div>
+              </div>
+              <a class="order-btn" href="https://wa.me/5515997398019?text=Ol%C3%A1%21%20Quero%20fazer%20um%20pedido%20na%20La%20Supreme.%0A%0AItem%3A%20Gorgo%20Peppe%0A%0APode%20me%20ajudar%20a%20finalizar%20o%20pedido%3F" target="_blank" rel="noopener">Pedir pelo WhatsApp</a>
+            </article>
+            
+            <article class="item" data-search="4 queijos mussarela, catupiry, parmesão e provolone">
+              <div class="item-top"><h3>4 Queijos</h3></div>
+              <p class="desc">Mussarela, Catupiry, parmesão e provolone</p>
+              <div class="prices single">
+                <div><span>Preço</span><strong>R$ 50,00</strong></div>
+              </div>
+              <a class="order-btn" href="https://wa.me/5515997398019?text=Ol%C3%A1%21%20Quero%20fazer%20um%20pedido%20na%20La%20Supreme.%0A%0AItem%3A%204%20Queijos%0A%0APode%20me%20ajudar%20a%20finalizar%20o%20pedido%3F" target="_blank" rel="noopener">Pedir pelo WhatsApp</a>
+            </article>
+            </div>
+    </section>
+    
+    <section id="cat-bebidas" class="menu-section">
+      <div class="section-title">
+        <span>🥤</span>
+        <h2>Bebidas</h2>
+      </div>
+      <div class="grid">
+            <article class="item" data-search="coca-cola 2l refrigerante 2 litros">
+              <div class="item-top"><h3>Coca-Cola 2L</h3></div>
+              <p class="desc">Refrigerante 2 litros</p>
+              <div class="prices single">
+                <div><span>Preço</span><strong>R$ 19,00</strong></div>
+              </div>
+              <a class="order-btn" href="https://wa.me/5515997398019?text=Ol%C3%A1%21%20Quero%20fazer%20um%20pedido%20na%20La%20Supreme.%0A%0AItem%3A%20Coca-Cola%202L%0A%0APode%20me%20ajudar%20a%20finalizar%20o%20pedido%3F" target="_blank" rel="noopener">Pedir pelo WhatsApp</a>
+            </article>
+            
+            <article class="item" data-search="fanta uva 2l refrigerante 2 litros">
+              <div class="item-top"><h3>Fanta Uva 2L</h3></div>
+              <p class="desc">Refrigerante 2 litros</p>
+              <div class="prices single">
+                <div><span>Preço</span><strong>R$ 16,00</strong></div>
+              </div>
+              <a class="order-btn" href="https://wa.me/5515997398019?text=Ol%C3%A1%21%20Quero%20fazer%20um%20pedido%20na%20La%20Supreme.%0A%0AItem%3A%20Fanta%20Uva%202L%0A%0APode%20me%20ajudar%20a%20finalizar%20o%20pedido%3F" target="_blank" rel="noopener">Pedir pelo WhatsApp</a>
+            </article>
+            
+            <article class="item" data-search="fanta laranja 2l refrigerante 2 litros">
+              <div class="item-top"><h3>Fanta Laranja 2L</h3></div>
+              <p class="desc">Refrigerante 2 litros</p>
+              <div class="prices single">
+                <div><span>Preço</span><strong>R$ 16,00</strong></div>
+              </div>
+              <a class="order-btn" href="https://wa.me/5515997398019?text=Ol%C3%A1%21%20Quero%20fazer%20um%20pedido%20na%20La%20Supreme.%0A%0AItem%3A%20Fanta%20Laranja%202L%0A%0APode%20me%20ajudar%20a%20finalizar%20o%20pedido%3F" target="_blank" rel="noopener">Pedir pelo WhatsApp</a>
+            </article>
+            
+            <article class="item" data-search="tubaína refrigerante">
+              <div class="item-top"><h3>Tubaína</h3></div>
+              <p class="desc">Refrigerante</p>
+              <div class="prices single">
+                <div><span>Preço</span><strong>R$ 12,00</strong></div>
+              </div>
+              <a class="order-btn" href="https://wa.me/5515997398019?text=Ol%C3%A1%21%20Quero%20fazer%20um%20pedido%20na%20La%20Supreme.%0A%0AItem%3A%20Tuba%C3%ADna%0A%0APode%20me%20ajudar%20a%20finalizar%20o%20pedido%3F" target="_blank" rel="noopener">Pedir pelo WhatsApp</a>
+            </article>
+            
+            <article class="item" data-search="heineken long neck cerveja">
+              <div class="item-top"><h3>Heineken Long Neck</h3></div>
+              <p class="desc">Cerveja</p>
+              <div class="prices single">
+                <div><span>Preço</span><strong>R$ 11,00</strong></div>
+              </div>
+              <a class="order-btn" href="https://wa.me/5515997398019?text=Ol%C3%A1%21%20Quero%20fazer%20um%20pedido%20na%20La%20Supreme.%0A%0AItem%3A%20Heineken%20Long%20Neck%0A%0APode%20me%20ajudar%20a%20finalizar%20o%20pedido%3F" target="_blank" rel="noopener">Pedir pelo WhatsApp</a>
+            </article>
+            
+            <article class="item" data-search="skol lata cerveja">
+              <div class="item-top"><h3>Skol Lata</h3></div>
+              <p class="desc">Cerveja</p>
+              <div class="prices single">
+                <div><span>Preço</span><strong>R$ 7,00</strong></div>
+              </div>
+              <a class="order-btn" href="https://wa.me/5515997398019?text=Ol%C3%A1%21%20Quero%20fazer%20um%20pedido%20na%20La%20Supreme.%0A%0AItem%3A%20Skol%20Lata%0A%0APode%20me%20ajudar%20a%20finalizar%20o%20pedido%3F" target="_blank" rel="noopener">Pedir pelo WhatsApp</a>
+            </article>
+            
+            <article class="item" data-search="original lata cerveja">
+              <div class="item-top"><h3>Original Lata</h3></div>
+              <p class="desc">Cerveja</p>
+              <div class="prices single">
+                <div><span>Preço</span><strong>R$ 8,00</strong></div>
+              </div>
+              <a class="order-btn" href="https://wa.me/5515997398019?text=Ol%C3%A1%21%20Quero%20fazer%20um%20pedido%20na%20La%20Supreme.%0A%0AItem%3A%20Original%20Lata%0A%0APode%20me%20ajudar%20a%20finalizar%20o%20pedido%3F" target="_blank" rel="noopener">Pedir pelo WhatsApp</a>
+            </article>
+            </div>
+    </section>
+    
+  <div id="empty" class="empty">Nenhum item encontrado.</div>
+  
+<section class="info-section" id="entregas">
+  <div class="section-title"><span>🛵</span><h2>Entregas</h2></div>
+  <div class="info-grid">
+    <div class="info-card">
+      <h3>Regiões atendidas</h3>
+      <p>Maristela, Laranjal Paulista e Pereiras.</p>
+      <p class="small">Consulte taxa e condições no atendimento pelo WhatsApp.</p>
+    </div>
+    <div class="info-card">
+      <h3>Como pedir</h3>
+      <p>Escolha seu sabor no cardápio e toque em <strong>“Pedir pelo WhatsApp”</strong>.</p>
+      <p class="small">Bordas de Catupiry ou Cheddar: <strong>+ R$ 12,00</strong>.</p>
+    </div>
+  </div>
+</section>
+
+<section class="info-section" id="contato">
+  <div class="section-title"><span>📲</span><h2>Contato</h2></div>
+  <div class="info-grid">
+    <a class="info-card link-card" href="https://wa.me/5515997398019" target="_blank" rel="noopener">
+      <h3>WhatsApp</h3>
+      <p>(15) 99739-8019</p>
+    </a>
+    <a class="info-card link-card" href="https://instagram.com/lasupreme_pizza" target="_blank" rel="noopener">
+      <h3>Instagram</h3>
+      <p>@lasupreme_pizza</p>
+    </a>
+  </div>
+</section>
+
+<div class="footer">
+    La Supreme Pizzaria • Sabor que vira tradição! • WhatsApp (15) 99739-8019 • Instagram @lasupreme_pizza
+  </div>
+</main>
+
+<div class="bottom-bar"><div class="bottom-inner"><button class="wa order-btn" onclick="openCart()">🛒 VER PEDIDO</button><a class="insta" href="https://instagram.com/lasupreme_pizza" target="_blank" rel="noopener">📸 INSTAGRAM</a></div></div><button class="cart-fab" onclick="openCart()">🛒 Carrinho <span id="cartCount" class="cart-count">0</span></button>
+
+
+<div id="productOverlay" class="order-overlay" aria-hidden="true">
+  <div class="order-modal">
+    <div class="modal-head"><h2 id="productTitle">Adicionar ao pedido</h2><button class="close-x" onclick="closeProduct()">×</button></div>
+    <div id="productForm"></div>
+  </div>
+</div>
+<div id="cartOverlay" class="order-overlay" aria-hidden="true">
+  <div class="order-modal">
+    <div class="modal-head"><h2>Seu pedido</h2><button class="close-x" onclick="closeCart()">×</button></div>
+    <div id="cartBody"></div>
+  </div>
+</div>
+<div id="toast" class="toast">Adicionado ao pedido</div>
+
+<div id="receiptOverlay" class="order-overlay" aria-hidden="true">
+  <div class="order-modal">
+    <div class="modal-head"><h2>Pedido gerado</h2><button class="close-x" onclick="closeReceipt()">×</button></div>
+    <div style="text-align:center"><span id="receiptOrderBadge" class="order-confirm-number">Pedido</span></div>
+    <div id="receiptPrintArea" class="receipt-preview"></div>
+    <div class="receipt-actions">
+      <button class="receipt-close" onclick="closeReceipt()">Fechar</button>
+      <button id="receiptPrintBtn" class="receipt-print" onclick="printReceipt()">🖨️ Imprimir 58 mm</button>
+    </div>
+  </div>
+</div>
+
+
+
+<style id="lsTrackStyles">
+#lsTrackFab{
+  position:static; z-index:auto;
+  width:min(92%,560px);
+  margin:14px auto 0;
+  border:2px solid #159447;
+  border-radius:18px;
+  padding:14px 18px;
+  background:#17110e;
+  color:#fff;
+  font-weight:800;
+  font-size:16px;
+  box-shadow:none;
+  cursor:pointer;
+  display:flex;
+  align-items:center;
+  justify-content:center;
+  gap:10px;
+}
+#lsTrackOverlay{
+  position:fixed; inset:0; z-index:9999; background:rgba(0,0,0,.62);
+  display:none; align-items:center; justify-content:center; padding:18px
+}
+#lsTrackOverlay.open{display:flex}
+#lsTrackCard{
+  width:min(480px,100%); max-height:90vh; overflow:auto;
+  background:#fff; color:#111827; border-radius:22px; padding:20px;
+  box-shadow:0 20px 60px rgba(0,0,0,.35)
+}
+#lsTrackHead{display:flex;align-items:center;gap:10px}
+#lsTrackHead h2{margin:0;font-size:22px}
+#lsTrackClose{margin-left:auto;border:0;background:#eee;border-radius:50%;width:38px;height:38px;font-size:22px}
+.ls-track-muted{color:#6b7280;font-size:13px}
+.ls-track-fields{display:grid;gap:10px;margin:16px 0}
+.ls-track-fields input{
+  width:100%;box-sizing:border-box;border:1px solid #d1d5db;border-radius:12px;
+  padding:12px 13px;font-size:16px
+}
+#lsTrackSearch{
+  width:100%;border:0;border-radius:12px;padding:13px;
+  background:#16a34a;color:#fff;font-weight:800;font-size:16px
+}
+#lsTrackResult{margin-top:18px}
+.ls-track-order{font-weight:900;font-size:18px;margin-bottom:4px}
+.ls-steps{display:grid;gap:10px;margin-top:16px}
+.ls-step{
+  display:flex;align-items:center;gap:12px;padding:12px;border-radius:14px;
+  background:#f3f4f6;color:#6b7280
+}
+.ls-step .dot{
+  width:34px;height:34px;flex:0 0 34px;border-radius:50%;
+  display:flex;align-items:center;justify-content:center;background:#d1d5db;color:#fff;font-weight:900
+}
+.ls-step.done{background:#ecfdf5;color:#166534}
+.ls-step.done .dot{background:#16a34a}
+.ls-step.current{outline:2px solid #16a34a;background:#f0fdf4;color:#14532d}
+.ls-track-statusbox{
+  margin-top:14px;padding:12px;border-radius:12px;background:#f9fafb;border:1px solid #e5e7eb
+}
+</style>
+
+
+
+<div id="lsTrackOverlay" aria-hidden="true">
+  <div id="lsTrackCard">
+    <div id="lsTrackHead">
+      <div>
+        <h2>Acompanhe seu pedido</h2>
+        <div class="ls-track-muted">Atualização automática a cada 5 segundos.</div>
+      </div>
+      <button id="lsTrackClose" type="button" onclick="closeOrderTracking()">×</button>
+    </div>
+
+    <div class="ls-track-fields">
+      <input id="lsTrackOrderNo" placeholder="Número do pedido">
+      <input id="lsTrackPhone" inputmode="tel" placeholder="Telefone usado no pedido">
+      <button id="lsTrackSearch" type="button" onclick="trackOrderNow(true)">Consultar pedido</button>
+    </div>
+
+    <div id="lsTrackResult"></div>
+  </div>
+</div>
+
+<script>
+function filterMenu(){
+  const q = document.getElementById('search').value.trim().toLowerCase();
+  const items = [...document.querySelectorAll('.item')];
+  let visible = 0;
+  items.forEach(el => {
+    const ok = !q || el.dataset.search.includes(q);
+    el.style.display = ok ? '' : 'none';
+    if(ok) visible++;
+  });
+  document.querySelectorAll('.menu-section').forEach(sec => {
+    const has = [...sec.querySelectorAll('.item')].some(el => el.style.display !== 'none');
+    sec.style.display = has ? '' : 'none';
+  });
+  document.getElementById('empty').style.display = visible ? 'none' : 'block';
+}
+
+// ===== Sistema de pedidos =====
+const LS_PHONE = '5515997398019';
+const PIZZA_SECTIONS = new Set(['cat-tradicionais','cat-queijos','cat-carnes','cat-verduras-e-legumes','cat-frutos-do-mar','cat-pizzas-doces']);
+let cart = JSON.parse(localStorage.getItem('ls_cart_v2') || '[]');
+let currentProduct = null;
+
+function parseBRL(s){
+  if(!s) return 0;
+  const m=s.match(/R\$\s*([\d.]+,\d{2})/i);
+  return m ? Number(m[1].replace(/\./g,'').replace(',','.')) : 0;
+}
+function money(v){return Number(v||0).toLocaleString('pt-BR',{style:'currency',currency:'BRL'});}
+function productFromCard(card){
+  const sec=card.closest('section');
+  const id=sec?.id||'';
+  const name=card.querySelector('h3')?.textContent.trim()||'Item';
+  const desc=card.querySelector('.desc')?.textContent.trim()||'';
+  const priceNodes=[...card.querySelectorAll('.prices strong')];
+  const prices=priceNodes.map(n=>parseBRL(n.textContent));
+  const isPizza=PIZZA_SECTIONS.has(id);
+  return {name,desc,section:id,isPizza,broto:isPizza?prices[0]:null,grande:isPizza?prices[1]:null,price:!isPizza?prices[0]:null};
+}
+function allPizzaProducts(){return [...document.querySelectorAll('.item')].map(productFromCard).filter(p=>p.isPizza);}
+function setupOrdering(){
+  document.querySelectorAll('.item').forEach(card=>{
+    const sec=card.closest('section')?.id;
+    const btn=card.querySelector('.order-btn');
+    if(!btn) return;
+    if(sec==='bordas'){
+      btn.outerHTML='<button class="order-btn" type="button" onclick="showToast(\'Escolha a borda ao adicionar uma pizza\')">Escolher na pizza</button>';
+      return;
+    }
+    btn.outerHTML='<button class="order-btn" type="button">Adicionar ao pedido</button>';
+    card.querySelector('.order-btn').addEventListener('click',()=>openProduct(productFromCard(card)));
+  });
+  updateCartBadge();
+}
+function openProduct(p){
+  currentProduct=p;
+  document.getElementById('productTitle').textContent=p.name;
+  const f=document.getElementById('productForm');
+  if(p.isPizza){
+    const options=allPizzaProducts().filter(x=>x.name!==p.name).map(x=>`<option value="${escapeHtml(x.name)}">${escapeHtml(x.name)}</option>`).join('');
+    f.innerHTML=`
+      <p class="desc">${escapeHtml(p.desc)}</p>
+      <div class="form-grid">
+        <div class="field full"><label>Tamanho</label><div class="choice-row"><button class="choice active" data-size="broto" onclick="chooseSize(this)">Broto 25 cm<br><small>${money(p.broto)}</small></button><button class="choice" data-size="grande" onclick="chooseSize(this)">Grande 35 cm<br><small>${money(p.grande)}</small></button></div></div>
+        <div class="field full"><label>🍕 Pizza meio a meio — escolha o segundo sabor</label><select id="halfFlavor" onchange="refreshProductPrice()"><option value="">Pizza inteira — ${escapeHtml(p.name)}</option>${options}</select><div class="half-note">No meio a meio, o valor é calculado por 50% de cada sabor.</div></div>
+        <div class="field full" id="crustField">
+          <label>Escolha a borda</label>
+          <select id="crust" onchange="refreshProductPrice()">
+            <option value="">Sem borda</option>
+            <option value="Catupiry">Catupiry + R$ 12,00</option>
+            <option value="Cheddar">Cheddar + R$ 12,00</option>
+          </select>
+          <div class="half-note">A borda escolhida vale para a pizza inteira, inclusive nas pizzas meio a meio.</div>
+        </div>
+        <div class="field full"><label>Observações</label><textarea id="itemObs" placeholder="Ex.: sem cebola, pouco orégano..."></textarea></div>
+      </div>
+      <div class="modal-price"><span>Valor</span><strong id="productPrice"></strong></div>
+      <div class="modal-actions"><button class="btn-muted" onclick="closeProduct()">Cancelar</button><button class="btn-main" onclick="addCurrentPizza()">Adicionar ao pedido</button></div>`;
+    refreshProductPrice();
+  } else {
+    f.innerHTML=`<p class="desc">${escapeHtml(p.desc)}</p><div class="form-grid"><div class="field full"><label>Quantidade</label><input id="simpleQty" type="number" min="1" value="1"></div><div class="field full"><label>Observações</label><textarea id="itemObs" placeholder="Observações do item"></textarea></div></div><div class="modal-price"><span>Valor unitário</span><strong>${money(p.price)}</strong></div><div class="modal-actions"><button class="btn-muted" onclick="closeProduct()">Cancelar</button><button class="btn-main" onclick="addSimpleProduct()">Adicionar ao pedido</button></div>`;
+  }
+  document.getElementById('productOverlay').classList.add('open');
+}
+function chooseSize(btn){document.querySelectorAll('[data-size]').forEach(b=>b.classList.remove('active'));btn.classList.add('active');refreshProductPrice();}
+function selectedSize(){return document.querySelector('[data-size].active')?.dataset.size||'broto';}
+function findPizza(name){return allPizzaProducts().find(p=>p.name===name);}
+function calcPizza(){
+  const size=selectedSize(), p=currentProduct;
+  let base=Number(p[size]||0), half=document.getElementById('halfFlavor')?.value||'';
+  if(half){
+    const p2=findPizza(half);
+    if(p2){
+      const price1=Number(p[size]||0);
+      const price2=Number(p2[size]||0);
+      base=(price1*0.5)+(price2*0.5);
+    }
+  }
+  const crust=document.getElementById('crust')?.value||'';
+  return {base,total:base+(crust?12:0),half,crust,size};
+}
+function refreshProductPrice(){const el=document.getElementById('productPrice'); if(el) el.textContent=money(calcPizza().total);}
+function addCurrentPizza(){
+  const c=calcPizza(), obs=document.getElementById('itemObs')?.value.trim()||'';
+  const label=c.half?`1/2 ${currentProduct.name} + 1/2 ${c.half}`:currentProduct.name;
+  cart.push({id:Date.now()+Math.random(),name:label,kind:'pizza',size:c.size==='broto'?'Broto 25 cm':'Grande 35 cm',crust:c.crust,obs,unit:c.total,qty:1});
+  saveCart();closeProduct();showToast('Pizza adicionada ao pedido');
+}
+function addSimpleProduct(){
+  const qty=Math.max(1,Number(document.getElementById('simpleQty')?.value||1));
+  const obs=document.getElementById('itemObs')?.value.trim()||'';
+  cart.push({id:Date.now()+Math.random(),name:currentProduct.name,kind:'item',obs,unit:currentProduct.price,qty});
+  saveCart();closeProduct();showToast('Item adicionado ao pedido');
+}
+function closeProduct(){document.getElementById('productOverlay').classList.remove('open');}
+function saveCart(){localStorage.setItem('ls_cart_v2',JSON.stringify(cart));updateCartBadge();}
+function updateCartBadge(){document.getElementById('cartCount').textContent=cart.reduce((s,x)=>s+x.qty,0);}
+function subtotal(){return cart.reduce((s,x)=>s+x.unit*x.qty,0);}
+function openCart(){renderCart();document.getElementById('cartOverlay').classList.add('open');}
+function closeCart(){document.getElementById('cartOverlay').classList.remove('open');}
+function changeQty(id,d){const x=cart.find(i=>i.id==id);if(!x)return;x.qty=Math.max(1,x.qty+d);saveCart();renderCart();}
+function removeItem(id){cart=cart.filter(i=>i.id!=id);saveCart();renderCart();}
+function renderCart(){
+  const b=document.getElementById('cartBody');
+  if(!cart.length){b.innerHTML='<div class="empty-cart">Seu carrinho está vazio.<br>Escolha os itens no cardápio.</div><button class="btn-main" style="width:100%" onclick="closeCart()">Voltar ao cardápio</button>';return;}
+  const rows=cart.map(x=>`<div class="cart-row"><div><h4>${escapeHtml(x.name)}</h4><p>${x.size?escapeHtml(x.size):''}${x.crust?` • Borda ${escapeHtml(x.crust)}`:''}</p>${x.obs?`<p>Obs.: ${escapeHtml(x.obs)}</p>`:''}<strong>${money(x.unit*x.qty)}</strong><br><button class="remove-item" onclick="removeItem(${x.id})">Remover</button></div><div class="qty-controls"><button onclick="changeQty(${x.id},-1)">−</button><b>${x.qty}</b><button onclick="changeQty(${x.id},1)">+</button></div></div>`).join('');
+  b.innerHTML=`<div class="cart-list">${rows}</div><div class="cart-summary"><div class="sum-line total"><span>Subtotal</span><span>${money(subtotal())}</span></div><div class="small-note">A taxa de entrega, quando aplicável, será confirmada no WhatsApp e não está incluída no subtotal.</div></div><div class="checkout-block"><h3>Finalizar pedido</h3><div class="form-grid"><div class="field full"><label>Seu nome</label><input id="custName" placeholder="Nome do cliente"></div><div class="field full"><label>Telefone</label><input id="custPhone" inputmode="tel" placeholder="(15) 99999-9999"></div><div class="field full"><label>Recebimento</label><div class="choice-row"><button id="deliveryBtn" class="choice active" onclick="setFulfillment('delivery')">Entrega</button><button id="pickupBtn" class="choice" onclick="setFulfillment('pickup')">Retirada</button></div></div><div id="addressFields" class="field full"><label>Endereço de entrega</label><textarea id="address" placeholder="Rua, número, bairro, cidade e referência"></textarea></div><div class="field full"><label>Forma de pagamento</label><select id="payment"><option value="Pix">Pix</option><option value="Dinheiro">Dinheiro</option><option value="Cartão na entrega">Cartão na entrega</option></select></div><div class="field full"><label>Observações gerais</label><textarea id="generalObs" placeholder="Alguma observação para o pedido?"></textarea></div></div><button class="btn-main" style="width:100%;margin-top:12px" onclick="checkoutWhatsApp()">✅ Gerar pedido e abrir WhatsApp</button></div>`;
+  window._fulfillment='delivery';
+}
+function setFulfillment(v){window._fulfillment=v;document.getElementById('deliveryBtn').classList.toggle('active',v==='delivery');document.getElementById('pickupBtn').classList.toggle('active',v==='pickup');document.getElementById('addressFields').style.display=v==='delivery'?'flex':'none';}
+function nextOrderNumber(){
+  const d=new Date();
+  const pad=n=>String(n).padStart(2,'0');
+  const stamp=`${pad(d.getDate())}${pad(d.getMonth()+1)}${pad(d.getHours())}${pad(d.getMinutes())}${pad(d.getSeconds())}`;
+  const rand=String(Math.floor(Math.random()*90)+10);
+  return `LS${stamp}${rand}`;
+}
+function buildOrderData(){
+  const name=document.getElementById('custName')?.value.trim()||'';
+  const phone=document.getElementById('custPhone')?.value.trim()||'';
+  if(!name){alert('Informe seu nome para finalizar o pedido.');return null;}
+  const fulfillment=window._fulfillment||'delivery';
+  const address=document.getElementById('address')?.value.trim()||'';
+  if(fulfillment==='delivery'&&!address){alert('Informe o endereço de entrega.');return null;}
+  const pay=document.getElementById('payment')?.value||'Pix';
+  const gobs=document.getElementById('generalObs')?.value.trim()||'';
+  const now=new Date();
+  return {
+    orderNo:nextOrderNumber(),
+    createdAt:now.toISOString(),
+    createdLabel:now.toLocaleString('pt-BR'),
+    customer:{name,phone},
+    fulfillment,
+    address,
+    payment:pay,
+    generalObs:gobs,
+    items:cart.map(x=>({...x})),
+    subtotal:subtotal()
+  };
+}
+function orderWhatsAppMessage(o){
+  const lines=o.items.map((x,i)=>`${i+1}. ${x.qty}x ${x.name}${x.size?' — '+x.size:''}${x.crust?' — borda '+x.crust:''}\n   ${money(x.unit*x.qty)}${x.obs?'\n   Obs.: '+x.obs:''}`);
+  let msg=`🍕 *PEDIDO ${o.orderNo} — LA SUPREME*\n\nCliente: ${o.customer.name}`;
+  if(o.customer.phone)msg+=`\nTelefone: ${o.customer.phone}`;
+  msg+=`\n\n${lines.join('\n\n')}\n\n*Subtotal: ${money(o.subtotal)}*\n`;
+  msg+=o.fulfillment==='delivery'?`\n🛵 Entrega\nEndereço: ${o.address}\nTaxa de entrega: a confirmar\n`:`\n🏪 Retirada no local\n`;
+  msg+=`\n💳 Pagamento: ${o.payment}`;
+  if(o.generalObs)msg+=`\n\nObservações: ${o.generalObs}`;
+  msg+=`\n\nPedido: *${o.orderNo}*\nGerado em: ${o.createdLabel}\nlasupremepizza.com.br`;
+  return msg;
+}
+function receiptText(o){
+  const W=32;
+  const line='-'.repeat(W);
+  const dbl='='.repeat(W);
+  const center=s=>{
+    s=String(s); if(s.length>=W)return s.slice(0,W);
+    return ' '.repeat(Math.floor((W-s.length)/2))+s;
+  };
+  const wrap=(s,width=30)=>{
+    const words=String(s||'').split(/\s+/); const out=[]; let cur='';
+    words.forEach(w=>{
+      if(!w)return;
+      if((cur+' '+w).trim().length>width){if(cur)out.push(cur);cur=w}
+      else cur=(cur+' '+w).trim();
+    });
+    if(cur)out.push(cur);
+    return out;
+  };
+  const r=[];
+  r.push(dbl,center('LA SUPREME'),center(`PEDIDO ${o.orderNo}`),dbl);
+  r.push(o.createdLabel);
+  r.push(`CLIENTE: ${o.customer.name}`);
+  if(o.customer.phone)r.push(`FONE: ${o.customer.phone}`);
+  r.push(`TIPO: ${o.fulfillment==='delivery'?'ENTREGA':'RETIRADA'}`,line);
+
+  o.items.forEach(x=>{
+    wrap(`${x.qty}x ${x.name}`,30).forEach(v=>r.push(v.toUpperCase()));
+    if(x.size)r.push(`  ${x.size.toUpperCase()}`);
+    if(x.crust)r.push(`  BORDA: ${x.crust.toUpperCase()}`);
+    if(x.obs)wrap(`  OBS: ${x.obs}`,30).forEach(v=>r.push(v.toUpperCase()));
+    r.push(`  ${money(x.unit*x.qty)}`);
+    r.push('');
+  });
+
+  r.push(line);
+  r.push(`SUBTOTAL: ${money(o.subtotal)}`);
+  if(o.fulfillment==='delivery')r.push('ENTREGA: A CONFIRMAR');
+  r.push(line);
+  r.push(`PAGAMENTO: ${o.payment.toUpperCase()}`);
+
+  if(o.fulfillment==='delivery'){
+    r.push('', 'ENDERECO:');
+    wrap(o.address,30).forEach(v=>r.push(v.toUpperCase()));
+  }
+  if(o.generalObs){
+    r.push('', 'OBS. GERAIS:');
+    wrap(o.generalObs,30).forEach(v=>r.push(v.toUpperCase()));
+  }
+  r.push(dbl,center('SABOR QUE VIRA TRADICAO!'),dbl,'','','');
+  return r.join('\n');
+}
+function showReceipt(o){
+  document.getElementById('receiptOrderBadge').textContent=`Pedido ${o.orderNo}`;
+  document.getElementById('receiptPrintArea').textContent=receiptText(o);
+  document.getElementById('receiptOverlay').classList.add('open');
+}
+function closeReceipt(){document.getElementById('receiptOverlay').classList.remove('open');}
+let _printLock=false;
+let _lastPrintedOrder='';
+let _printUnlockTimer=null;
+
+function printReceipt(){
+  const badge=document.getElementById('receiptOrderBadge');
+  const orderNo=(badge?.textContent||'').replace(/^Pedido\s+/i,'').trim();
+
+  if(_printLock){
+    showToast('Impressão já enviada. Aguarde.');
+    return;
+  }
+
+  if(orderNo && _lastPrintedOrder===orderNo){
+    const ok=confirm('Este pedido já foi enviado para impressão. Deseja imprimir novamente?');
+    if(!ok)return;
+  }
+
+  _printLock=true;
+  _lastPrintedOrder=orderNo||_lastPrintedOrder;
+
+  const btn=document.getElementById('receiptPrintBtn');
+  if(btn){
+    btn.disabled=true;
+    btn.textContent='Enviado para impressão';
+    btn.style.opacity='.65';
+  }
+
+  window.print();
+
+  clearTimeout(_printUnlockTimer);
+  _printUnlockTimer=setTimeout(()=>{
+    _printLock=false;
+    if(btn){
+      btn.disabled=false;
+      btn.textContent='🖨️ Imprimir 58 mm';
+      btn.style.opacity='1';
+    }
+  },8000);
+}
+async function checkoutWhatsApp(){
+  const order=buildOrderData();
+  if(!order)return;
+  const btn=document.querySelector('.finish-btn');
+  const oldText=btn?.textContent;
+  if(btn){btn.disabled=true;btn.textContent='Registrando pedido...';}
+  try{
+    const saved=await saveOrderOnline(order);
+    if(!saved.ok) throw new Error('Supabase não configurado');
+    localStorage.setItem('ls_last_order_v1',JSON.stringify(order));
+    const history=JSON.parse(localStorage.getItem('ls_order_history_v1')||'[]');
+    history.unshift(order);
+    localStorage.setItem('ls_order_history_v1',JSON.stringify(history.slice(0,30)));
+    cart=[]; saveCart(); renderCart(); closeCart();
+    showToast(`Pedido ${order.orderNo} confirmado!`);
+    setTimeout(()=>openOrderTracking(order),250);
+  }catch(err){
+    console.error(err);
+    alert('Não foi possível registrar o pedido. Tente novamente. Seu carrinho foi mantido.');
+  }finally{
+    if(btn){btn.disabled=false;btn.textContent=oldText||'✅ Finalizar pedido';}
+  }
+}
+function escapeHtml(s){return String(s||'').replace(/[&<>'"]/g,c=>({'&':'&amp;','<':'&lt;','>':'&gt;',"'":'&#39;','"':'&quot;'}[c]));}
+function showToast(msg){const t=document.getElementById('toast');t.textContent=msg;t.classList.add('show');setTimeout(()=>t.classList.remove('show'),1800);}
+window.addEventListener('DOMContentLoaded',setupOrdering);
+document.getElementById('productOverlay').addEventListener('click',e=>{if(e.target.id==='productOverlay')closeProduct();});
+document.getElementById('cartOverlay').addEventListener('click',e=>{if(e.target.id==='cartOverlay')closeCart();});
+document.getElementById('receiptOverlay').addEventListener('click',e=>{if(e.target.id==='receiptOverlay')closeReceipt();});
+
+
+window.addEventListener('beforeprint',()=>{
+  const btn=document.getElementById('receiptPrintBtn');
+  if(btn) btn.disabled=true;
+});
+window.addEventListener('afterprint',()=>{
+  const btn=document.getElementById('receiptPrintBtn');
+  setTimeout(()=>{
+    _printLock=false;
+    if(btn){
+      btn.disabled=false;
+      btn.textContent='🖨️ Imprimir 58 mm';
+      btn.style.opacity='1';
+    }
+  },1500);
+});
+
+
+/* ===== LA SUPREME - PEDIDOS ONLINE =====
+   Preencha SUPABASE_URL e SUPABASE_ANON_KEY depois de criar o projeto.
+*/
+const SUPABASE_URL = 'https://stacwvpsfjvyvbjwagtd.supabase.co';
+const SUPABASE_ANON_KEY = 'sb_publishable_uM7vsWn839Zmj1lTk3yKyg_b5Vj501Z';
+
+function supabaseConfigured(){
+  return SUPABASE_URL.startsWith('https://') &&
+         !SUPABASE_URL.includes('COLE_AQUI') &&
+         SUPABASE_ANON_KEY &&
+         !SUPABASE_ANON_KEY.includes('COLE_AQUI');
+}
+
+async function saveOrderOnline(order){
+  if(!supabaseConfigured()) return {ok:false, reason:'not_configured'};
+  const payload={
+    order_no: order.orderNo,
+    created_at: order.createdAt,
+    customer_name: order.customer.name,
+    customer_phone: order.customer.phone || '',
+    fulfillment: order.fulfillment,
+    address: order.address || '',
+    payment: order.payment || '',
+    general_obs: order.generalObs || '',
+    subtotal: Number(order.subtotal || 0),
+    delivery_fee: null,
+    total: Number(order.subtotal || 0),
+    status: 'novo',
+    printed: false,
+    items: order.items
+  };
+  const r=await fetch(`${SUPABASE_URL}/rest/v1/orders`,{
+    method:'POST',
+    headers:{
+      'apikey':SUPABASE_ANON_KEY,
+      'Authorization':`Bearer ${SUPABASE_ANON_KEY}`,
+      'Content-Type':'application/json',
+      'Prefer':'return=representation'
+    },
+    body:JSON.stringify(payload)
+  });
+  if(!r.ok){
+    const detail=await r.text().catch(()=> '');
+    throw new Error(`Falha ao registrar pedido (${r.status}) ${detail}`);
+  }
+  return {ok:true, data:await r.json()};
+}
+
+
+
+/* ===== LA SUPREME - ACOMPANHAMENTO DO PEDIDO ===== */
+let _lsTrackTimer=null;
+let _lsTrackLastStatus='';
+
+function lsOnlyDigits(v){ return String(v||'').replace(/\D/g,''); }
+
+function openOrderTracking(order){
+  const ov=document.getElementById('lsTrackOverlay');
+  if(!ov)return;
+  ov.classList.add('open');
+  ov.setAttribute('aria-hidden','false');
+
+  let last=order;
+  if(!last){
+    try{ last=JSON.parse(localStorage.getItem('ls_last_order_v1')||'null'); }catch(e){}
+  }
+  if(last){
+    document.getElementById('lsTrackOrderNo').value=last.orderNo||'';
+    document.getElementById('lsTrackPhone').value=(last.customer&&last.customer.phone)||'';
+    trackOrderNow(false);
+  }
+}
+
+function closeOrderTracking(){
+  const ov=document.getElementById('lsTrackOverlay');
+  if(ov){ov.classList.remove('open');ov.setAttribute('aria-hidden','true');}
+  if(_lsTrackTimer){clearTimeout(_lsTrackTimer);_lsTrackTimer=null;}
+}
+
+function lsStatusIndex(status){
+  return ({novo:0,preparo:1,entrega:2,concluido:3})[status] ?? 0;
+}
+function lsStatusLabel(status){
+  return ({
+    novo:'Pedido recebido',
+    preparo:'Em preparo',
+    entrega:'Saiu para entrega',
+    concluido:'Pedido concluído'
+  })[status] || 'Pedido recebido';
+}
+
+function renderTrackedOrder(o){
+  const box=document.getElementById('lsTrackResult');
+  const status=String(o.status||'novo').toLowerCase();
+  const idx=lsStatusIndex(status);
+  const delivery=(o.fulfillment==='delivery');
+  const steps=delivery
+    ? [
+        ['✓','Pedido recebido','Recebemos seu pedido.'],
+        ['🍕','Em preparo','Sua pizza está sendo preparada.'],
+        ['🛵','Saiu para entrega','Seu pedido está a caminho.'],
+        ['🏁','Concluído','Pedido finalizado.']
+      ]
+    : [
+        ['✓','Pedido recebido','Recebemos seu pedido.'],
+        ['🍕','Em preparo','Seu pedido está sendo preparado.'],
+        ['🏪','Pronto / retirada','Aguarde a liberação para retirada.'],
+        ['🏁','Concluído','Pedido finalizado.']
+      ];
+
+  box.innerHTML=`
+    <div class="ls-track-order">Pedido ${escapeHtml(o.order_no||'')}</div>
+    <div class="ls-track-muted">${o.created_at?new Date(o.created_at).toLocaleString('pt-BR'):''}</div>
+    <div class="ls-track-statusbox"><b>Status atual:</b> ${escapeHtml(lsStatusLabel(status))}</div>
+    <div class="ls-steps">
+      ${steps.map((s,i)=>`
+        <div class="ls-step ${i<=idx?'done':''} ${i===idx?'current':''}">
+          <div class="dot">${s[0]}</div>
+          <div><b>${s[1]}</b><div class="ls-track-muted">${s[2]}</div></div>
+        </div>`).join('')}
+    </div>
+  `;
+
+  if(_lsTrackLastStatus && _lsTrackLastStatus!==status && navigator.vibrate){
+    try{navigator.vibrate(120)}catch(e){}
+  }
+  _lsTrackLastStatus=status;
+}
+
+async function trackOrderNow(manual){
+  const no=(document.getElementById('lsTrackOrderNo')?.value||'').trim();
+  const phone=(document.getElementById('lsTrackPhone')?.value||'').trim();
+  const result=document.getElementById('lsTrackResult');
+
+  if(!no || !phone){
+    if(manual) result.innerHTML='<div class="ls-track-statusbox">Informe o número do pedido e o telefone usado na compra.</div>';
+    return;
+  }
+  if(!supabaseConfigured()){
+    result.innerHTML='<div class="ls-track-statusbox">Acompanhamento temporariamente indisponível.</div>';
+    return;
+  }
+
+  try{
+    const qNo=encodeURIComponent(no);
+    const r=await fetch(`${SUPABASE_URL}/rest/v1/orders?select=order_no,created_at,status,fulfillment&order_no=eq.${qNo}&limit=10`,{
+      headers:{
+        'apikey':SUPABASE_ANON_KEY,
+        'Authorization':`Bearer ${SUPABASE_ANON_KEY}`
+      }
+    });
+    if(!r.ok) throw new Error(await r.text());
+    const rows=await r.json();
+
+    // Confere o telefone usando uma segunda consulta somente do pedido exato.
+    const r2=await fetch(`${SUPABASE_URL}/rest/v1/orders?select=order_no,created_at,status,fulfillment,customer_phone&order_no=eq.${qNo}&limit=10`,{
+      headers:{
+        'apikey':SUPABASE_ANON_KEY,
+        'Authorization':`Bearer ${SUPABASE_ANON_KEY}`
+      }
+    });
+    if(!r2.ok) throw new Error(await r2.text());
+    const full=await r2.json();
+
+    const wanted=lsOnlyDigits(phone);
+    const o=(full||[]).find(x=>lsOnlyDigits(x.customer_phone)===wanted);
+
+    if(!o){
+      result.innerHTML='<div class="ls-track-statusbox">Pedido não encontrado. Confira o número e o telefone.</div>';
+    }else{
+      renderTrackedOrder(o);
+    }
+  }catch(err){
+    console.error('Falha ao acompanhar pedido:',err);
+    result.innerHTML='<div class="ls-track-statusbox">Não foi possível atualizar agora. Tente novamente em alguns segundos.</div>';
+  }
+
+  if(_lsTrackTimer)clearTimeout(_lsTrackTimer);
+  if(document.getElementById('lsTrackOverlay')?.classList.contains('open')){
+    _lsTrackTimer=setTimeout(()=>trackOrderNow(false),5000);
+  }
+}
+
+document.getElementById('lsTrackOverlay')?.addEventListener('click',e=>{
+  if(e.target.id==='lsTrackOverlay')closeOrderTracking();
+});
+
+</script>
+</body>
+</html>
