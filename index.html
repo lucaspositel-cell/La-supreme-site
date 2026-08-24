@@ -144,6 +144,18 @@ a{color:inherit}
 
 
 .print-lock-note{font-size:11px;color:var(--muted);text-align:center;margin-top:7px}
+
+/* ===== PIX MERCADO PAGO ===== */
+.pix-card{width:min(520px,100%);text-align:center}
+.pix-amount{font-size:28px;font-weight:900;color:var(--gold);margin:8px 0 14px}
+.pix-qr{width:min(280px,82vw);height:auto;background:#fff;border-radius:14px;padding:10px;margin:8px auto;display:block}
+.pix-code{width:100%;min-height:96px;border:1px solid var(--line);border-radius:12px;background:#211a17;color:#fff;padding:11px;font:12px/1.4 ui-monospace,SFMono-Regular,Menlo,Consolas,monospace;word-break:break-all;resize:none}
+.pix-actions{display:grid;grid-template-columns:1fr 1fr;gap:8px;margin-top:10px}
+.pix-status{margin:12px 0;padding:11px;border-radius:12px;background:#2a211d;border:1px solid var(--line);font-weight:800}
+.pix-status.paid{background:#123d29;border-color:#1e8c54;color:#d9ffe9}
+.pix-ticket{display:inline-block;margin-top:10px;color:var(--gold);font-weight:800}
+@media(max-width:600px){.pix-actions{grid-template-columns:1fr}}
+
 </style>
 </head>
 <body>
@@ -1676,6 +1688,27 @@ a{color:inherit}
   </div>
 </div>
 
+<div id="pixOverlay" class="order-overlay" aria-hidden="true">
+  <div class="order-modal pix-card">
+    <div class="modal-head">
+      <h2>Pagamento via Pix</h2>
+      <button class="close-x" onclick="closePix()">×</button>
+    </div>
+    <div class="small-note">Pedido <b id="pixOrderNo">—</b></div>
+    <div id="pixAmount" class="pix-amount">R$ 0,00</div>
+    <img id="pixQrImage" class="pix-qr" alt="QR Code Pix">
+    <div class="small-note" style="margin:8px 0">Escaneie o QR Code ou use o Pix Copia e Cola:</div>
+    <textarea id="pixCode" class="pix-code" readonly></textarea>
+    <div class="pix-actions">
+      <button class="btn-main" onclick="copyPixCode()">📋 Copiar código Pix</button>
+      <button class="btn-muted" onclick="checkPixPayment(true)">🔄 Verificar pagamento</button>
+    </div>
+    <a id="pixTicketUrl" class="pix-ticket" href="#" target="_blank" rel="noopener" style="display:none">Abrir pagamento no Mercado Pago</a>
+    <div id="pixStatus" class="pix-status">Aguardando pagamento...</div>
+    <button class="btn-muted" style="width:100%" onclick="closePix()">Fechar</button>
+  </div>
+</div>
+
 
 
 <style id="lsTrackStyles">
@@ -1887,10 +1920,16 @@ function renderCart(){
   const b=document.getElementById('cartBody');
   if(!cart.length){b.innerHTML='<div class="empty-cart">Seu carrinho está vazio.<br>Escolha os itens no cardápio.</div><button class="btn-main" style="width:100%" onclick="closeCart()">Voltar ao cardápio</button>';return;}
   const rows=cart.map(x=>`<div class="cart-row"><div><h4>${escapeHtml(x.name)}</h4><p>${x.size?escapeHtml(x.size):''}${x.crust?` • Borda ${escapeHtml(x.crust)}`:''}</p>${x.obs?`<p>Obs.: ${escapeHtml(x.obs)}</p>`:''}<strong>${money(x.unit*x.qty)}</strong><br><button class="remove-item" onclick="removeItem(${x.id})">Remover</button></div><div class="qty-controls"><button onclick="changeQty(${x.id},-1)">−</button><b>${x.qty}</b><button onclick="changeQty(${x.id},1)">+</button></div></div>`).join('');
-  b.innerHTML=`<div class="cart-list">${rows}</div><div class="cart-summary"><div class="sum-line total"><span>Subtotal</span><span>${money(subtotal())}</span></div><div class="small-note">A taxa de entrega, quando aplicável, será confirmada no WhatsApp e não está incluída no subtotal.</div></div><div class="checkout-block"><h3>Finalizar pedido</h3><div class="form-grid"><div class="field full"><label>Seu nome</label><input id="custName" placeholder="Nome do cliente"></div><div class="field full"><label>Telefone</label><input id="custPhone" inputmode="tel" placeholder="(15) 99999-9999"></div><div class="field full"><label>Recebimento</label><div class="choice-row"><button id="deliveryBtn" class="choice active" onclick="setFulfillment('delivery')">Entrega</button><button id="pickupBtn" class="choice" onclick="setFulfillment('pickup')">Retirada</button></div></div><div id="addressFields" class="field full"><label>Endereço de entrega</label><textarea id="address" placeholder="Rua, número, bairro, cidade e referência"></textarea></div><div class="field full"><label>Forma de pagamento</label><select id="payment"><option value="Pix">Pix</option><option value="Dinheiro">Dinheiro</option><option value="Cartão na entrega">Cartão na entrega</option></select></div><div class="field full"><label>Observações gerais</label><textarea id="generalObs" placeholder="Alguma observação para o pedido?"></textarea></div></div><button class="btn-main" style="width:100%;margin-top:12px" onclick="checkoutWhatsApp()">✅ Gerar pedido e abrir WhatsApp</button></div>`;
+  b.innerHTML=`<div class="cart-list">${rows}</div><div class="cart-summary"><div class="sum-line total"><span>Subtotal</span><span>${money(subtotal())}</span></div><div class="small-note">A taxa de entrega, quando aplicável, será confirmada no atendimento e não está incluída no subtotal.</div></div><div class="checkout-block"><h3>Finalizar pedido</h3><div class="form-grid"><div class="field full"><label>Seu nome</label><input id="custName" placeholder="Nome do cliente"></div><div class="field full"><label>Telefone</label><input id="custPhone" inputmode="tel" placeholder="(15) 99999-9999"></div><div class="field full"><label>Recebimento</label><div class="choice-row"><button id="deliveryBtn" class="choice active" onclick="setFulfillment('delivery')">Entrega</button><button id="pickupBtn" class="choice" onclick="setFulfillment('pickup')">Retirada</button></div></div><div id="addressFields" class="field full"><label>Endereço de entrega</label><textarea id="address" placeholder="Rua, número, bairro, cidade e referência"></textarea></div><div class="field full"><label>Forma de pagamento</label><select id="payment" onchange="togglePixEmail()"><option value="Pix">Pix</option><option value="Dinheiro">Dinheiro</option><option value="Cartão na entrega">Cartão na entrega</option></select></div><div id="pixEmailField" class="field full"><label>E-mail para gerar o Pix</label><input id="custEmail" type="email" inputmode="email" autocomplete="email" placeholder="seuemail@exemplo.com"><div class="small-note">Necessário somente para o Pix Mercado Pago.</div></div><div class="field full"><label>Observações gerais</label><textarea id="generalObs" placeholder="Alguma observação para o pedido?"></textarea></div></div><button class="btn-main finish-btn" style="width:100%;margin-top:12px" onclick="checkoutWhatsApp()">✅ Finalizar pedido</button></div>`;
   window._fulfillment='delivery';
+  togglePixEmail();
 }
 function setFulfillment(v){window._fulfillment=v;document.getElementById('deliveryBtn').classList.toggle('active',v==='delivery');document.getElementById('pickupBtn').classList.toggle('active',v==='pickup');document.getElementById('addressFields').style.display=v==='delivery'?'flex':'none';}
+function togglePixEmail(){
+  const pay=document.getElementById('payment')?.value||'Pix';
+  const field=document.getElementById('pixEmailField');
+  if(field) field.style.display=pay==='Pix'?'flex':'none';
+}
 function nextOrderNumber(){
   const d=new Date();
   const pad=n=>String(n).padStart(2,'0');
@@ -1906,13 +1945,18 @@ function buildOrderData(){
   const address=document.getElementById('address')?.value.trim()||'';
   if(fulfillment==='delivery'&&!address){alert('Informe o endereço de entrega.');return null;}
   const pay=document.getElementById('payment')?.value||'Pix';
+  const email=document.getElementById('custEmail')?.value.trim().toLowerCase()||'';
+  if(pay==='Pix' && (!email || !email.includes('@'))){
+    alert('Informe um e-mail válido para gerar o Pix.');
+    return null;
+  }
   const gobs=document.getElementById('generalObs')?.value.trim()||'';
   const now=new Date();
   return {
     orderNo:nextOrderNumber(),
     createdAt:now.toISOString(),
     createdLabel:now.toLocaleString('pt-BR'),
-    customer:{name,phone},
+    customer:{name,phone,email},
     fulfillment,
     address,
     payment:pay,
@@ -2029,35 +2073,165 @@ function printReceipt(){
     }
   },8000);
 }
+let _pixOrderDbId='';
+let _pixPollTimer=null;
+
 async function checkoutWhatsApp(){
   const order=buildOrderData();
   if(!order)return;
   const btn=document.querySelector('.finish-btn');
   const oldText=btn?.textContent;
-  if(btn){btn.disabled=true;btn.textContent='Registrando pedido...';}
+  if(btn){btn.disabled=true;btn.textContent=order.payment==='Pix'?'Gerando Pix...':'Registrando pedido...';}
   try{
     const saved=await saveOrderOnline(order);
     if(!saved.ok) throw new Error('Supabase não configurado');
+
+    const savedRow=Array.isArray(saved.data)?saved.data[0]:saved.data;
+    order.dbId=savedRow?.id||'';
+
     localStorage.setItem('ls_last_order_v1',JSON.stringify(order));
     const history=JSON.parse(localStorage.getItem('ls_order_history_v1')||'[]');
     history.unshift(order);
     localStorage.setItem('ls_order_history_v1',JSON.stringify(history.slice(0,30)));
-    cart=[]; saveCart(); renderCart(); closeCart();
-    showToast(`Pedido ${order.orderNo} confirmado!`);
-    setTimeout(()=>openOrderTracking(order),250);
+
+    if(order.payment==='Pix'){
+      if(!order.dbId) throw new Error('Pedido salvo sem ID para cobrança Pix.');
+      const pix=await createPixForOrder(order.dbId,order.customer.email);
+      cart=[]; saveCart(); renderCart(); closeCart();
+      showPixPayment(order,pix);
+      showToast(`Pix do pedido ${order.orderNo} gerado!`);
+    }else{
+      cart=[]; saveCart(); renderCart(); closeCart();
+      showToast(`Pedido ${order.orderNo} confirmado!`);
+      setTimeout(()=>openOrderTracking(order),250);
+    }
   }catch(err){
     console.error(err);
-    alert('Não foi possível registrar o pedido. Tente novamente. Seu carrinho foi mantido.');
+    alert('Não foi possível finalizar o pedido: '+(err?.message||'erro desconhecido')+'. Se o pedido já tiver sido registrado, consulte em “Acompanhar pedido”.');
   }finally{
     if(btn){btn.disabled=false;btn.textContent=oldText||'✅ Finalizar pedido';}
   }
 }
+
+async function createPixForOrder(orderId,email){
+  const r=await fetch(`${SUPABASE_URL}/functions/v1/mercadopago-pix`,{
+    method:'POST',
+    headers:{
+      'apikey':SUPABASE_ANON_KEY,
+      'Authorization':`Bearer ${SUPABASE_ANON_KEY}`,
+      'Content-Type':'application/json'
+    },
+    body:JSON.stringify({order_id:orderId,email})
+  });
+  const data=await r.json().catch(()=>({}));
+  if(!r.ok || !data?.success){
+    throw new Error(data?.error||`Falha ao gerar Pix (${r.status})`);
+  }
+  return data;
+}
+
+function showPixPayment(order,pix){
+  _pixOrderDbId=order.dbId||'';
+  document.getElementById('pixOrderNo').textContent=order.orderNo||'—';
+  document.getElementById('pixAmount').textContent=money(Number(pix.amount||order.subtotal||0));
+  document.getElementById('pixCode').value=pix.qr_code||'';
+  const img=document.getElementById('pixQrImage');
+  const b64=String(pix.qr_code_base64||'');
+  if(b64){
+    img.src=b64.startsWith('data:')?b64:`data:image/png;base64,${b64}`;
+    img.style.display='block';
+  }else{
+    img.removeAttribute('src');
+    img.style.display='none';
+  }
+  const ticket=document.getElementById('pixTicketUrl');
+  if(pix.ticket_url){
+    ticket.href=pix.ticket_url;
+    ticket.style.display='inline-block';
+  }else{
+    ticket.style.display='none';
+  }
+  const st=document.getElementById('pixStatus');
+  st.className='pix-status';
+  st.textContent='Aguardando pagamento...';
+  document.getElementById('pixOverlay').classList.add('open');
+  document.getElementById('pixOverlay').setAttribute('aria-hidden','false');
+  startPixPolling();
+}
+
+function closePix(){
+  document.getElementById('pixOverlay')?.classList.remove('open');
+  document.getElementById('pixOverlay')?.setAttribute('aria-hidden','true');
+  if(_pixPollTimer){clearTimeout(_pixPollTimer);_pixPollTimer=null;}
+}
+
+async function copyPixCode(){
+  const code=document.getElementById('pixCode')?.value||'';
+  if(!code)return;
+  try{
+    await navigator.clipboard.writeText(code);
+    showToast('Código Pix copiado!');
+  }catch(e){
+    const el=document.getElementById('pixCode');
+    el.focus();el.select();
+    document.execCommand('copy');
+    showToast('Código Pix copiado!');
+  }
+}
+
+function pixPaidStatus(v){
+  return ['approved','paid','processed','accredited'].includes(String(v||'').toLowerCase());
+}
+
+async function checkPixPayment(manual=false){
+  if(!_pixOrderDbId || !supabaseConfigured())return;
+  try{
+    const r=await fetch(`${SUPABASE_URL}/rest/v1/orders?select=payment_status&id=eq.${encodeURIComponent(_pixOrderDbId)}&limit=1`,{
+      headers:{
+        'apikey':SUPABASE_ANON_KEY,
+        'Authorization':`Bearer ${SUPABASE_ANON_KEY}`
+      }
+    });
+    if(!r.ok)throw new Error(await r.text());
+    const rows=await r.json();
+    const status=rows?.[0]?.payment_status||'pending';
+    const box=document.getElementById('pixStatus');
+    if(pixPaidStatus(status)){
+      box.className='pix-status paid';
+      box.textContent='✅ Pagamento confirmado!';
+      if(navigator.vibrate){try{navigator.vibrate([120,80,120])}catch(e){}}
+      showToast('Pagamento Pix confirmado!');
+      if(_pixPollTimer){clearTimeout(_pixPollTimer);_pixPollTimer=null;}
+      return true;
+    }
+    box.className='pix-status';
+    box.textContent='⏳ Aguardando confirmação do pagamento...';
+    if(manual)showToast('Pagamento ainda não confirmado.');
+  }catch(err){
+    console.error('Falha ao verificar Pix:',err);
+    if(manual)showToast('Não foi possível verificar agora.');
+  }
+  return false;
+}
+
+function startPixPolling(){
+  if(_pixPollTimer)clearTimeout(_pixPollTimer);
+  const tick=async()=>{
+    const paid=await checkPixPayment(false);
+    if(!paid && document.getElementById('pixOverlay')?.classList.contains('open')){
+      _pixPollTimer=setTimeout(tick,4000);
+    }
+  };
+  _pixPollTimer=setTimeout(tick,3000);
+}
+
 function escapeHtml(s){return String(s||'').replace(/[&<>'"]/g,c=>({'&':'&amp;','<':'&lt;','>':'&gt;',"'":'&#39;','"':'&quot;'}[c]));}
 function showToast(msg){const t=document.getElementById('toast');t.textContent=msg;t.classList.add('show');setTimeout(()=>t.classList.remove('show'),1800);}
 window.addEventListener('DOMContentLoaded',setupOrdering);
 document.getElementById('productOverlay').addEventListener('click',e=>{if(e.target.id==='productOverlay')closeProduct();});
 document.getElementById('cartOverlay').addEventListener('click',e=>{if(e.target.id==='cartOverlay')closeCart();});
 document.getElementById('receiptOverlay').addEventListener('click',e=>{if(e.target.id==='receiptOverlay')closeReceipt();});
+document.getElementById('pixOverlay')?.addEventListener('click',e=>{if(e.target.id==='pixOverlay')closePix();});
 
 
 window.addEventListener('beforeprint',()=>{
@@ -2171,6 +2345,7 @@ function lsStatusLabel(status){
 function renderTrackedOrder(o){
   const box=document.getElementById('lsTrackResult');
   const status=String(o.status||'novo').toLowerCase();
+  const paymentStatus=String(o.payment_status||'').toLowerCase();
   const idx=lsStatusIndex(status);
   const delivery=(o.fulfillment==='delivery');
   const steps=delivery
@@ -2191,6 +2366,7 @@ function renderTrackedOrder(o){
     <div class="ls-track-order">Pedido ${escapeHtml(o.order_no||'')}</div>
     <div class="ls-track-muted">${o.created_at?new Date(o.created_at).toLocaleString('pt-BR'):''}</div>
     <div class="ls-track-statusbox"><b>Status atual:</b> ${escapeHtml(lsStatusLabel(status))}</div>
+    ${String(o.payment||'').toLowerCase()==='pix'?`<div class="ls-track-statusbox"><b>Pagamento Pix:</b> ${pixPaidStatus(paymentStatus)?'✅ Confirmado':'⏳ Aguardando confirmação'}</div>`:''}
     <div class="ls-steps">
       ${steps.map((s,i)=>`
         <div class="ls-step ${i<=idx?'done':''} ${i===idx?'current':''}">
@@ -2222,7 +2398,7 @@ async function trackOrderNow(manual){
 
   try{
     const qNo=encodeURIComponent(no);
-    const r=await fetch(`${SUPABASE_URL}/rest/v1/orders?select=order_no,created_at,status,fulfillment&order_no=eq.${qNo}&limit=10`,{
+    const r=await fetch(`${SUPABASE_URL}/rest/v1/orders?select=order_no,created_at,status,fulfillment,payment,payment_status&order_no=eq.${qNo}&limit=10`,{
       headers:{
         'apikey':SUPABASE_ANON_KEY,
         'Authorization':`Bearer ${SUPABASE_ANON_KEY}`
@@ -2232,7 +2408,7 @@ async function trackOrderNow(manual){
     const rows=await r.json();
 
     // Confere o telefone usando uma segunda consulta somente do pedido exato.
-    const r2=await fetch(`${SUPABASE_URL}/rest/v1/orders?select=order_no,created_at,status,fulfillment,customer_phone&order_no=eq.${qNo}&limit=10`,{
+    const r2=await fetch(`${SUPABASE_URL}/rest/v1/orders?select=order_no,created_at,status,fulfillment,customer_phone,payment,payment_status&order_no=eq.${qNo}&limit=10`,{
       headers:{
         'apikey':SUPABASE_ANON_KEY,
         'Authorization':`Bearer ${SUPABASE_ANON_KEY}`
