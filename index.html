@@ -291,6 +291,17 @@ body{background:#050505!important;color:#fff!important;padding-bottom:142px!impo
 
 @media(max-width:900px){.app-topbar-inner{grid-template-columns:auto auto 1fr}.top-logo{height:86px;top:4px}.top-logo img{height:86px}.top-actions .top-action:first-child{display:none}.app-hero-grid{grid-template-columns:1fr;min-height:auto;padding-top:42px}.app-hero-copy{text-align:left}.app-hero-visual{height:300px;margin-top:-5px}.hero-pizza-photo{max-height:285px}.hero-seal{width:92px;height:92px;right:3%;font-size:9px}.hero-seal b{font-size:13px}.app-benefits{grid-template-columns:1fr 1fr;margin:0 14px 18px}.app-benefits>div:nth-child(2){border-right:0}.app-benefits>div:nth-child(-n+2){border-bottom:1px solid #2e2a20}.search-wrap{top:94px!important}.category-shell{top:151px!important}.grid{grid-template-columns:repeat(2,minmax(0,1fr))!important}}
 @media(max-width:620px){body{padding-bottom:142px!important}.app-topbar-inner{min-height:76px;padding:4px 9px;gap:8px}.top-menu{font-size:24px}.top-status{padding:6px 9px}.top-status b{font-size:11px}.top-status small{font-size:8px}.top-logo{height:76px;top:0}.top-logo img{height:76px}.top-actions{gap:0}.top-action{min-width:54px;padding:6px}.top-action span{font-size:18px}.top-action small{font-size:8px}.app-hero-grid{padding:28px 15px 8px}.app-kicker{font-size:13px}.app-hero-copy h1{font-size:43px}.app-hero-copy p{font-size:14px;margin:16px 0}.app-hero-actions{display:grid;grid-template-columns:1fr}.app-primary,.app-secondary{text-align:center;padding:13px}.app-hero-visual{height:230px}.hero-pizza-photo{max-height:220px}.hero-seal{width:76px;height:76px;right:0;top:2%;font-size:8px}.hero-seal b{font-size:11px}.app-benefits{margin:0 10px 14px}.app-benefits>div{padding:12px 10px;gap:9px}.app-benefits>div>span{font-size:20px}.app-benefits b{font-size:11px}.app-benefits small{font-size:9px}.search-wrap{top:76px!important}.category-shell{top:132px!important}.cat-btn{min-width:92px!important;min-height:78px!important}.cat-btn .ci{font-size:24px!important}.featured-wrap{padding:12px!important}.featured-grid{display:flex!important;overflow-x:auto!important;scroll-snap-type:x mandatory!important}.featured-card{min-width:76vw!important;scroll-snap-align:start}.menu-section{padding:12px!important;margin:13px 0!important}.grid{grid-template-columns:1fr!important}.bottom-bar{bottom:64px!important;width:calc(100% - 16px)!important}.bottom-open-cart{min-width:138px!important;padding:12px 14px!important}.bottom-cart-copy b{font-size:12px!important}.bottom-cart-copy span{font-size:11px!important}.mobile-app-nav{height:65px}.mobile-app-nav .order-center{width:72px;height:72px}.mobile-app-nav .order-center span{font-size:25px}}
+
+/* ===== Horário em destaque ===== */
+.hours-highlight{max-width:1100px;margin:14px auto 0;padding:0 14px;position:relative;z-index:8}
+.hours-highlight-inner{display:flex;align-items:center;justify-content:center;gap:13px;padding:14px 18px;border:1px solid rgba(224,180,93,.62);border-radius:16px;background:linear-gradient(135deg,rgba(224,180,93,.16),rgba(22,17,14,.96));box-shadow:0 10px 30px rgba(0,0,0,.28),inset 0 0 24px rgba(224,180,93,.05);text-decoration:none}
+.hours-highlight-icon{font-size:25px;line-height:1}
+.hours-highlight-copy{display:flex;align-items:baseline;justify-content:center;gap:8px;flex-wrap:wrap;text-align:center}
+.hours-highlight-copy b{color:var(--gold);font-family:Georgia,serif;font-size:17px;letter-spacing:.2px}
+.hours-highlight-copy strong{color:#fff;font-size:16px}
+.hours-highlight-copy small{color:var(--muted);font-size:12px}
+@media(max-width:600px){.hours-highlight{margin-top:10px;padding:0 10px}.hours-highlight-inner{padding:12px 10px;gap:8px;border-radius:14px}.hours-highlight-icon{font-size:22px}.hours-highlight-copy{display:block}.hours-highlight-copy b,.hours-highlight-copy strong{display:block}.hours-highlight-copy b{font-size:15px;margin-bottom:3px}.hours-highlight-copy strong{font-size:15px}.hours-highlight-copy small{display:block;margin-top:3px}}
+
 </style>
 </head>
 <body>
@@ -306,6 +317,16 @@ body{background:#050505!important;color:#fff!important;padding-bottom:142px!impo
 </div>
 </div>
 </nav>
+<div class="hours-highlight">
+  <a class="hours-highlight-inner" href="#atendimento" aria-label="Ver horário de atendimento e localização">
+    <span class="hours-highlight-icon">🕒</span>
+    <span class="hours-highlight-copy">
+      <b>HORÁRIO DE ATENDIMENTO</b>
+      <strong>Quarta a domingo • 17:45 às 23:00</strong>
+      <small>Toque para ver endereço e localização</small>
+    </span>
+  </a>
+</div>
 <header class="hero" id="inicio">
 <div class="app-hero-grid">
 <div class="app-hero-copy">
@@ -1528,6 +1549,22 @@ body{background:#050505!important;color:#fff!important;padding-bottom:142px!impo
 </div>
 </div>
 </section>
+<section class="info-section" id="atendimento">
+<div class="section-title"><span>🕒</span><h2>Horário e localização</h2></div>
+<div class="info-grid">
+<div class="info-card">
+<h3>Horário de atendimento</h3>
+<p><strong>Quarta a domingo</strong></p>
+<p>Das <strong>17:45 às 23:00</strong></p>
+<p class="small">Segunda e terça: fechado.</p>
+</div>
+<a class="info-card link-card" href="https://www.google.com/maps/search/?api=1&amp;query=Av%20Afonso%20Mathias%2C%20671%20-%20Maristela%2C%20SP" rel="noopener" target="_blank">
+<h3>📍 Nossa localização</h3>
+<p>Av. Afonso Mathias, 671 — Maristela, SP</p>
+<p class="small"><strong>Toque aqui para abrir no mapa.</strong></p>
+</a>
+</div>
+</section>
 <section class="info-section" id="contato">
 <div class="section-title"><span>📲</span><h2>Contato</h2></div>
 <div class="info-grid">
@@ -1542,7 +1579,7 @@ body{background:#050505!important;color:#fff!important;padding-bottom:142px!impo
 </div>
 </section>
 <div class="footer">
-    La Supreme Pizzaria • Sabor que vira tradição! • WhatsApp (15) 99739-8019 • Instagram @lasupreme_pizza
+    La Supreme Pizzaria • Quarta a domingo, 17:45 às 23:00 • Av. Afonso Mathias, 671 — Maristela, SP • WhatsApp (15) 99739-8019
   </div>
 </main>
 <nav aria-label="Navegação rápida" class="mobile-app-nav">
