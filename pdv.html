@@ -1,250 +1,309 @@
-<!doctype html>
-<html lang="pt-BR">
-<head>
-<meta charset="utf-8">
-<meta name="viewport" content="width=device-width,initial-scale=1,viewport-fit=cover">
-<title>La Supreme — Painel de Pedidos</title>
-<style>
-:root{--bg:#120f0d;--panel:#211a17;--panel2:#2b211d;--text:#fff8ed;--muted:#c8b9ad;--gold:#dfb25b;--green:#1d8b54;--red:#b6282c;--line:#41332c}
-*{box-sizing:border-box}body{margin:0;background:var(--bg);color:var(--text);font-family:Arial,sans-serif}
-header{position:sticky;top:0;z-index:5;background:#100d0cf5;border-bottom:1px solid var(--line);padding:12px}
-.head{max-width:1100px;margin:auto;display:flex;align-items:center;gap:10px}
-h1{font:700 23px Georgia;margin:0}.brand{color:var(--gold)}.spacer{flex:1}
-button{cursor:pointer}.arm{border:0;border-radius:10px;padding:10px 12px;background:var(--green);color:white;font-weight:900}
-.wrap{max-width:1100px;margin:auto;padding:14px 12px 80px}
-.statusbar{display:flex;gap:8px;overflow:auto;margin-bottom:14px}
-.pill{white-space:nowrap;background:#211a17;border:1px solid var(--line);border-radius:999px;padding:8px 11px;color:white}
-.grid{display:grid;grid-template-columns:repeat(2,minmax(0,1fr));gap:12px}
-.card{background:linear-gradient(180deg,var(--panel2),var(--panel));border:1px solid var(--line);border-radius:16px;padding:14px}
-.card.new{border-color:var(--gold);box-shadow:0 0 0 1px #dfb25b55}.row{display:flex;gap:8px;align-items:flex-start}.order{font:700 20px Georgia}.time{color:var(--muted);font-size:12px}.grow{flex:1}.tag{font-size:11px;font-weight:900;border-radius:999px;padding:5px 8px;background:#171210}.customer{margin:12px 0 5px;font-weight:900}.muted{color:var(--muted);font-size:13px;line-height:1.45}
-.items{margin-top:10px;border-top:1px dashed #4d3b32;padding-top:8px}.item{padding:7px 0;border-bottom:1px dashed #3b2e28}.item:last-child{border-bottom:0}
-.total{font-size:18px;font-weight:900;margin:12px 0}.actions{display:grid;grid-template-columns:1fr 1fr;gap:8px}
-.actions button{border:0;border-radius:10px;padding:11px;font-weight:900}.print{background:var(--gold);color:#271904}.next{background:var(--green);color:#fff}.done{background:#3c302a;color:#fff}.empty{text-align:center;color:var(--muted);padding:50px 10px}
-.notice{background:#251c18;border:1px solid var(--line);border-radius:12px;padding:12px;margin-bottom:14px;color:var(--muted);font-size:13px}
-@media print{
-  body{background:#fff!important;color:#000!important;margin:0!important;padding:0!important}
-  body>*:not(#iosPrintArea){display:none!important}
-  #iosPrintArea{display:block!important;width:58mm!important;max-width:58mm!important;margin:0!important;padding:2mm!important;background:#fff!important;color:#000!important}
-  #iosPrintArea pre{white-space:pre-wrap!important;word-break:break-word!important;margin:0!important;font-family:ui-monospace,SFMono-Regular,Menlo,Consolas,monospace!important;font-size:10pt!important;line-height:1.18!important}
-  @page{size:58mm auto;margin:0}
-}
-#iosPrintArea{display:none}
-@media(max-width:720px){.grid{grid-template-columns:1fr}}
-</style>
-</head>
-<body>
-<header><div class="head"><h1>LA <span class="brand">SUPREME</span> — Pedidos</h1><div class="spacer"></div><button class="arm" onclick="armAudio()">🔔 Ativar alertas</button></div></header>
-<main class="wrap">
-<div class="notice" id="notice">Painel preparado. Falta inserir as chaves do banco online no código.</div>
-<div class="statusbar">
-<button class="pill" onclick="setFilter('novo')">Novos</button>
-<button class="pill" onclick="setFilter('preparo')">Em preparo</button>
-<button class="pill" onclick="setFilter('entrega')">Saiu p/ entrega</button>
-<button class="pill" onclick="setFilter('concluido')">Concluídos</button>
-<button class="pill" onclick="setFilter('todos')">Todos</button>
-</div>
-<div id="orders" class="grid"></div>
-</main>
-<div id="iosPrintArea" aria-hidden="true"><pre id="iosPrintText"></pre></div>
+<!doctype html><html lang="pt-BR"><head><meta charset="utf-8"><meta name="viewport" content="width=device-width,initial-scale=1"><title>La Supreme — PDV</title><style>
+:root{--bg:#120f0d;--p:#211a17;--p2:#2b211d;--t:#fff8ed;--m:#c8b9ad;--g:#dfb25b;--ok:#1d8b54;--r:#b6282c;--l:#41332c}*{box-sizing:border-box}body{margin:0;background:var(--bg);color:var(--t);font:14px Arial}header{position:sticky;top:0;z-index:10;background:#100d0cf5;border-bottom:1px solid var(--l);padding:12px}.h,.wrap{max-width:1100px;margin:auto}.h{display:flex;align-items:center}h1{font:700 22px Georgia;margin:0}.gold{color:var(--g)}.tabs{display:flex;gap:8px;overflow:auto;padding:12px 0}button{border:0;border-radius:10px;padding:10px;font-weight:800}.tab{background:var(--p);color:#fff;border:1px solid var(--l);white-space:nowrap}.tab.on{background:var(--g);color:#241704}.wrap{padding:0 12px 80px}.notice,.card{background:var(--p);border:1px solid var(--l);border-radius:14px;padding:12px}.notice{color:var(--m);margin-bottom:12px}.tables{display:grid;grid-template-columns:repeat(3,1fr);gap:10px}.mesa{background:linear-gradient(var(--p2),var(--p));border:1px solid var(--l);border-radius:15px;padding:14px}.mesa.livre{border-color:#315d43}.mesa.ocupada{border-color:var(--g)}.mesa b{font:700 20px Georgia}.small{color:var(--m);font-size:12px;margin-top:6px}.hidden{display:none}.modalbg{position:fixed;inset:0;background:#0009;z-index:50;display:flex;align-items:flex-end;justify-content:center}.modal{background:#181311;width:min(760px,100%);max-height:92vh;overflow:auto;border-radius:18px 18px 0 0;padding:14px}.row{display:flex;gap:8px;align-items:center}.grow{flex:1}input,select{width:100%;background:#211a17;color:#fff;border:1px solid var(--l);border-radius:9px;padding:10px}.field{margin-top:9px}.products{display:grid;grid-template-columns:1fr 1fr;gap:8px;max-height:42vh;overflow:auto;margin-top:9px}.prod{background:#241c19;border:1px solid var(--l);border-radius:11px;padding:9px}.prod h4{margin:0 0 5px}.prodBtns{display:grid;grid-template-columns:1fr 1fr;gap:5px;margin-top:7px}.ok{background:var(--ok);color:#fff}.yellow{background:var(--g);color:#241704}.red{background:var(--r);color:#fff}.dark{background:#392d27;color:#fff}.item{padding:7px 0;border-bottom:1px dashed #49372f}.total{font-size:20px;font-weight:900;margin:10px 0}.actions{display:grid;grid-template-columns:1fr 1fr;gap:7px}.counter{display:grid;grid-template-columns:1.1fr .9fr;gap:10px}@media(max-width:700px){.tables{grid-template-columns:repeat(2,1fr)}.products{grid-template-columns:1fr}.counter{grid-template-columns:1fr}}
+.store-status-wrap{display:flex;justify-content:flex-end;align-items:center;gap:10px;margin:10px 0 14px}.store-status-btn{border:0;border-radius:999px;padding:11px 16px;font-weight:900;cursor:pointer;box-shadow:0 6px 18px rgba(0,0,0,.12)}.store-status-btn.open{background:#1f9d55;color:#fff}.store-status-btn.closed{background:#c0392b;color:#fff}.store-status-label{font-size:13px;font-weight:800;opacity:.78}@media(max-width:700px){.store-status-wrap{justify-content:stretch}.store-status-btn{width:100%}.store-status-label{display:none}}
+</style></head><body>
+<header><div class="h"><h1>LA <span class="gold">SUPREME</span> — PDV</h1></div></header><main class="wrap"><div class="tabs"><button class="tab" onclick="location.href='painel.html'">Delivery</button><button class="tab" id="tb" onclick="tab('balcao')">Balcão</button><button class="tab on" id="tm" onclick="tab('mesas')">Mesas</button><button class="tab" id="tc" onclick="tab('caixa')">Caixa</button><button class="tab" id="tr" onclick="tab('relatorios')">Relatórios</button></div><div class="store-status-wrap"><span class="store-status-label">Status da loja:</span><button id="storeStatusBtn" class="store-status-btn open" onclick="toggleStoreStatus()">🟢 Aberto agora</button></div><div id="notice" class="notice">Conectando...</div><section id="mesas"><div id="tables" class="tables"></div></section><section id="balcao" class="hidden"><div class="counter"><div class="card"><h2>Balcão</h2><input id="bq" placeholder="Buscar produto" oninput="renderProducts('b')"><div id="bp" class="products"></div></div><div class="card"><h2>Comanda</h2><div class="field"><input id="bc" placeholder="Cliente (opcional)"></div><div id="bitems"></div><div class="total">Total: <span id="btot">R$ 0,00</span></div><div class="field"><select id="bpay"><option>Pix</option><option>Dinheiro</option><option>Cartão Débito</option><option>Cartão Crédito</option></select></div><div class="actions"><button class="dark" onclick="bCart=[];renderBCart()">Limpar</button><button class="ok" onclick="finishB()">Fechar venda</button></div></div></div></section><section id="caixa" class="hidden"><div id="cashbox" class="card"><h2>Caixa</h2><div class="small">Carregando...</div></div></section><section id="relatorios" class="hidden"><div id="reports" class="card"><h2>Relatórios</h2><div class="small">Carregando...</div></div></section></main><div id="modal"></div>
 <script>
+let storeOpen=true;
+function renderStoreStatus(){const btn=document.getElementById('storeStatusBtn');if(!btn)return;btn.textContent=storeOpen?'🟢 Aberto agora':'🔴 Fechado agora';btn.classList.toggle('open',storeOpen);btn.classList.toggle('closed',!storeOpen);btn.setAttribute('aria-pressed',String(storeOpen));}
+async function loadStoreStatus(){
+  try{const r=await fetch(`${SUPABASE_URL}/rest/v1/store_settings?id=eq.1&select=is_open`,{headers:{apikey:SUPABASE_ANON_KEY,Authorization:`Bearer ${SUPABASE_ANON_KEY}`}});if(!r.ok)throw new Error();const rows=await r.json();if(rows?.length)storeOpen=!!rows[0].is_open;renderStoreStatus();}catch(e){renderStoreStatus();}
+}
+async function toggleStoreStatus(){
+  const btn=document.getElementById('storeStatusBtn');const next=!storeOpen;if(btn){btn.disabled=true;btn.textContent='Salvando...';}
+  try{const r=await fetch(`${SUPABASE_URL}/rest/v1/store_settings?id=eq.1`,{method:'PATCH',headers:{apikey:SUPABASE_ANON_KEY,Authorization:`Bearer ${SUPABASE_ANON_KEY}`,'Content-Type':'application/json',Prefer:'return=representation'},body:JSON.stringify({is_open:next,updated_at:new Date().toISOString()})});if(!r.ok)throw new Error(await r.text());storeOpen=next;renderStoreStatus();}catch(e){alert('Não foi possível alterar o status da loja. Verifique se o SQL de status foi executado no Supabase.');renderStoreStatus();}finally{if(btn)btn.disabled=false;}
+}
+document.addEventListener('DOMContentLoaded',()=>{renderStoreStatus();setTimeout(loadStoreStatus,0);});
+
 const SUPABASE_URL='https://stacwvpsfjvyvbjwagtd.supabase.co';
 const SUPABASE_ANON_KEY='sb_publishable_uM7vsWn839Zmj1lTk3yKyg_b5Vj501Z';
-let filter='novo', lastSeen=new Set(), audioArmed=false, firstLoad=true;
-
+const PRODUCTS=[{"category": "Tradicionais", "name": "Portuguesa Especial", "desc": "Molho, presunto, milho, ervilha, palmito, ovos, cebola, mussarela, azeitonas e orégano", "broto": 40.0, "grande": 80.0}, {"category": "Tradicionais", "name": "Portuguesa Supreme", "desc": "Molho, lombo, milho, ervilha, palmito, ovos, cebola, Catupiry, mussarela, azeitonas e orégano", "broto": 44.0, "grande": 88.0}, {"category": "Tradicionais", "name": "Mista", "desc": "Molho, presunto, tomate, cebola, mussarela, azeitonas e orégano", "broto": 32.5, "grande": 65.0}, {"category": "Tradicionais", "name": "Mista Especial", "desc": "Molho, presunto, tomate, cebola, Catupiry, mussarela, azeitonas e orégano", "broto": 35.0, "grande": 70.0}, {"category": "Tradicionais", "name": "Frango", "desc": "Molho, frango, mussarela, azeitonas e orégano", "broto": 35.0, "grande": 70.0}, {"category": "Tradicionais", "name": "Frango Catupiry", "desc": "Molho, frango, Catupiry, azeitonas e orégano", "broto": 38.0, "grande": 76.0}, {"category": "Tradicionais", "name": "Frango Cheddar", "desc": "Molho, frango, cheddar, azeitonas e orégano", "broto": 38.0, "grande": 76.0}, {"category": "Tradicionais", "name": "Frango Especial", "desc": "Molho, frango, Catupiry, milho, mussarela, azeitonas e orégano", "broto": 44.0, "grande": 88.0}, {"category": "Tradicionais", "name": "Frango Bacon", "desc": "Molho, frango, Catupiry, bacon, azeitonas e orégano", "broto": 40.0, "grande": 80.0}, {"category": "Tradicionais", "name": "Calabresa", "desc": "Molho, calabresa, mussarela, cebola, azeitonas e orégano", "broto": 40.0, "grande": 80.0}, {"category": "Tradicionais", "name": "Calabresa Especial", "desc": "Molho, calabresa, Catupiry, mussarela, azeitonas e orégano", "broto": 45.0, "grande": 90.0}, {"category": "Tradicionais", "name": "Calábria", "desc": "Molho, calabresa fatiada, ovos, cebola, Catupiry, mussarela, azeitonas e orégano", "broto": 45.0, "grande": 90.0}, {"category": "Tradicionais", "name": "Calabresa Supreme", "desc": "Molho, mussarela, calabresa, cebola roxa, gorgonzola, azeitonas e orégano", "broto": 50.0, "grande": 100.0}, {"category": "Tradicionais", "name": "Catupyresa", "desc": "Molho, calabresa, Catupiry, azeitonas e orégano", "broto": 38.0, "grande": 76.0}, {"category": "Tradicionais", "name": "Palmito", "desc": "Molho, palmito, mussarela, azeitonas e orégano", "broto": 40.0, "grande": 80.0}, {"category": "Tradicionais", "name": "Palmito Especial", "desc": "Molho, palmito, mussarela, Catupiry, azeitonas e orégano", "broto": 42.0, "grande": 84.0}, {"category": "Tradicionais", "name": "Palmito Supreme", "desc": "Molho, palmito, mussarela, cream cheese, bacon, azeitonas e orégano", "broto": 50.0, "grande": 100.0}, {"category": "Tradicionais", "name": "Atum", "desc": "Molho, atum, mussarela, azeitonas e orégano", "broto": 35.0, "grande": 70.0}, {"category": "Tradicionais", "name": "Atum Especial", "desc": "Molho, atum, cebola, Catupiry, mussarela, azeitonas e orégano", "broto": 37.5, "grande": 75.0}, {"category": "Tradicionais", "name": "Atum Supreme", "desc": "Molho, atum, tomate, palmito, cebola roxa, mussarela, azeitonas e orégano", "broto": 42.0, "grande": 84.0}, {"category": "Tradicionais", "name": "Bacon", "desc": "Molho, mussarela, bacon, azeitonas e orégano", "broto": 40.0, "grande": 80.0}, {"category": "Tradicionais", "name": "Baiana", "desc": "Molho, calabresa moída, ovos, parmesão, pimenta, azeitonas e orégano", "broto": 40.0, "grande": 80.0}, {"category": "Tradicionais", "name": "Baiana Especial", "desc": "Molho, calabresa moída, ovos, Catupiry, parmesão, pimenta, azeitonas e orégano", "broto": 44.0, "grande": 88.0}, {"category": "Tradicionais", "name": "Baiana Supreme", "desc": "Molho, calabresa moída, ovos, Catupiry, gorgonzola, pimenta, azeitonas e orégano", "broto": 49.0, "grande": 98.0}, {"category": "Tradicionais", "name": "Hot Dog", "desc": "Molho, purê de batata, salsicha, Catupiry, mussarela, azeitonas e orégano", "broto": 45.0, "grande": 90.0}, {"category": "Tradicionais", "name": "Lombo", "desc": "Molho, lombo, tomate, cebola, mussarela, azeitonas e orégano", "broto": 40.0, "grande": 80.0}, {"category": "Tradicionais", "name": "Lombo Especial", "desc": "Molho, lombo, cebola, Catupiry, parmesão, manjericão, azeitonas e orégano", "broto": 47.5, "grande": 95.0}, {"category": "Tradicionais", "name": "Lombo Supreme", "desc": "Molho, lombo, tomate, palmito, cebola, cheddar, mussarela, bacon, azeitonas e orégano", "broto": 57.5, "grande": 115.0}, {"category": "Tradicionais", "name": "Supreme Defumada", "desc": "Molho, lombo, champignon, Catupiry, bacon, azeitonas e orégano", "broto": 47.5, "grande": 95.0}, {"category": "Tradicionais", "name": "Nova Delícia", "desc": "Molho, lombo, calabresa moída, mussarela, bacon, azeitonas e orégano", "broto": 47.0, "grande": 94.0}, {"category": "Tradicionais", "name": "Pepperoni", "desc": "Molho, mussarela, Catupiry, pepperoni, azeitonas e orégano", "broto": 47.0, "grande": 94.0}, {"category": "Tradicionais", "name": "Pepperoni Especial", "desc": "Molho, mussarela, pepperoni, cebola, Catupiry, azeitonas e orégano", "broto": 50.0, "grande": 100.0}, {"category": "Tradicionais", "name": "Pepperoni Supreme", "desc": "Molho, 5 queijos, pepperoni, azeitonas e orégano", "broto": 57.5, "grande": 115.0}, {"category": "Queijos", "name": "Marguerita", "desc": "Molho, mussarela, parmesão, tomate, manjericão in natura, azeitonas e orégano", "broto": 44.0, "grande": 88.0}, {"category": "Queijos", "name": "Mussarela", "desc": "Molho, mussarela, azeitonas e orégano", "broto": 40.0, "grande": 80.0}, {"category": "Queijos", "name": "2 Queijos", "desc": "Molho, mussarela, Catupiry, azeitonas e orégano", "broto": 44.0, "grande": 88.0}, {"category": "Queijos", "name": "3 Queijos", "desc": "Molho, mussarela, Catupiry, parmesão, azeitonas e orégano", "broto": 46.0, "grande": 92.0}, {"category": "Queijos", "name": "4 Queijos", "desc": "Molho, mussarela, Catupiry, parmesão, provolone, azeitonas e orégano", "broto": 49.0, "grande": 98.0}, {"category": "Queijos", "name": "5 Queijos", "desc": "Molho, mussarela, Catupiry, parmesão, provolone, gorgonzola, azeitonas e orégano", "broto": 57.5, "grande": 115.0}, {"category": "Queijos", "name": "Gorgonzola Supreme", "desc": "Molho, mussarela, parmesão, gorgonzola, azeitonas e orégano", "broto": 54.0, "grande": 108.0}, {"category": "Carnes", "name": "Alcatra Supreme", "desc": "Molho, miolo de alcatra, Catupiry, mussarela, parmesão, azeitonas e orégano", "broto": 60.0, "grande": 120.0}, {"category": "Carnes", "name": "Coreana", "desc": "Molho, frango em cubos, Catupiry, mussarela, bacon, azeitonas e orégano", "broto": 49.0, "grande": 98.0}, {"category": "Carnes", "name": "Coreana Especial", "desc": "Molho, frango em cubos, cream cheese, mussarela, bacon, azeitonas e orégano", "broto": 52.0, "grande": 104.0}, {"category": "Carnes", "name": "Costela", "desc": "Molho, costela desfiada, mussarela, azeitonas e orégano. Vinagrete para acompanhamento", "broto": 45.0, "grande": 90.0}, {"category": "Carnes", "name": "Costela Especial", "desc": "Molho, costela desfiada, Catupiry, mussarela, azeitonas e orégano. Vinagrete para acompanhamento", "broto": 48.0, "grande": 96.0}, {"category": "Carnes", "name": "Costela Supreme", "desc": "Molho, costela desfiada, cebola roxa, mussarela, gorgonzola, azeitonas e orégano. Vinagrete para acompanhamento", "broto": 60.0, "grande": 120.0}, {"category": "Carnes", "name": "Costela Acebolada", "desc": "Molho, costela desfiada, cebola, mussarela, azeitonas e orégano. Vinagrete para acompanhamento", "broto": 47.5, "grande": 95.0}, {"category": "Carnes", "name": "Strogonoff de Frango", "desc": "Molho, strogonoff de frango, Catupiry, champignon, mussarela, azeitonas e orégano", "broto": 49.0, "grande": 98.0}, {"category": "Carnes", "name": "Filé Supreme", "desc": "Molho, filé mignon, Catupiry, mussarela, parmesão ralado, azeitonas e orégano", "broto": 62.0, "grande": 124.0}, {"category": "Carnes", "name": "Chef Supreme", "desc": "Molho, miolo de alcatra, Catupiry, mussarela, gorgonzola, azeitonas e orégano", "broto": 68.0, "grande": 136.0}, {"category": "Verduras e Legumes", "name": "Abobrinha", "desc": "Molho, abobrinha, mussarela, parmesão, azeitonas e orégano", "broto": 45.0, "grande": 90.0}, {"category": "Verduras e Legumes", "name": "Escarola", "desc": "Molho, escarola, Catupiry, mussarela, azeitonas e orégano", "broto": 37.0, "grande": 74.0}, {"category": "Verduras e Legumes", "name": "Escarola Especial", "desc": "Molho, escarola, Catupiry, mussarela, bacon, azeitonas e orégano", "broto": 42.0, "grande": 84.0}, {"category": "Verduras e Legumes", "name": "Escarola Supreme", "desc": "Molho, escarola, Catupiry, mussarela, bacon, azeitonas e orégano", "broto": 47.5, "grande": 95.0}, {"category": "Verduras e Legumes", "name": "Alho-Poró", "desc": "Molho, alho-poró, mussarela, azeitonas e orégano", "broto": 40.0, "grande": 80.0}, {"category": "Verduras e Legumes", "name": "Alho-Poró Especial", "desc": "Molho, alho-poró, mussarela, Catupiry, azeitonas e orégano", "broto": 42.5, "grande": 85.0}, {"category": "Verduras e Legumes", "name": "Alho-Poró Supreme", "desc": "Molho, alho-poró, Catupiry, bacon, azeitonas e orégano", "broto": 49.0, "grande": 98.0}, {"category": "Verduras e Legumes", "name": "Rúcula", "desc": "Molho, mussarela, rúcula, azeitonas e orégano", "broto": 39.0, "grande": 78.0}, {"category": "Verduras e Legumes", "name": "Rúcula Especial", "desc": "Molho, mussarela, tomate seco, rúcula, azeitonas e orégano", "broto": 42.0, "grande": 84.0}, {"category": "Verduras e Legumes", "name": "Rúcula Supreme", "desc": "Molho, mussarela de búfala, tomate seco, azeitonas e orégano", "broto": 47.5, "grande": 95.0}, {"category": "Verduras e Legumes", "name": "Brócolis", "desc": "Molho, mussarela, brócolis, tomate seco, azeitonas e orégano", "broto": 40.0, "grande": 80.0}, {"category": "Verduras e Legumes", "name": "Brócolis Especial", "desc": "Molho, mussarela de búfala, brócolis, tomate seco, azeitonas e orégano", "broto": 42.5, "grande": 85.0}, {"category": "Verduras e Legumes", "name": "Brócolis Supreme", "desc": "Molho, mussarela, Catupiry, brócolis, tomate seco, bacon, azeitonas e orégano", "broto": 49.0, "grande": 98.0}, {"category": "Verduras e Legumes", "name": "Vegetariana", "desc": "Molho, tomate, champignon, palmito, cebola, brócolis, azeitonas e orégano", "broto": 45.0, "grande": 90.0}, {"category": "Verduras e Legumes", "name": "Vegetariana Supreme", "desc": "Molho, tomate, champignon, palmito, cebola, brócolis, azeitonas e orégano", "broto": 52.5, "grande": 105.0}, {"category": "Frutos do Mar", "name": "Camarão", "desc": "Molho, camarão, Catupiry, mussarela, azeitonas e orégano", "broto": 60.0, "grande": 120.0}, {"category": "Frutos do Mar", "name": "Camarão Especial", "desc": "Molho, camarão, molho branco, mussarela, azeitonas e orégano", "broto": 65.0, "grande": 130.0}, {"category": "Frutos do Mar", "name": "Strogonoff de Camarão", "desc": "Molho, strogonoff de camarão, Catupiry, champignon, mussarela, azeitonas e orégano", "broto": 67.5, "grande": 135.0}, {"category": "Pizzas Doces", "name": "Abacaxi Supreme", "desc": "Abacaxi, doce de leite, canela e mel", "broto": 45.0, "grande": 90.0}, {"category": "Pizzas Doces", "name": "Banana Nevada", "desc": "Banana, chocolate branco e canela em pó", "broto": 36.0, "grande": 72.0}, {"category": "Pizzas Doces", "name": "Banana c/ Doce de Leite", "desc": "Banana, doce de leite e canela em pó", "broto": 37.5, "grande": 75.0}, {"category": "Pizzas Doces", "name": "Banana c/ Nutella", "desc": "Banana e Nutella", "broto": 47.5, "grande": 95.0}, {"category": "Pizzas Doces", "name": "Brigadeiro", "desc": "Chocolate em ganache e chocolate granulado", "broto": 40.0, "grande": 80.0}, {"category": "Pizzas Doces", "name": "Romeu e Julieta", "desc": "Goiabada e mussarela", "broto": 39.0, "grande": 78.0}, {"category": "Pizzas Doces", "name": "Confeti", "desc": "Chocolate em ganache e confetes", "broto": 40.0, "grande": 80.0}, {"category": "Pizzas Doces", "name": "Paçoca", "desc": "Chocolate em ganache e paçoca", "broto": 40.0, "grande": 80.0}, {"category": "Pizzas Doces", "name": "Morango", "desc": "Chocolate em ganache e morangos", "broto": 45.0, "grande": 90.0}, {"category": "Pizzas Doces", "name": "Nutella", "desc": "Nutella", "broto": 50.0, "grande": 100.0}, {"category": "Pizzas Doces", "name": "Nutella c/ Morango", "desc": "Nutella e morangos", "broto": 55.0, "grande": 110.0}, {"category": "Pizzas Doces", "name": "Cereja", "desc": "Chocolate em ganache e cerejas", "broto": 40.0, "grande": 80.0}, {"category": "Pizzas Doces", "name": "Ferrero Rocher", "desc": "Chocolate em ganache e Ferrero Rocher", "broto": 59.0, "grande": 118.0}, {"category": "Pizzas Doces", "name": "Kit Kat", "desc": "Chocolate em ganache e Kit Kat", "broto": 42.0, "grande": 84.0}, {"category": "Pizzas Doces", "name": "Kinder Bueno", "desc": "Chocolate em ganache e Kinder Bueno", "broto": 42.5, "grande": 85.0}, {"category": "Pizzas Doces", "name": "Prestígio", "desc": "Chocolate em ganache e flocos de coco", "broto": 38.0, "grande": 76.0}, {"category": "Calzones", "name": "Frango Catupiry", "desc": "Frango desfiado, mussarela e Catupiry", "price": 80.0}, {"category": "Calzones", "name": "Calabresa", "desc": "Calabresa, cebola e mussarela", "price": 80.0}, {"category": "Calzones", "name": "4 Queijos", "desc": "Mussarela, Catupiry, provolone e parmesão", "price": 90.0}, {"category": "Calzones", "name": "Alho-Poró", "desc": "Alho-poró, Catupiry e mussarela", "price": 80.0}, {"category": "Calzones", "name": "Filé Mignon", "desc": "Filé mignon em tiras, Catupiry e mussarela", "price": 120.0}, {"category": "Calzones", "name": "Alcatra", "desc": "Miolo de alcatra em cubos, Catupiry e mussarela", "price": 120.0}, {"category": "Crostinis", "name": "Gorgonzola e azeite", "desc": "", "price": 50.0}, {"category": "Crostinis", "name": "Parmesão e azeite", "desc": "", "price": 50.0}, {"category": "Pizza Rolls", "name": "Gorgo Peppe", "desc": "Gorgonzola, mussarela e pepperoni", "price": 50.0}, {"category": "Pizza Rolls", "name": "4 Queijos", "desc": "Mussarela, Catupiry, parmesão e provolone", "price": 50.0}, {"category": "Bebidas", "name": "Coca-Cola 2L", "desc": "Refrigerante 2 litros", "price": 19.0}, {"category": "Bebidas", "name": "Fanta Uva 2L", "desc": "Refrigerante 2 litros", "price": 16.0}, {"category": "Bebidas", "name": "Fanta Laranja 2L", "desc": "Refrigerante 2 litros", "price": 16.0}, {"category": "Bebidas", "name": "Tubaína", "desc": "Refrigerante", "price": 12.0}, {"category": "Bebidas", "name": "Heineken Long Neck", "desc": "Cerveja", "price": 11.0}, {"category": "Bebidas", "name": "Skol Lata", "desc": "Cerveja", "price": 7.0}, {"category": "Bebidas", "name": "Original Lata", "desc": "Cerveja", "price": 8.0}];;
+let tabs=[],curT=null,curC=null,sitems=[],bCart=[];
 const money=v=>'R$ '+Number(v||0).toFixed(2).replace('.',',');
 const esc=s=>String(s??'').replace(/[&<>"']/g,m=>({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&#039;'}[m]));
-function configured(){return SUPABASE_URL.startsWith('https://')&&!SUPABASE_URL.includes('COLE_AQUI')&&!SUPABASE_ANON_KEY.includes('COLE_AQUI')}
-function setFilter(v){filter=v;loadOrders();}
-function armAudio(){audioArmed=true;beep();document.querySelector('.arm').textContent='🔔 Alertas ativos';}
-function beep(){if(!audioArmed)return;try{const a=new (window.AudioContext||window.webkitAudioContext)();const o=a.createOscillator(),g=a.createGain();o.frequency.value=880;o.connect(g);g.connect(a.destination);g.gain.value=.12;o.start();setTimeout(()=>{o.stop();a.close()},250)}catch(e){}}
 
-async function api(path,opts={}){
-  const r=await fetch(`${SUPABASE_URL}/rest/v1/${path}`,{
-    ...opts,
-    headers:{apikey:SUPABASE_ANON_KEY,Authorization:`Bearer ${SUPABASE_ANON_KEY}`,'Content-Type':'application/json',Prefer:'return=representation',...(opts.headers||{})}
-  });
-  if(!r.ok)throw new Error(await r.text());
-  const t=await r.text();return t?JSON.parse(t):null;
+async function api(p,o={}){
+  let r=await fetch(`${SUPABASE_URL}/rest/v1/${p}`,{...o,headers:{apikey:SUPABASE_ANON_KEY,Authorization:`Bearer ${SUPABASE_ANON_KEY}`,'Content-Type':'application/json',Prefer:'return=representation',...(o.headers||{})}});
+  if(!r.ok)throw Error(await r.text());
+  let t=await r.text(); return t?JSON.parse(t):null;
 }
-async function loadOrders(){
-  if(!configured()){
-    document.getElementById('notice').textContent='Falta configurar SUPABASE_URL e SUPABASE_ANON_KEY.';
-    document.getElementById('orders').innerHTML='<div class="empty">Banco online ainda não conectado.</div>';
-    return;
-  }
-  document.getElementById('notice').textContent='🟢 Online — verificando novos pedidos automaticamente.';
-  let q='orders?select=*&order=created_at.desc&limit=60';
-  if(filter!=='todos')q+=`&status=eq.${filter}`;
+
+function tab(x){
+  mesas.classList.toggle('hidden',x!='mesas');
+  balcao.classList.toggle('hidden',x!='balcao');
+  caixa.classList.toggle('hidden',x!='caixa');
+  relatorios.classList.toggle('hidden',x!='relatorios');
+  tm.classList.toggle('on',x=='mesas');
+  tb.classList.toggle('on',x=='balcao');
+  tc.classList.toggle('on',x=='caixa');
+  tr.classList.toggle('on',x=='relatorios');
+  if(x=='balcao')renderProducts('b');
+  if(x=='caixa')loadCaixa();
+  if(x=='relatorios')loadRelatorios();
+}
+
+async function load(){
   try{
-    const rows=await api(q);
-    if(!firstLoad && filter==='novo'){
-      rows.forEach(o=>{if(!lastSeen.has(o.id)){beep();}});
+    tabs=await api('mesas?select=*&order=numero.asc');
+    notice.textContent='🟢 Online — '+tabs.length+' mesas';
+    renderTables();
+  }catch(e){notice.textContent='Erro ao conectar: '+e.message}
+}
+
+function renderTables(){
+  tables.innerHTML=tabs.map(t=>`<div class="mesa ${t.status}" onclick="openT('${t.id}')"><b>Mesa ${esc(t.numero)}</b><div class="small">${String(t.status).toUpperCase()}</div><div class="small">${t.status==='livre'?'Disponível':'Comanda aberta'}</div></div>`).join('');
+}
+
+async function openT(id){
+  curT=tabs.find(t=>String(t.id)===String(id));
+  if(curT.status==='livre'){
+    modal.innerHTML=`<div class="modalbg"><div class="modal"><div class="row"><h2>Mesa ${esc(curT.numero)}</h2><span class="grow"></span><button class="dark" onclick="closeM()">Fechar</button></div><div class="field"><input id="cust" placeholder="Cliente (opcional)"></div><div class="actions"><button class="dark" onclick="closeM()">Cancelar</button><button class="ok" onclick="startT()">Abrir mesa</button></div></div></div>`;
+    return;
+  }
+  let a=await api(`comandas?mesa_id=eq.${curT.id}&status=eq.aberta&select=*&order=aberta_em.desc&limit=1`);
+  if(!a.length){await api(`mesas?id=eq.${curT.id}`,{method:'PATCH',body:JSON.stringify({status:'livre'})});await load();return openT(id)}
+  curC=a[0];
+  sitems=await api(`comanda_itens?comanda_id=eq.${curC.id}&select=*&order=created_at.asc`);
+  showT();
+}
+
+async function startT(){
+  let a=await api('comandas',{method:'POST',body:JSON.stringify({tipo:'mesa',mesa_id:curT.id,cliente_nome:cust.value.trim()||null,status:'aberta'})});
+  curC=a[0];
+  await api(`mesas?id=eq.${curT.id}`,{method:'PATCH',body:JSON.stringify({status:'ocupada'})});
+  sitems=[];
+  await load();
+  showT();
+}
+
+function showT(){
+  modal.innerHTML=`<div class="modalbg"><div class="modal"><div class="row"><h2>Mesa ${esc(curT.numero)}</h2><span class="grow"></span><button class="dark" onclick="closeM()">Fechar</button></div><div class="small">${curC.cliente_nome?'Cliente: '+esc(curC.cliente_nome):'Comanda aberta'}</div><div class="field"><input id="tq" placeholder="Buscar produto" oninput="renderProducts('t')"></div><div class="row field"><button class="yellow grow" onclick="openHalfHalf('t')">🍕 Pizza meio a meio 50/50</button></div><div id="tp" class="products"></div><h3>Itens</h3><div id="titems"></div><div class="total">Total: <span id="ttot">R$ 0,00</span></div><div class="actions"><button class="yellow" onclick="alert('Impressão parcial entra na próxima etapa')">🖨️ Parcial</button><button class="ok" onclick="closeTUI()">Fechar conta</button></div></div></div>`;
+  renderProducts('t');renderTItems();
+}
+
+function renderProducts(where){
+  let q=(document.getElementById(where=='t'?'tq':'bq')?.value||'').toLowerCase(),el=document.getElementById(where=='t'?'tp':'bp');
+  if(!el)return;
+  el.innerHTML=PRODUCTS.filter(p=>(p.name+' '+p.category+' '+p.desc).toLowerCase().includes(q)).slice(0,90).map(p=>`<div class="prod"><h4>${esc(p.name)}</h4><div class="small">${esc(p.category)}</div>${p.broto!=null?`<div class="prodBtns"><button class="ok" onclick='addP(${JSON.stringify(p)},"Broto",${p.broto},"${where}")'>Broto ${money(p.broto)}</button><button class="yellow" onclick='addP(${JSON.stringify(p)},"Grande",${p.grande},"${where}")'>Grande ${money(p.grande)}</button></div>`:`<div class="prodBtns" style="grid-template-columns:1fr"><button class="ok" onclick='addP(${JSON.stringify(p)},"",${p.price||0},"${where}")'>Adicionar ${money(p.price||0)}</button></div>`}</div>`).join('');
+}
+
+async function addP(p,size,price,w){
+  if(w==='b'){
+    bCart.push({produto_nome:p.name,tamanho:size,sabor_1:p.name,sabor_2:null,quantidade:1,preco_unitario:price,adicionais:0,total:price,observacoes:p.category});
+    return renderBCart();
+  }
+  let a=await api('comanda_itens',{method:'POST',body:JSON.stringify({comanda_id:curC.id,produto_nome:p.name,tamanho:size||null,sabor_1:p.name,sabor_2:null,quantidade:1,preco_unitario:price,adicionais:0,total:price,observacoes:p.category})});
+  sitems.push(a[0]); await recalc(); renderTItems();
+}
+
+function pizzaProducts(){return PRODUCTS.filter(p=>p.broto!=null && !['Bebidas','Calzones','Crostinis','Pizza Rolls'].includes(p.category))}
+
+function openHalfHalf(where){
+  const ps=pizzaProducts();
+  const opts=ps.map((p,i)=>`<option value="${i}">${esc(p.name)}</option>`).join('');
+  modal.innerHTML=`<div class="modalbg"><div class="modal"><div class="row"><h2>Pizza meio a meio</h2><span class="grow"></span><button class="dark" onclick="${where==='t'?'showT()':'closeM()'}">Fechar</button></div><div class="small">Preço = 50% do sabor 1 + 50% do sabor 2.</div><div class="field"><select id="hhsize"><option value="Broto">Broto</option><option value="Grande">Grande</option></select></div><div class="field"><label>1º sabor</label><select id="hh1">${opts}</select></div><div class="field"><label>2º sabor</label><select id="hh2">${opts}</select></div><div class="actions field"><button class="dark" onclick="${where==='t'?'showT()':'closeM()'}">Cancelar</button><button class="ok" onclick="addHalfHalf('${where}')">Adicionar 50/50</button></div></div></div>`;
+}
+
+async function addHalfHalf(where){
+  const ps=pizzaProducts(),p1=ps[Number(hh1.value)],p2=ps[Number(hh2.value)],size=hhsize.value;
+  const k=size==='Broto'?'broto':'grande';
+  const price=(Number(p1[k])+Number(p2[k]))/2;
+  const obj={produto_nome:`½ ${p1.name} + ½ ${p2.name}`,tamanho:size,sabor_1:p1.name,sabor_2:p2.name,quantidade:1,preco_unitario:price,adicionais:0,total:price,observacoes:'Pizza meio a meio 50/50'};
+  if(where==='b'){bCart.push(obj);closeM();renderBCart();return}
+  let a=await api('comanda_itens',{method:'POST',body:JSON.stringify({comanda_id:curC.id,...obj})});
+  sitems.push(a[0]);await recalc();showT();
+}
+
+async function recalc(){
+  let s=sitems.reduce((a,x)=>a+Number(x.total),0);
+  await api(`comandas?id=eq.${curC.id}`,{method:'PATCH',body:JSON.stringify({subtotal:s,total:s})});
+}
+
+function renderTItems(){
+  titems.innerHTML=sitems.map(x=>`<div class="item"><div class="row"><div class="grow"><b>${x.quantidade}x ${esc(x.produto_nome)}</b><div class="small">${esc(x.tamanho||'')} — ${money(x.total)}</div></div><button class="red" onclick="delI('${x.id}')">×</button></div></div>`).join('');
+  ttot.textContent=money(sitems.reduce((a,x)=>a+Number(x.total),0));
+}
+
+async function delI(id){
+  await api(`comanda_itens?id=eq.${id}`,{method:'DELETE'});
+  sitems=sitems.filter(x=>String(x.id)!==String(id)); await recalc(); renderTItems();
+}
+
+function closeTUI(){
+  let total=sitems.reduce((a,x)=>a+Number(x.total),0);
+  modal.innerHTML=`<div class="modalbg"><div class="modal"><h2>Fechar Mesa ${esc(curT.numero)}</h2><div class="total">Total: ${money(total)}</div><div class="field"><select id="tpay"><option>Pix</option><option>Dinheiro</option><option>Cartão Débito</option><option>Cartão Crédito</option></select></div><div class="field"><input id="disc" value="0" inputmode="decimal" placeholder="Desconto"></div><div class="actions"><button class="dark" onclick="showT()">Voltar</button><button class="ok" onclick="finishT()">Confirmar</button></div></div></div>`;
+}
+
+async function finishT(){
+  let sub=sitems.reduce((a,x)=>a+Number(x.total),0),d=Number(String(disc.value).replace(',','.'))||0,total=Math.max(0,sub-d);
+  await api(`comandas?id=eq.${curC.id}`,{method:'PATCH',body:JSON.stringify({status:'fechada',fechada_em:new Date().toISOString(),subtotal:sub,desconto:d,total,forma_pagamento:tpay.value})});
+  await api(`mesas?id=eq.${curT.id}`,{method:'PATCH',body:JSON.stringify({status:'livre'})});
+  closeM(); await load(); alert('Mesa fechada. Total: '+money(total));
+}
+
+function renderBCart(){
+  bitems.innerHTML=bCart.map((x,i)=>`<div class="item"><div class="row"><div class="grow"><b>${x.quantidade}x ${esc(x.produto_nome)}</b><div class="small">${esc(x.tamanho||'')} — ${money(x.total)}</div></div><button class="red" onclick="bCart.splice(${i},1);renderBCart()">×</button></div></div>`).join('');
+  btot.textContent=money(bCart.reduce((a,x)=>a+Number(x.total),0));
+}
+
+async function finishB(){
+  if(!bCart.length)return alert('Adicione itens.');
+  let total=bCart.reduce((a,x)=>a+Number(x.total),0);
+  let a=await api('comandas',{method:'POST',body:JSON.stringify({tipo:'balcao',mesa_id:null,cliente_nome:bc.value.trim()||null,status:'fechada',subtotal:total,desconto:0,acrescimo:0,total,forma_pagamento:bpay.value,fechada_em:new Date().toISOString()})});
+  const c=a[0];
+  await api('comanda_itens',{method:'POST',body:JSON.stringify(bCart.map(x=>({comanda_id:c.id,...x})))});
+  alert('Venda de balcão finalizada. Total: '+money(total));
+  bCart=[];renderBCart();bc.value='';
+}
+
+
+async function loadCaixa(){
+  cashbox.innerHTML='<h2>Caixa</h2><div class="small">Carregando...</div>';
+  try{
+    const a=await api('caixa_sessoes?status=eq.aberto&select=*&order=aberto_em.desc&limit=1');
+    if(!a.length){
+      cashbox.innerHTML=`<h2>Caixa fechado</h2><div class="notice">Abra o caixa para iniciar o movimento do turno.</div><div class="field"><input id="cop" placeholder="Operador"></div><div class="field"><input id="cab" inputmode="decimal" value="0" placeholder="Valor inicial em dinheiro"></div><button class="ok" style="width:100%;margin-top:10px" onclick="abrirCaixa()">Abrir caixa</button>`;
+      return;
     }
-    rows.forEach(o=>lastSeen.add(o.id)); firstLoad=false;
-    render(rows);
-  }catch(e){
-    document.getElementById('notice').textContent='Erro ao carregar pedidos: '+e.message;
+    const c=a[0], inicio=encodeURIComponent(c.aberto_em);
+    const vendas=await api(`comandas?status=eq.fechada&fechada_em=gte.${inicio}&select=total,forma_pagamento,fechada_em`);
+    const movs=await api(`caixa_movimentos?caixa_id=eq.${c.id}&select=*&order=criado_em.desc`);
+    const soma=pg=>vendas.filter(v=>v.forma_pagamento===pg).reduce((n,v)=>n+Number(v.total||0),0);
+    const pix=soma('Pix'), din=soma('Dinheiro'), deb=soma('Cartão Débito'), cred=soma('Cartão Crédito');
+    const vendasTotal=vendas.reduce((n,v)=>n+Number(v.total||0),0);
+    const supr=movs.filter(m=>m.tipo==='suprimento').reduce((n,m)=>n+Number(m.valor||0),0);
+    const sang=movs.filter(m=>m.tipo==='sangria').reduce((n,m)=>n+Number(m.valor||0),0);
+    const esperado=Number(c.valor_abertura||0)+din+supr-sang;
+    cashbox.innerHTML=`<div class="row"><h2>Caixa aberto</h2><span class="grow"></span><b class="gold">${esc(c.operador||'Operador')}</b></div>
+      <div class="small">Aberto em ${new Date(c.aberto_em).toLocaleString('pt-BR')}</div>
+      <div class="total">Vendas do turno: ${money(vendasTotal)}</div>
+      <div class="card" style="margin-top:10px"><div class="row"><span class="grow">Dinheiro</span><b>${money(din)}</b></div><div class="row"><span class="grow">Pix</span><b>${money(pix)}</b></div><div class="row"><span class="grow">Débito</span><b>${money(deb)}</b></div><div class="row"><span class="grow">Crédito</span><b>${money(cred)}</b></div></div>
+      <div class="card" style="margin-top:10px"><div class="row"><span class="grow">Abertura</span><b>${money(c.valor_abertura)}</b></div><div class="row"><span class="grow">Suprimentos</span><b>${money(supr)}</b></div><div class="row"><span class="grow">Sangrias</span><b>-${money(sang)}</b></div><div class="row"><span class="grow"><b>Dinheiro esperado</b></span><b>${money(esperado)}</b></div></div>
+      <div class="actions" style="margin-top:10px"><button class="yellow" onclick="movCaixa('suprimento',${c.id})">+ Suprimento</button><button class="red" onclick="movCaixa('sangria',${c.id})">− Sangria</button></div>
+      <button class="ok" style="width:100%;margin-top:10px" onclick="fecharCaixa(${c.id},${esperado})">Fechar caixa</button>`;
+  }catch(e){cashbox.innerHTML='<h2>Caixa</h2><div class="notice">Erro: '+esc(e.message)+'</div>'}
+}
+
+async function abrirCaixa(){
+  const v=Number(String(cab.value).replace(',','.'))||0;
+  try{await api('caixa_sessoes',{method:'POST',body:JSON.stringify({operador:cop.value.trim()||'Operador',valor_abertura:v,status:'aberto'})});await loadCaixa()}catch(e){alert('Erro ao abrir caixa: '+e.message)}
+}
+
+async function movCaixa(tipo,id){
+  const nome=tipo==='sangria'?'Sangria':'Suprimento';
+  const v=prompt(nome+' — valor em R$'); if(v===null)return;
+  const valor=Number(String(v).replace(',','.')); if(!(valor>0))return alert('Informe um valor válido.');
+  const descricao=prompt('Descrição (opcional)')||null;
+  try{await api('caixa_movimentos',{method:'POST',body:JSON.stringify({caixa_id:id,tipo,valor,descricao})});await loadCaixa()}catch(e){alert('Erro: '+e.message)}
+}
+
+async function fecharCaixa(id,esperado){
+  const v=prompt('Dinheiro contado no caixa (R$)',Number(esperado).toFixed(2).replace('.',',')); if(v===null)return;
+  const informado=Number(String(v).replace(',','.')); if(!Number.isFinite(informado)||informado<0)return alert('Informe um valor válido.');
+  const dif=informado-Number(esperado);
+  if(!confirm('Esperado: '+money(esperado)+'\nInformado: '+money(informado)+'\nDiferença: '+money(dif)+'\n\nConfirmar fechamento?'))return;
+  try{await api(`caixa_sessoes?id=eq.${id}`,{method:'PATCH',body:JSON.stringify({status:'fechado',valor_fechamento_informado:informado,valor_fechamento_esperado:esperado,diferenca:dif,fechado_em:new Date().toISOString()})});alert('Caixa fechado. Diferença: '+money(dif));await loadCaixa()}catch(e){alert('Erro ao fechar caixa: '+e.message)}
+}
+
+
+
+function reportRow(label,value){return `<div class="row"><span class="grow">${esc(label)}</span><b>${value}</b></div>`}
+
+let reportPreset='hoje', reportIni='', reportFim='';
+
+function localDateStr(d){const y=d.getFullYear(),m=String(d.getMonth()+1).padStart(2,'0'),day=String(d.getDate()).padStart(2,'0');return `${y}-${m}-${day}`}
+function reportRange(preset=reportPreset){
+  const now=new Date(), end=new Date(now); end.setHours(23,59,59,999);
+  let start=new Date(now); start.setHours(0,0,0,0);
+  if(preset==='ontem'){start.setDate(start.getDate()-1);end.setDate(end.getDate()-1)}
+  if(preset==='7dias')start.setDate(start.getDate()-6);
+  if(preset==='30dias')start.setDate(start.getDate()-29);
+  if(preset==='personalizado'){
+    if(!reportIni||!reportFim)return null;
+    start=new Date(reportIni+'T00:00:00');end=new Date(reportFim+'T23:59:59.999');
   }
+  return {start,end};
 }
-function render(rows){
-  const el=document.getElementById('orders');
-  if(!rows.length){el.innerHTML='<div class="empty">Nenhum pedido nesta etapa.</div>';return}
-  el.innerHTML=rows.map(o=>{
-    const items=Array.isArray(o.items)?o.items:[];
-    return `<article class="card ${o.status==='novo'?'new':''}">
-      <div class="row"><div><div class="order">${esc(o.order_no)}</div><div class="time">${new Date(o.created_at).toLocaleString('pt-BR')}</div></div><div class="grow"></div><span class="tag">${esc(o.status)}</span></div>
-      <div class="customer">${esc(o.customer_name)}</div>
-      <div class="muted">${o.customer_phone?esc(o.customer_phone)+'<br>':''}${o.fulfillment==='delivery'?'🛵 '+esc(o.address):'🏪 Retirada'}<br>Pagamento: ${esc(o.payment)}</div>
-      <div class="items">${items.map(x=>`<div class="item"><b>${x.qty||1}x ${esc(x.name)}</b>${x.size?'<br><span class="muted">'+esc(x.size)+'</span>':''}${x.crust?'<br><span class="muted">Borda: '+esc(x.crust)+'</span>':''}${x.obs?'<br><span class="muted">Obs.: '+esc(x.obs)+'</span>':''}</div>`).join('')}</div>
-      ${o.general_obs?`<div class="muted" style="margin-top:8px"><b>Obs. gerais:</b> ${esc(o.general_obs)}</div>`:''}
-      <div class="total">Subtotal: ${money(o.subtotal)}</div>
-      <div class="actions">
-        <button class="print" onclick='printOrder(${JSON.stringify(o).replace(/'/g,"&#39;")})'>🖨️ Imprimir cozinha</button>
-        ${o.fulfillment==='delivery'?`<button class="print" onclick='printDelivery(${JSON.stringify(o).replace(/'/g,"&#39;")})'>🛵 Imprimir delivery</button>`:''}
-        ${nextButton(o)}
-      </div>
-    </article>`;
-  }).join('');
+function reportFilterBar(){
+  const btn=(id,label)=>`<button class="${reportPreset===id?'yellow':'dark'}" onclick="setReportPreset('${id}')">${label}</button>`;
+  return `<div class="card" style="margin-top:10px"><div class="small">Período do relatório</div><div class="row" style="margin-top:8px;overflow:auto">${btn('hoje','Hoje')}${btn('ontem','Ontem')}${btn('7dias','7 dias')}${btn('30dias','30 dias')}${btn('personalizado','Personalizado')}</div>${reportPreset==='personalizado'?`<div class="actions field"><input id="rini" type="date" value="${esc(reportIni)}"><input id="rfim" type="date" value="${esc(reportFim)}"></div><button class="ok" style="width:100%;margin-top:8px" onclick="applyCustomReport()">Aplicar período</button>`:''}</div>`;
 }
-function nextButton(o){
-  if(o.status==='novo')return `<button class="next" onclick="statusOrder('${o.id}','preparo')">▶ Em preparo</button>`;
-  if(o.status==='preparo')return `<button class="next" onclick="statusOrder('${o.id}','entrega')">🛵 Saiu</button>`;
-  if(o.status==='entrega')return `<button class="next" onclick="statusOrder('${o.id}','concluido')">✓ Concluir</button>`;
-  return `<button class="done" disabled>✓ Concluído</button>`;
-}
-async function statusOrder(id,status){
-  const payload={status};
-  if(status==='concluido')payload.concluded_at=new Date().toISOString();
-  await api(`orders?id=eq.${encodeURIComponent(id)}`,{method:'PATCH',body:JSON.stringify(payload)});
-  loadOrders();
-}
-function receipt(o){
-  const W=32,L='-'.repeat(W),D='='.repeat(W),c=s=>' '.repeat(Math.max(0,Math.floor((W-String(s).length)/2)))+s;
-  const wrap=(s,w=30)=>{let a=[],cur='';String(s||'').split(/\s+/).forEach(x=>{if((cur+' '+x).trim().length>w){if(cur)a.push(cur);cur=x}else cur=(cur+' '+x).trim()});if(cur)a.push(cur);return a};
-  let r=[
-    D,
-    c('LA SUPREME'),
-    c('COMANDA DA COZINHA'),
-    D,
-    `PEDIDO: ${o.order_no}`,
-    `HORARIO: ${new Date(o.created_at).toLocaleString('pt-BR')}`,
-    `TIPO: ${o.fulfillment==='delivery'?'DELIVERY':'RETIRADA'}`,
-    `CLIENTE: ${o.customer_name||''}`,
-    L
-  ];
-  (o.items||[]).forEach(x=>{
-    wrap(`${x.qty||1}x ${x.name}`).forEach(v=>r.push(v.toUpperCase()));
-    if(x.size)r.push('  TAMANHO: '+String(x.size).toUpperCase());
-    if(x.crust)r.push('  BORDA: '+String(x.crust).toUpperCase());
-    if(x.obs)wrap('  OBS: '+x.obs).forEach(v=>r.push(v.toUpperCase()));
-    r.push('');
-  });
-  if(o.general_obs){
-    r.push(L,'OBS. GERAIS:');
-    wrap(o.general_obs).forEach(v=>r.push(v.toUpperCase()));
-  }
-  r.push(L,c('FIM DA COMANDA'),D,'','','');
-  return r.join('\n');
-}
-
-function deliveryReceipt(o){
-  const W=32,L='-'.repeat(W),D='='.repeat(W),c=s=>' '.repeat(Math.max(0,Math.floor((W-String(s).length)/2)))+s;
-  const wrap=(s,w=30)=>{let a=[],cur='';String(s||'').split(/\s+/).forEach(x=>{if((cur+' '+x).trim().length>w){if(cur)a.push(cur);cur=x}else cur=(cur+' '+x).trim()});if(cur)a.push(cur);return a};
-  const brl=v=>'R$ '+Number(v||0).toFixed(2).replace('.',',');
-  const items=Array.isArray(o.items)?o.items:[];
-  const subtotal=Number(o.subtotal||0);
-  const entrega=Number(o.delivery_fee||0);
-  const total=Number(o.total!=null?o.total:(subtotal+entrega));
-
-  let r=[D,c('LA SUPREME'),c('CUPOM DELIVERY / MOTOBOY'),D,
-    `PEDIDO: ${o.order_no}`,
-    `HORARIO: ${new Date(o.created_at).toLocaleString('pt-BR')}`,
-    L,
-    'CLIENTE:'];
-  wrap(o.customer_name||'').forEach(v=>r.push(v.toUpperCase()));
-  if(o.customer_phone)r.push(`FONE: ${o.customer_phone}`);
-
-  r.push(L,'ITENS / SABORES:');
-  if(!items.length){
-    r.push('SEM ITENS REGISTRADOS');
-  }else{
-    items.forEach(x=>{
-      const qtd=Number(x.qty||x.quantidade||1);
-      const nome=String(x.name||x.produto_nome||'Produto');
-      const unit=Number(x.unit||x.preco_unitario||((x.total!=null)?Number(x.total)/Math.max(qtd,1):0));
-      const itemTotal=unit*qtd;
-
-      wrap(`${qtd}x ${nome}`).forEach(v=>r.push(v.toUpperCase()));
-      if(x.size||x.tamanho) r.push(`  TAMANHO: ${String(x.size||x.tamanho).toUpperCase()}`);
-      if(x.crust) r.push(`  BORDA: ${String(x.crust).toUpperCase()}`);
-      if(x.sabor_1 && x.sabor_2){
-        wrap(`  SABORES: 1/2 ${x.sabor_1} + 1/2 ${x.sabor_2}`).forEach(v=>r.push(v.toUpperCase()));
-      }
-      if(x.obs||x.observacoes){
-        wrap(`  OBS: ${x.obs||x.observacoes}`).forEach(v=>r.push(v.toUpperCase()));
-      }
-      r.push(`  VALOR: ${brl(itemTotal)}`);
-      r.push('');
-    });
-  }
-
-  r.push(L,`SUBTOTAL: ${brl(subtotal)}`);
-  if(entrega>0) r.push(`ENTREGA: ${brl(entrega)}`);
-  r.push(`TOTAL: ${brl(total)}`);
-
-  r.push(L,'ENDERECO DE ENTREGA:');
-  wrap(o.address||'ENDERECO NAO INFORMADO').forEach(v=>r.push(v.toUpperCase()));
-
-  r.push(L,`PAGAMENTO: ${String(o.payment||'').toUpperCase()}`);
-  if(o.general_obs){
-    r.push(L,'OBSERVACOES:');
-    wrap(o.general_obs).forEach(v=>r.push(v.toUpperCase()));
-  }
-  r.push(D,c('ENTREGA LA SUPREME'),D,'','','');
-  return r.join('\n');
-}
-function printDelivery(o){
-  if(o.fulfillment!=='delivery'){alert('Este pedido é para retirada.');return;}
-  const txt=deliveryReceipt(o);
-  if(isAndroid()){
-    window.location.href='rawbt:'+encodeURIComponent(txt);
+function setReportPreset(p){
+  reportPreset=p;
+  if(p==='personalizado'){
+    const now=new Date(); if(!reportFim)reportFim=localDateStr(now); if(!reportIni)reportIni=reportFim;
+    reports.innerHTML='<h2>Relatórios</h2>'+reportFilterBar()+'<div class="small" style="margin-top:10px">Escolha as datas e toque em Aplicar período.</div>';
     return;
   }
-  document.getElementById('iosPrintText').textContent=txt;
-  setTimeout(()=>window.print(),120);
+  loadRelatorios();
+}
+function applyCustomReport(){
+  reportIni=document.getElementById('rini').value;reportFim=document.getElementById('rfim').value;
+  if(!reportIni||!reportFim)return alert('Informe a data inicial e final.');
+  if(reportIni>reportFim)return alert('A data inicial não pode ser maior que a final.');
+  loadRelatorios();
+}
+async function loadRelatorios(){
+  reports.innerHTML='<h2>Relatórios</h2>'+reportFilterBar()+'<div class="small" style="margin-top:10px">Carregando...</div>';
+  try{
+    const rg=reportRange();
+    if(!rg)return;
+    const ini=encodeURIComponent(rg.start.toISOString()), fim=encodeURIComponent(rg.end.toISOString());
+    const vendas=await api(`comandas?status=eq.fechada&fechada_em=gte.${ini}&fechada_em=lte.${fim}&select=id,tipo,total,subtotal,desconto,forma_pagamento,fechada_em`);
+    const ids=vendas.map(v=>v.id);
+    let itens=[];
+    if(ids.length)itens=await api(`comanda_itens?comanda_id=in.(${ids.join(',')})&select=comanda_id,produto_nome,tamanho,sabor_1,sabor_2,quantidade,total`);
+    const caixas=await api(`caixa_sessoes?aberto_em=gte.${ini}&aberto_em=lte.${fim}&select=*&order=aberto_em.desc&limit=50`);
+
+    const faturamento=vendas.reduce((n,v)=>n+Number(v.total||0),0);
+    const descontos=vendas.reduce((n,v)=>n+Number(v.desconto||0),0);
+    const ticket=vendas.length?faturamento/vendas.length:0;
+
+    const pgMap={}; vendas.forEach(v=>{const k=v.forma_pagamento||'Não informado';pgMap[k]??={total:0,q:0};pgMap[k].total+=Number(v.total||0);pgMap[k].q++});
+    const payHtml=Object.keys(pgMap).length?Object.entries(pgMap).sort((a,b)=>b[1].total-a[1].total).map(([k,x])=>reportRow(k,money(x.total)+' · '+x.q+' venda(s)')).join(''):'<div class="small">Sem vendas.</div>';
+
+    const orMap={}; vendas.forEach(v=>{const k=v.tipo||'outro';orMap[k]??={total:0,q:0};orMap[k].total+=Number(v.total||0);orMap[k].q++});
+    const origemNome=k=>String(k).replace('balcao','Balcão').replace('mesa','Mesas').replace('delivery','Delivery');
+    const origHtml=Object.keys(orMap).length?Object.entries(orMap).sort((a,b)=>b[1].total-a[1].total).map(([k,x])=>reportRow(origemNome(k),money(x.total)+' · '+x.q+' venda(s)')).join(''):'<div class="small">Sem vendas.</div>';
+
+    const dayMap={}; vendas.forEach(v=>{const k=localDateStr(new Date(v.fechada_em));dayMap[k]??={total:0,q:0};dayMap[k].total+=Number(v.total||0);dayMap[k].q++});
+    const diasHtml=Object.keys(dayMap).length?Object.entries(dayMap).sort((a,b)=>b[0].localeCompare(a[0])).map(([k,x])=>reportRow(new Date(k+'T12:00:00').toLocaleDateString('pt-BR'),money(x.total)+' · '+x.q+' venda(s)')).join(''):'<div class="small">Sem vendas.</div>';
+
+    const prodMap={}; itens.forEach(x=>{const k=(x.produto_nome||'Produto')+'||'+(x.tamanho||'');prodMap[k]??={nome:x.produto_nome||'Produto',tam:x.tamanho||'',q:0,total:0};prodMap[k].q+=Number(x.quantidade||0);prodMap[k].total+=Number(x.total||0)});
+    const prods=Object.values(prodMap).sort((a,b)=>b.q-a.q||b.total-a.total).slice(0,10);
+    const prodHtml=prods.length?prods.map((x,i)=>`<div class="item"><b>${i+1}. ${esc(x.nome)}${x.tam?' — '+esc(x.tam):''}</b><div class="small">${x.q} un. · ${money(x.total)}</div></div>`).join(''):'<div class="small">Sem itens.</div>';
+
+    const sabMap={}; itens.forEach(x=>{[x.sabor_1,x.sabor_2].filter(Boolean).forEach(s=>sabMap[s]=(sabMap[s]||0)+Number(x.quantidade||1))});
+    const sabores=Object.entries(sabMap).sort((a,b)=>b[1]-a[1]).slice(0,10);
+    const sabHtml=sabores.length?sabores.map(([s,q],i)=>`<div class="item"><b>${i+1}. ${esc(s)}</b><div class="small">${q} ocorrência(s)</div></div>`).join(''):'<div class="small">Sem sabores.</div>';
+
+    const cxHtml=caixas.length?caixas.map(x=>`<div class="item"><b>${esc(x.operador||'Operador')} — ${String(x.status).toUpperCase()}</b><div class="small">Abertura: ${new Date(x.aberto_em).toLocaleString('pt-BR')}${x.fechado_em?' · Fechamento: '+new Date(x.fechado_em).toLocaleString('pt-BR'):''}</div><div class="small">Inicial ${money(x.valor_abertura)}${x.valor_fechamento_informado!=null?' · Informado '+money(x.valor_fechamento_informado)+' · Diferença '+money(x.diferenca):''}</div></div>`).join(''):'<div class="small">Sem caixas no período.</div>';
+
+    const label=rg.start.toLocaleDateString('pt-BR')+(localDateStr(rg.start)!==localDateStr(rg.end)?' até '+rg.end.toLocaleDateString('pt-BR'):'');
+    reports.innerHTML=`<h2>Relatórios</h2>${reportFilterBar()}
+      <div class="small" style="margin-top:10px">Exibindo: ${label}</div>
+      <div class="card" style="margin-top:10px"><div class="small">Resumo do período</div><div class="total">${money(faturamento)}</div>${reportRow('Vendas',vendas.length)}${reportRow('Ticket médio',money(ticket))}${reportRow('Descontos',money(descontos))}</div>
+      <div class="card" style="margin-top:10px"><h3>Formas de pagamento</h3>${payHtml}</div>
+      <div class="card" style="margin-top:10px"><h3>Origem das vendas</h3>${origHtml}</div>
+      <div class="card" style="margin-top:10px"><h3>Vendas por dia</h3>${diasHtml}</div>
+      <div class="card" style="margin-top:10px"><h3>Produtos mais vendidos</h3>${prodHtml}</div>
+      <div class="card" style="margin-top:10px"><h3>Sabores mais vendidos</h3>${sabHtml}</div>
+      <div class="card" style="margin-top:10px"><h3>Histórico de caixas</h3>${cxHtml}</div>`;
+  }catch(e){reports.innerHTML='<h2>Relatórios</h2>'+reportFilterBar()+'<div class="notice">Erro: '+esc(e.message)+'</div>'}
 }
 
-function isIOS(){
-  return /iPad|iPhone|iPod/.test(navigator.userAgent) || (navigator.platform==='MacIntel' && navigator.maxTouchPoints>1);
-}
-function isAndroid(){return /Android/i.test(navigator.userAgent);}
-function markPrinted(o){
-  api(`orders?id=eq.${encodeURIComponent(o.id)}`,{method:'PATCH',body:JSON.stringify({printed:true})}).catch(()=>{});
-}
-function printOrder(o){
-  const key='ls_printed_'+o.id;
-  if(localStorage.getItem(key)){
-    if(!confirm('Este pedido já foi enviado à impressão neste aparelho. Imprimir novamente?'))return;
+function closeM(){modal.innerHTML='';curT=curC=null;sitems=[]}
+
+// botão meio a meio também no Balcão
+const oldTab=tab;
+const oldRenderProducts=renderProducts;
+setTimeout(()=>{
+  const c=document.querySelector('#balcao .card');
+  if(c && !document.getElementById('bhh')){
+    const b=document.createElement('button');b.id='bhh';b.className='yellow';b.style='width:100%;margin-top:9px';b.textContent='🍕 Pizza meio a meio 50/50';b.onclick=()=>openHalfHalf('b');
+    c.insertBefore(b,document.getElementById('bp'));
   }
-  const txt=receipt(o);
+},0);
 
-  // Android: mantém exatamente o fluxo atual pela RawBT.
-  if(isAndroid()){
-    localStorage.setItem(key,String(Date.now()));
-    window.location.href='rawbt:'+encodeURIComponent(txt);
-    markPrinted(o);
-    return;
-  }
-
-  // iPhone/iPad e demais navegadores: usa a impressão do sistema.
-  // No iOS, a impressora precisa aparecer no seletor de impressão (AirPrint/app compatível).
-  document.getElementById('iosPrintText').textContent=txt;
-  localStorage.setItem(key,String(Date.now()));
-  setTimeout(()=>{
-    window.print();
-    markPrinted(o);
-  },120);
-}
-loadOrders();setInterval(loadOrders,5000);
-</script>
-</body></html>
+load();
+</script></body></html>
