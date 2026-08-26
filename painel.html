@@ -20,7 +20,7 @@ button{cursor:pointer}.arm{border:0;border-radius:10px;padding:10px 12px;backgro
 .items{margin-top:10px;border-top:1px dashed #4d3b32;padding-top:8px}.item{padding:7px 0;border-bottom:1px dashed #3b2e28}.item:last-child{border-bottom:0}
 .total{font-size:18px;font-weight:900;margin:12px 0}.actions{display:grid;grid-template-columns:1fr 1fr;gap:8px}
 .actions button{border:0;border-radius:10px;padding:11px;font-weight:900}.print{background:var(--gold);color:#271904}.next{background:var(--green);color:#fff}.done{background:#3c302a;color:#fff}.empty{text-align:center;color:var(--muted);padding:50px 10px}
-.notice{background:#251c18;border:1px solid var(--line);border-radius:12px;padding:12px;margin-bottom:14px;color:var(--muted);font-size:13px}
+.payline{margin-top:5px;font-weight:900}.pay-paid{color:#54d98c}.pay-pending{color:#f0bd55}.notice{background:#251c18;border:1px solid var(--line);border-radius:12px;padding:12px;margin-bottom:14px;color:var(--muted);font-size:13px}
 @media print{
   body{background:#fff!important;color:#000!important;margin:0!important;padding:0!important}
   body>*:not(#iosPrintArea){display:none!important}
@@ -94,7 +94,7 @@ function render(rows){
     return `<article class="card ${o.status==='novo'?'new':''}">
       <div class="row"><div><div class="order">${esc(o.order_no)}</div><div class="time">${new Date(o.created_at).toLocaleString('pt-BR')}</div></div><div class="grow"></div><span class="tag">${esc(o.status)}</span></div>
       <div class="customer">${esc(o.customer_name)}</div>
-      <div class="muted">${o.customer_phone?esc(o.customer_phone)+'<br>':''}${o.fulfillment==='delivery'?'🛵 '+esc(o.address):'🏪 Retirada'}<br>Pagamento: ${esc(o.payment)}</div>
+      <div class="muted">${o.customer_phone?esc(o.customer_phone)+'<br>':''}${o.fulfillment==='delivery'?'🛵 '+esc(o.address):'🏪 Retirada'}<br>${paymentLine(o)}</div>
       <div class="items">${items.map(x=>`<div class="item"><b>${x.qty||1}x ${esc(x.name)}</b>${x.size?'<br><span class="muted">'+esc(x.size)+'</span>':''}${x.crust?'<br><span class="muted">Borda: '+esc(x.crust)+'</span>':''}${x.obs?'<br><span class="muted">Obs.: '+esc(x.obs)+'</span>':''}</div>`).join('')}</div>
       ${o.general_obs?`<div class="muted" style="margin-top:8px"><b>Obs. gerais:</b> ${esc(o.general_obs)}</div>`:''}
       <div class="total">Subtotal: ${money(o.subtotal)}</div>
@@ -105,6 +105,15 @@ function render(rows){
       </div>
     </article>`;
   }).join('');
+}
+function paymentLine(o){
+  const method=String(o.payment||'').trim();
+  if(method.toLowerCase()!=='pix') return `Pagamento: ${esc(method)}`;
+  const st=String(o.payment_status||'').toLowerCase();
+  const paid=['approved','paid','processed','accredited'].includes(st);
+  return paid
+    ? `<span class="payline pay-paid">Pagamento: Pix — ✅ PAGO</span>`
+    : `<span class="payline pay-pending">Pagamento: Pix — ⏳ AGUARDANDO PAGAMENTO</span>`;
 }
 function nextButton(o){
   if(o.status==='novo')return `<button class="next" onclick="statusOrder('${o.id}','preparo')">▶ Em preparo</button>`;
