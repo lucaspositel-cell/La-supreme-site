@@ -19,7 +19,7 @@ button{cursor:pointer}.arm{border:0;border-radius:10px;padding:10px 12px;backgro
 .card.new{border-color:var(--gold);box-shadow:0 0 0 1px #dfb25b55}.row{display:flex;gap:8px;align-items:flex-start}.order{font:700 20px Georgia}.time{color:var(--muted);font-size:12px}.grow{flex:1}.tag{font-size:11px;font-weight:900;border-radius:999px;padding:5px 8px;background:#171210}.customer{margin:12px 0 5px;font-weight:900}.muted{color:var(--muted);font-size:13px;line-height:1.45}
 .items{margin-top:10px;border-top:1px dashed #4d3b32;padding-top:8px}.item{padding:7px 0;border-bottom:1px dashed #3b2e28}.item:last-child{border-bottom:0}
 .total{font-size:18px;font-weight:900;margin:12px 0}.actions{display:grid;grid-template-columns:1fr 1fr;gap:8px}
-.actions button{border:0;border-radius:10px;padding:11px;font-weight:900}.print{background:var(--gold);color:#271904}.next{background:var(--green);color:#fff}.done{background:#3c302a;color:#fff}.empty{text-align:center;color:var(--muted);padding:50px 10px}
+.actions button{border:0;border-radius:10px;padding:11px;font-weight:900}.print{background:var(--gold);color:#271904}.next{background:var(--green);color:#fff}.cancel{background:var(--red);color:#fff}.done{background:#3c302a;color:#fff}.empty{text-align:center;color:var(--muted);padding:50px 10px}
 .payline{margin-top:5px;font-weight:900}.pay-paid{color:#54d98c}.pay-pending{color:#f0bd55}.notice{background:#251c18;border:1px solid var(--line);border-radius:12px;padding:12px;margin-bottom:14px;color:var(--muted);font-size:13px}
 @media print{
   body{background:#fff!important;color:#000!important;margin:0!important;padding:0!important}
@@ -76,7 +76,19 @@ async function loadOrders(){
   let q='orders?select=*&order=created_at.desc&limit=60';
   if(filter!=='todos')q+=`&status=eq.${filter}`;
   try{
-    const rows=await api(q);
+    let rows=await api(q);
+
+    // Regra operacional: pedidos Pix só aparecem em "Novos" após confirmação do pagamento.
+    // Nas demais etapas, continuamos exibindo normalmente para preservar o histórico.
+    if(filter==='novo'){
+      rows = rows.filter(o=>{
+        const method=String(o.payment||'').trim().toLowerCase();
+        if(method!=='pix') return true;
+        const st=String(o.payment_status||'').trim().toLowerCase();
+        return ['approved','paid','processed','accredited'].includes(st);
+      });
+    }
+
     if(!firstLoad && filter==='novo'){
       rows.forEach(o=>{if(!lastSeen.has(o.id)){beep();}});
     }
@@ -102,6 +114,7 @@ function render(rows){
         <button class="print" onclick='printOrder(${JSON.stringify(o).replace(/'/g,"&#39;")})'>🖨️ Imprimir cozinha</button>
         ${o.fulfillment==='delivery'?`<button class="print" onclick='printDelivery(${JSON.stringify(o).replace(/'/g,"&#39;")})'>🛵 Imprimir delivery</button>`:''}
         ${nextButton(o)}
+        ${cancelButton(o)}
       </div>
     </article>`;
   }).join('');
@@ -120,6 +133,21 @@ function nextButton(o){
   if(o.status==='preparo')return `<button class="next" onclick="statusOrder('${o.id}','entrega')">🛵 Saiu</button>`;
   if(o.status==='entrega')return `<button class="next" onclick="statusOrder('${o.id}','concluido')">✓ Concluir</button>`;
   return `<button class="done" disabled>✓ Concluído</button>`;
+}
+function cancelButton(o){
+  if(['concluido','cancelado'].includes(String(o.status||'').toLowerCase())) return '';
+  return `<button class="cancel" onclick="cancelOrder('${o.id}','${String(o.order_no||'').replace(/'/g,"\'")}')">✕ Cancelar pedido</button>`;
+}
+async function cancelOrder(id,orderNo){
+  const ok=confirm(`Cancelar o pedido ${orderNo || ''}?\n\nEsta ação retirará o pedido da fila de produção e manterá o registro como CANCELADO.`);
+  if(!ok)return;
+  try{
+    await api(`orders?id=eq.${encodeURIComponent(id)}`,{method:'PATCH',body:JSON.stringify({status:'cancelado'})});
+    await loadOrders();
+    alert('Pedido cancelado com sucesso.');
+  }catch(e){
+    alert('Não foi possível cancelar o pedido: '+e.message);
+  }
 }
 async function statusOrder(id,status){
   const payload={status};
