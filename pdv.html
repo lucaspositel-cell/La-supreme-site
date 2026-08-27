@@ -1,8 +1,10 @@
 <!doctype html><html lang="pt-BR"><head><meta charset="utf-8"><meta name="viewport" content="width=device-width,initial-scale=1"><title>La Supreme — PDV</title><style>
 :root{--bg:#120f0d;--p:#211a17;--p2:#2b211d;--t:#fff8ed;--m:#c8b9ad;--g:#dfb25b;--ok:#1d8b54;--r:#b6282c;--l:#41332c}*{box-sizing:border-box}body{margin:0;background:var(--bg);color:var(--t);font:14px Arial}header{position:sticky;top:0;z-index:10;background:#100d0cf5;border-bottom:1px solid var(--l);padding:12px}.h,.wrap{max-width:1100px;margin:auto}.h{display:flex;align-items:center}h1{font:700 22px Georgia;margin:0}.gold{color:var(--g)}.tabs{display:flex;gap:8px;overflow:auto;padding:12px 0}button{border:0;border-radius:10px;padding:10px;font-weight:800}.tab{background:var(--p);color:#fff;border:1px solid var(--l);white-space:nowrap}.tab.on{background:var(--g);color:#241704}.wrap{padding:0 12px 80px}.notice,.card{background:var(--p);border:1px solid var(--l);border-radius:14px;padding:12px}.notice{color:var(--m);margin-bottom:12px}.tables{display:grid;grid-template-columns:repeat(3,1fr);gap:10px}.mesa{background:linear-gradient(var(--p2),var(--p));border:1px solid var(--l);border-radius:15px;padding:14px}.mesa.livre{border-color:#315d43}.mesa.ocupada{border-color:var(--g)}.mesa b{font:700 20px Georgia}.small{color:var(--m);font-size:12px;margin-top:6px}.hidden{display:none}.modalbg{position:fixed;inset:0;background:#0009;z-index:50;display:flex;align-items:flex-end;justify-content:center}.modal{background:#181311;width:min(760px,100%);max-height:92vh;overflow:auto;border-radius:18px 18px 0 0;padding:14px}.row{display:flex;gap:8px;align-items:center}.grow{flex:1}input,select{width:100%;background:#211a17;color:#fff;border:1px solid var(--l);border-radius:9px;padding:10px}.field{margin-top:9px}.products{display:grid;grid-template-columns:1fr 1fr;gap:8px;max-height:42vh;overflow:auto;margin-top:9px}.prod{background:#241c19;border:1px solid var(--l);border-radius:11px;padding:9px}.prod h4{margin:0 0 5px}.prodBtns{display:grid;grid-template-columns:1fr 1fr;gap:5px;margin-top:7px}.ok{background:var(--ok);color:#fff}.yellow{background:var(--g);color:#241704}.red{background:var(--r);color:#fff}.dark{background:#392d27;color:#fff}.item{padding:7px 0;border-bottom:1px dashed #49372f}.total{font-size:20px;font-weight:900;margin:10px 0}.actions{display:grid;grid-template-columns:1fr 1fr;gap:7px}.counter{display:grid;grid-template-columns:1.1fr .9fr;gap:10px}@media(max-width:700px){.tables{grid-template-columns:repeat(2,1fr)}.products{grid-template-columns:1fr}.counter{grid-template-columns:1fr}}
 .store-status-wrap{display:flex;justify-content:flex-end;align-items:center;gap:10px;margin:10px 0 14px}.store-status-btn{border:0;border-radius:999px;padding:11px 16px;font-weight:900;cursor:pointer;box-shadow:0 6px 18px rgba(0,0,0,.12)}.store-status-btn.open{background:#1f9d55;color:#fff}.store-status-btn.closed{background:#c0392b;color:#fff}.store-status-label{font-size:13px;font-weight:800;opacity:.78}@media(max-width:700px){.store-status-wrap{justify-content:stretch}.store-status-btn{width:100%}.store-status-label{display:none}}
+
+.coupon-grid{display:grid;grid-template-columns:repeat(auto-fit,minmax(250px,1fr));gap:10px;margin-top:12px}.coupon-card{background:var(--p2);border:1px solid var(--l);border-radius:14px;padding:14px}.coupon-card.off{opacity:.58}.coupon-code{font:800 18px Georgia;color:var(--g);letter-spacing:.5px}.coupon-meta{display:grid;gap:5px;margin:9px 0;color:var(--m)}.coupon-form{display:grid;grid-template-columns:repeat(2,minmax(0,1fr));gap:10px}.coupon-form .wide{grid-column:1/-1}.coupon-form label{display:grid;gap:5px;color:var(--m);font-size:12px}.coupon-form input,.coupon-form select{width:100%;background:#120f0d;color:#fff;border:1px solid var(--l);border-radius:10px;padding:11px}.coupon-actions{display:flex;gap:7px;flex-wrap:wrap;margin-top:10px}.coupon-login{max-width:460px;margin:18px auto 0;background:var(--p2);border:1px solid var(--l);border-radius:14px;padding:16px}.coupon-login h3{margin:0 0 8px}.coupon-login .field{display:grid;gap:5px;margin:10px 0}.coupon-login input{width:100%;background:#120f0d;color:#fff;border:1px solid var(--l);border-radius:10px;padding:12px}.coupon-adminbar{display:flex;gap:8px;align-items:center;flex-wrap:wrap;margin-top:12px;padding:10px 12px;border:1px solid var(--l);border-radius:12px;background:var(--p2)}@media(max-width:620px){.coupon-form{grid-template-columns:1fr}}
 </style></head><body>
-<header><div class="h"><h1>LA <span class="gold">SUPREME</span> — PDV</h1></div></header><main class="wrap"><div class="tabs"><button class="tab" onclick="location.href='painel.html'">Delivery</button><button class="tab" id="tb" onclick="tab('balcao')">Balcão</button><button class="tab on" id="tm" onclick="tab('mesas')">Mesas</button><button class="tab" id="tc" onclick="tab('caixa')">Caixa</button><button class="tab" id="tr" onclick="tab('relatorios')">Relatórios</button></div><div class="store-status-wrap"><span class="store-status-label">Status da loja:</span><button id="storeStatusBtn" class="store-status-btn open" onclick="toggleStoreStatus()">🟢 Aberto agora</button></div><div id="notice" class="notice">Conectando...</div><section id="mesas"><div id="tables" class="tables"></div></section><section id="balcao" class="hidden"><div class="counter"><div class="card"><h2>Balcão</h2><input id="bq" placeholder="Buscar produto" oninput="renderProducts('b')"><div id="bp" class="products"></div></div><div class="card"><h2>Comanda</h2><div class="field"><input id="bc" placeholder="Cliente (opcional)"></div><div id="bitems"></div><div class="total">Total: <span id="btot">R$ 0,00</span></div><div class="field"><select id="bpay"><option>Pix</option><option>Dinheiro</option><option>Cartão Débito</option><option>Cartão Crédito</option></select></div><div class="actions"><button class="dark" onclick="bCart=[];renderBCart()">Limpar</button><button class="ok" onclick="finishB()">Fechar venda</button></div></div></div></section><section id="caixa" class="hidden"><div id="cashbox" class="card"><h2>Caixa</h2><div class="small">Carregando...</div></div></section><section id="relatorios" class="hidden"><div id="reports" class="card"><h2>Relatórios</h2><div class="small">Carregando...</div></div></section></main><div id="modal"></div>
+<header><div class="h"><h1>LA <span class="gold">SUPREME</span> — PDV</h1></div></header><main class="wrap"><div class="tabs"><button class="tab" onclick="location.href='painel.html'">Delivery</button><button class="tab" id="tb" onclick="tab('balcao')">Balcão</button><button class="tab on" id="tm" onclick="tab('mesas')">Mesas</button><button class="tab" id="tc" onclick="tab('caixa')">Caixa</button><button class="tab" id="tr" onclick="tab('relatorios')">Relatórios</button><button class="tab" id="tcu" onclick="tab('cupons')">Cupons</button></div><div class="store-status-wrap"><span class="store-status-label">Status da loja:</span><button id="storeStatusBtn" class="store-status-btn open" onclick="toggleStoreStatus()">🟢 Aberto agora</button></div><div id="notice" class="notice">Conectando...</div><section id="mesas"><div id="tables" class="tables"></div></section><section id="balcao" class="hidden"><div class="counter"><div class="card"><h2>Balcão</h2><input id="bq" placeholder="Buscar produto" oninput="renderProducts('b')"><div id="bp" class="products"></div></div><div class="card"><h2>Comanda</h2><div class="field"><input id="bc" placeholder="Cliente (opcional)"></div><div id="bitems"></div><div class="total">Total: <span id="btot">R$ 0,00</span></div><div class="field"><select id="bpay"><option>Pix</option><option>Dinheiro</option><option>Cartão Débito</option><option>Cartão Crédito</option></select></div><div class="actions"><button class="dark" onclick="bCart=[];renderBCart()">Limpar</button><button class="ok" onclick="finishB()">Fechar venda</button></div></div></div></section><section id="caixa" class="hidden"><div id="cashbox" class="card"><h2>Caixa</h2><div class="small">Carregando...</div></div></section><section id="relatorios" class="hidden"><div id="reports" class="card"><h2>Relatórios</h2><div class="small">Carregando...</div></div></section><section id="cupons" class="hidden"><div class="card"><div class="row"><div><h2 style="margin-bottom:3px">Cupons</h2><div class="small">Crie e gerencie os cupons usados no site.</div></div><span class="grow"></span><button class="ok" id="newCouponBtn" onclick="newCoupon()" style="display:none">+ Novo cupom</button></div><div id="couponAuth"></div><div id="couponList"></div></div></section></main><div id="modal"></div>
 <script>
 let storeOpen=true;
 function renderStoreStatus(){const btn=document.getElementById('storeStatusBtn');if(!btn)return;btn.textContent=storeOpen?'🟢 Aberto agora':'🔴 Fechado agora';btn.classList.toggle('open',storeOpen);btn.classList.toggle('closed',!storeOpen);btn.setAttribute('aria-pressed',String(storeOpen));}
@@ -33,14 +35,87 @@ function tab(x){
   balcao.classList.toggle('hidden',x!='balcao');
   caixa.classList.toggle('hidden',x!='caixa');
   relatorios.classList.toggle('hidden',x!='relatorios');
+  cupons.classList.toggle('hidden',x!='cupons');
   tm.classList.toggle('on',x=='mesas');
   tb.classList.toggle('on',x=='balcao');
   tc.classList.toggle('on',x=='caixa');
   tr.classList.toggle('on',x=='relatorios');
+  tcu.classList.toggle('on',x=='cupons');
   if(x=='balcao')renderProducts('b');
   if(x=='caixa')loadCaixa();
   if(x=='relatorios')loadRelatorios();
+  if(x=='cupons')couponEntry();
 }
+
+
+let couponAccessToken=localStorage.getItem('lasupreme_coupon_token')||'';
+let couponUserEmail=localStorage.getItem('lasupreme_coupon_email')||'';
+async function couponApi(p,o={}){
+  if(!couponAccessToken)throw Error('Faça login para administrar cupons.');
+  let r=await fetch(`${SUPABASE_URL}/rest/v1/${p}`,{...o,headers:{apikey:SUPABASE_ANON_KEY,Authorization:`Bearer ${couponAccessToken}`,'Content-Type':'application/json',Prefer:'return=representation',...(o.headers||{})}});
+  if(r.status===401){couponLogout(false);throw Error('Sessão expirada. Entre novamente.');}
+  if(!r.ok)throw Error(await r.text());
+  let t=await r.text(); return t?JSON.parse(t):null;
+}
+async function couponLogin(){
+  const email=(document.getElementById('couponEmail')?.value||'').trim();
+  const password=document.getElementById('couponPassword')?.value||'';
+  if(!email||!password)return alert('Informe e-mail e senha.');
+  const btn=document.getElementById('couponLoginBtn'); if(btn){btn.disabled=true;btn.textContent='Entrando...';}
+  try{
+    const r=await fetch(`${SUPABASE_URL}/auth/v1/token?grant_type=password`,{method:'POST',headers:{apikey:SUPABASE_ANON_KEY,'Content-Type':'application/json'},body:JSON.stringify({email,password})});
+    const data=await r.json();
+    if(!r.ok||!data.access_token)throw Error(data?.error_description||data?.msg||data?.message||'Login inválido.');
+    couponAccessToken=data.access_token; couponUserEmail=data.user?.email||email;
+    localStorage.setItem('lasupreme_coupon_token',couponAccessToken); localStorage.setItem('lasupreme_coupon_email',couponUserEmail);
+    renderCouponAuth(); await loadCoupons();
+  }catch(e){alert('Não foi possível entrar. '+e.message)}finally{if(btn){btn.disabled=false;btn.textContent='Entrar';}}
+}
+function couponLogout(reload=true){couponAccessToken='';couponUserEmail='';localStorage.removeItem('lasupreme_coupon_token');localStorage.removeItem('lasupreme_coupon_email');if(reload){renderCouponAuth();couponList.innerHTML='';}}
+function renderCouponAuth(){
+  const a=document.getElementById('couponAuth'), b=document.getElementById('newCouponBtn'); if(!a||!b)return;
+  if(couponAccessToken){
+    b.style.display='';
+    a.innerHTML=`<div class="coupon-adminbar"><b>🔐 Administrador conectado</b><span class="small">${esc(couponUserEmail)}</span><span class="grow"></span><button class="dark" onclick="couponLogout()">Sair</button></div>`;
+  }else{
+    b.style.display='none';
+    a.innerHTML=`<div class="coupon-login"><h3>🔐 Acesso administrativo</h3><div class="small">Entre com o usuário criado no Supabase para gerenciar os cupons.</div><div class="field"><label>E-mail</label><input id="couponEmail" type="email" autocomplete="username" value="${esc(couponUserEmail)}" placeholder="seu@email.com"></div><div class="field"><label>Senha</label><input id="couponPassword" type="password" autocomplete="current-password" placeholder="Sua senha" onkeydown="if(event.key==='Enter')couponLogin()"></div><button class="ok" id="couponLoginBtn" onclick="couponLogin()">Entrar</button></div>`;
+  }
+}
+async function couponEntry(){renderCouponAuth();if(couponAccessToken)await loadCoupons();else couponList.innerHTML='';}
+
+let couponsCache=[];
+function couponTypeLabel(t){return t==='percent'?'Porcentagem':t==='fixed'?'Valor fixo':t==='free_delivery'?'Frete grátis':t;}
+function couponDiscountLabel(c){if(c.discount_type==='percent')return `${Number(c.discount_value||0).toLocaleString('pt-BR')}%`;if(c.discount_type==='fixed')return money(c.discount_value||0);return 'Frete grátis';}
+function couponDate(v){if(!v)return 'Sem vencimento';try{return new Date(v).toLocaleString('pt-BR')}catch{return v}}
+async function loadCoupons(){
+  couponList.innerHTML='<div class="small" style="margin-top:12px">Carregando cupons...</div>';
+  try{
+    couponsCache=await couponApi('coupons?select=*&order=created_at.desc');
+    renderCoupons();
+  }catch(e){couponList.innerHTML=`<div class="notice" style="margin-top:12px">Não foi possível carregar os cupons.<br><span class="small">${esc(e.message)}</span></div>`}
+}
+function renderCoupons(){
+  if(!couponsCache?.length){couponList.innerHTML='<div class="small" style="margin-top:14px">Nenhum cupom cadastrado.</div>';return;}
+  couponList.innerHTML='<div class="coupon-grid">'+couponsCache.map(c=>`<div class="coupon-card ${c.active?'':'off'}"><div class="row"><div class="coupon-code">${esc(c.code)}</div><span class="grow"></span><b>${c.active?'🟢 Ativo':'⚪ Inativo'}</b></div><div class="coupon-meta"><div>${esc(couponTypeLabel(c.discount_type))}: <b>${esc(couponDiscountLabel(c))}</b></div><div>Pedido mínimo: <b>${money(c.min_order||0)}</b></div><div>Validade: <b>${esc(couponDate(c.expires_at))}</b></div><div>Uso: <b>${Number(c.usage_count||0)}${c.usage_limit!=null?' / '+Number(c.usage_limit):' / ilimitado'}</b></div></div><div class="coupon-actions"><button class="dark" onclick="editCoupon('${c.id}')">Editar</button><button class="${c.active?'warn':'ok'}" onclick="toggleCoupon('${c.id}',${!c.active})">${c.active?'Desativar':'Ativar'}</button><button class="danger" onclick="deleteCoupon('${c.id}')">Excluir</button></div></div>`).join('')+'</div>';
+}
+function newCoupon(){if(!couponAccessToken)return alert('Faça login para administrar cupons.');showCouponEditor(null)}
+function editCoupon(id){showCouponEditor(couponsCache.find(x=>String(x.id)===String(id))||null)}
+function showCouponEditor(c){
+  const d=c?.expires_at?new Date(c.expires_at):null;
+  const local=d&&!isNaN(d)?new Date(d.getTime()-d.getTimezoneOffset()*60000).toISOString().slice(0,16):'';
+  modal.innerHTML=`<div class="modalbg"><div class="modal"><div class="row"><h2>${c?'Editar cupom':'Novo cupom'}</h2><span class="grow"></span><button class="dark" onclick="closeM()">Fechar</button></div><div class="coupon-form"><label>Código<input id="cpCode" maxlength="40" value="${c?esc(c.code):''}" placeholder="EX.: SUPREME10"></label><label>Tipo de desconto<select id="cpType" onchange="couponTypeChanged()"><option value="percent" ${c?.discount_type==='percent'?'selected':''}>Porcentagem (%)</option><option value="fixed" ${c?.discount_type==='fixed'?'selected':''}>Valor fixo (R$)</option><option value="free_delivery" ${c?.discount_type==='free_delivery'?'selected':''}>Frete grátis</option></select></label><label id="cpValueLabel">Valor do desconto<input id="cpValue" type="number" min="0" step="0.01" value="${c?Number(c.discount_value||0):10}"></label><label>Pedido mínimo (R$)<input id="cpMin" type="number" min="0" step="0.01" value="${c?Number(c.min_order||0):0}"></label><label>Validade (opcional)<input id="cpExpires" type="datetime-local" value="${local}"></label><label>Limite de usos (opcional)<input id="cpLimit" type="number" min="1" step="1" value="${c?.usage_limit??''}" placeholder="Ilimitado"></label><label class="wide"><span><input id="cpActive" type="checkbox" ${c?.active===false?'':'checked'} style="width:auto;margin-right:7px">Cupom ativo</span></label></div><div class="actions" style="margin-top:14px"><button class="dark" onclick="closeM()">Cancelar</button><button class="ok" onclick="saveCoupon(${c?`'${c.id}'`:'null'})">Salvar cupom</button></div></div></div>`;
+  couponTypeChanged();
+}
+function couponTypeChanged(){const type=document.getElementById('cpType')?.value;const row=document.getElementById('cpValueLabel');const inp=document.getElementById('cpValue');if(!row||!inp)return;row.style.opacity=type==='free_delivery'?'.5':'1';inp.disabled=type==='free_delivery';if(type==='free_delivery')inp.value='0';}
+async function saveCoupon(id){
+  const code=cpCode.value.trim().toUpperCase().replace(/\s+/g,''); const type=cpType.value; const value=type==='free_delivery'?0:Number(cpValue.value||0); const min=Number(cpMin.value||0); const limit=cpLimit.value?Number(cpLimit.value):null; const exp=cpExpires.value?new Date(cpExpires.value).toISOString():null;
+  if(!code)return alert('Informe o código do cupom.'); if(type==='percent'&&(value<=0||value>100))return alert('A porcentagem deve ser maior que 0 e no máximo 100%.'); if(type==='fixed'&&value<=0)return alert('Informe um valor de desconto maior que zero.');
+  const body={code,discount_type:type,discount_value:value,min_order:min,active:cpActive.checked,expires_at:exp,usage_limit:limit};
+  try{if(id)await couponApi(`coupons?id=eq.${encodeURIComponent(id)}`,{method:'PATCH',body:JSON.stringify(body)});else await couponApi('coupons',{method:'POST',body:JSON.stringify({...body,usage_count:0})});closeM();await loadCoupons();}catch(e){alert('Não foi possível salvar o cupom. '+e.message)}
+}
+async function toggleCoupon(id,active){try{await couponApi(`coupons?id=eq.${encodeURIComponent(id)}`,{method:'PATCH',body:JSON.stringify({active})});await loadCoupons()}catch(e){alert('Não foi possível alterar o cupom. '+e.message)}}
+async function deleteCoupon(id){const c=couponsCache.find(x=>String(x.id)===String(id));if(!confirm(`Excluir o cupom ${c?.code||''}?`))return;try{await couponApi(`coupons?id=eq.${encodeURIComponent(id)}`,{method:'DELETE'});await loadCoupons()}catch(e){alert('Não foi possível excluir o cupom. '+e.message)}}
 
 async function load(){
   try{
