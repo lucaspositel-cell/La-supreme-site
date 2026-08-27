@@ -1909,13 +1909,40 @@ function renderCart(){
   const b=document.getElementById('cartBody');
   if(!cart.length){b.innerHTML='<div class="empty-cart">Seu carrinho está vazio.<br>Escolha os itens no cardápio.</div><button class="btn-main" style="width:100%" onclick="closeCart()">Voltar ao cardápio</button>';return;}
   const rows=cart.map(x=>`<div class="cart-row"><div><h4>${escapeHtml(x.name)}</h4><p>${x.size?escapeHtml(x.size):''}${x.crust?` • Borda ${escapeHtml(x.crust)}`:''}</p>${x.obs?`<p>Obs.: ${escapeHtml(x.obs)}</p>`:''}<strong>${money(x.unit*x.qty)}</strong><br><button class="remove-item" onclick="removeItem(${x.id})">Remover</button></div><div class="qty-controls"><button onclick="changeQty(${x.id},-1)">−</button><b>${x.qty}</b><button onclick="changeQty(${x.id},1)">+</button></div></div>`).join('');
-  b.innerHTML=`<div class="cart-list">${rows}</div><div class="cart-summary"><div class="sum-line total"><span>Subtotal</span><span>${money(subtotal())}</span></div><div class="small-note">A taxa de entrega, quando aplicável, será confirmada no atendimento e não está incluída no subtotal.</div></div><div class="checkout-block"><div class="account-card"><h3>👤 Cadastro opcional</h3><p id="checkoutAccountText">Você pode continuar sem cadastro ou salvar seus dados para agilizar os próximos pedidos.</p><div class="account-actions"><button class="btn-muted" type="button" onclick="openCustomerAccount()">Minha conta</button><button class="btn-muted" type="button" onclick="fillCheckoutFromProfile();showToast('Dados preenchidos!')">Usar dados salvos</button></div></div><div class="checkout-steps"><div class="checkout-step active"><b>1</b>Pedido</div><div class="checkout-step active"><b>2</b>Entrega</div><div class="checkout-step active"><b>3</b>Pagamento</div><div class="checkout-step"><b>4</b>Confirmar</div></div><h3>Finalizar pedido</h3><div class="form-grid"><div class="field full"><label>Seu nome</label><input id="custName" placeholder="Nome do cliente"></div><div class="field full"><label>Telefone</label><input id="custPhone" inputmode="tel" placeholder="(15) 99999-9999"></div><div class="field full"><label>Recebimento</label><div class="choice-row"><button id="deliveryBtn" class="choice active" onclick="setFulfillment('delivery')">Entrega</button><button id="pickupBtn" class="choice" onclick="setFulfillment('pickup')">Retirada</button></div></div><div id="addressFields" class="field full"><label>Endereço de entrega</label><textarea id="address" placeholder="Rua, número, bairro, cidade e referência"></textarea></div><div class="field full"><label>Forma de pagamento</label><select id="payment" onchange="togglePixEmail()"><option value="Pix">Pix</option><option value="Dinheiro">Dinheiro</option><option value="Cartão na entrega">Cartão na entrega</option></select></div><div id="pixEmailField" class="field full"><label>E-mail para gerar o Pix</label><input id="custEmail" type="email" inputmode="email" autocomplete="email" placeholder="seuemail@exemplo.com"><div class="small-note">Necessário somente para o Pix Mercado Pago.</div></div><div class="field full"><label>Observações gerais</label><textarea id="generalObs" placeholder="Alguma observação para o pedido?"></textarea></div><div class="field full"><label style="display:flex;gap:9px;align-items:flex-start;cursor:pointer"><input id="saveCustomerData" type="checkbox" style="width:auto;margin-top:2px"> <span>Salvar nome, telefone e endereço neste aparelho para os próximos pedidos.</span></label></div></div><button class="btn-main finish-btn" style="width:100%;margin-top:12px" onclick="checkoutWhatsApp()">✅ Finalizar pedido</button></div>`;
+  b.innerHTML=`<div class="cart-list">${rows}</div><div class="cart-summary"><div class="sum-line"><span>Subtotal</span><span>${money(subtotal())}</span></div><div class="sum-line" id="deliveryFeeLine"><span>Entrega</span><span id="deliveryFeeValue">Grátis</span></div><div class="sum-line total"><span>Total</span><span id="checkoutTotalValue">${money(subtotal())}</span></div><div class="small-note" id="deliveryFeeNote">Escolha sua cidade abaixo. Maristela tem entrega grátis; Laranjal Paulista e Pereiras têm taxa de R$ 5,00.</div></div><div class="checkout-block"><div class="account-card"><h3>👤 Cadastro opcional</h3><p id="checkoutAccountText">Você pode continuar sem cadastro ou salvar seus dados para agilizar os próximos pedidos.</p><div class="account-actions"><button class="btn-muted" type="button" onclick="openCustomerAccount()">Minha conta</button><button class="btn-muted" type="button" onclick="fillCheckoutFromProfile();showToast('Dados preenchidos!')">Usar dados salvos</button></div></div><div class="checkout-steps"><div class="checkout-step active"><b>1</b>Pedido</div><div class="checkout-step active"><b>2</b>Entrega</div><div class="checkout-step active"><b>3</b>Pagamento</div><div class="checkout-step"><b>4</b>Confirmar</div></div><h3>Finalizar pedido</h3><div class="form-grid"><div class="field full"><label>Seu nome</label><input id="custName" placeholder="Nome do cliente"></div><div class="field full"><label>Telefone</label><input id="custPhone" inputmode="tel" placeholder="(15) 99999-9999"></div><div class="field full"><label>Recebimento</label><div class="choice-row"><button id="deliveryBtn" class="choice active" onclick="setFulfillment('delivery')">Entrega</button><button id="pickupBtn" class="choice" onclick="setFulfillment('pickup')">Retirada</button></div></div><div id="deliveryFields" class="field full"><label>Sua cidade</label><select id="deliveryCity" onchange="updateDeliveryTotal()"><option value="" data-fee="0" selected disabled>Selecione sua cidade</option><option value="Maristela" data-fee="0">Maristela — entrega grátis</option><option value="Laranjal Paulista" data-fee="5">Laranjal Paulista — entrega R$ 5,00</option><option value="Pereiras" data-fee="5">Pereiras — entrega R$ 5,00</option></select></div><div id="addressFields" class="field full"><label>Endereço de entrega</label><textarea id="address" placeholder="Rua, número, bairro e referência"></textarea></div><div class="field full"><label>Forma de pagamento</label><select id="payment" onchange="togglePixEmail()"><option value="Pix">Pix</option><option value="Dinheiro">Dinheiro</option><option value="Cartão na entrega">Cartão na entrega</option></select></div><div id="pixEmailField" class="field full"><label>E-mail para gerar o Pix</label><input id="custEmail" type="email" inputmode="email" autocomplete="email" placeholder="seuemail@exemplo.com"><div class="small-note">Necessário somente para o Pix Mercado Pago.</div></div><div class="field full"><label>Observações gerais</label><textarea id="generalObs" placeholder="Alguma observação para o pedido?"></textarea></div><div class="field full"><label style="display:flex;gap:9px;align-items:flex-start;cursor:pointer"><input id="saveCustomerData" type="checkbox" style="width:auto;margin-top:2px"> <span>Salvar nome, telefone e endereço neste aparelho para os próximos pedidos.</span></label></div></div><button class="btn-main finish-btn" style="width:100%;margin-top:12px" onclick="checkoutWhatsApp()">✅ Finalizar pedido</button></div>`;
   window._fulfillment='delivery';
   applyStoreStatusUI();
   togglePixEmail();
   fillCheckoutFromProfile();
+  updateDeliveryTotal();
 }
-function setFulfillment(v){window._fulfillment=v;document.getElementById('deliveryBtn').classList.toggle('active',v==='delivery');document.getElementById('pickupBtn').classList.toggle('active',v==='pickup');document.getElementById('addressFields').style.display=v==='delivery'?'flex':'none';}
+function selectedDelivery(){
+  if((window._fulfillment||'delivery')!=='delivery') return {city:'',fee:0};
+  const sel=document.getElementById('deliveryCity');
+  if(!sel) return {city:'Maristela',fee:0};
+  const opt=sel.options[sel.selectedIndex];
+  return {city:sel.value||'',fee:Number(opt?.dataset?.fee||0)};
+}
+function updateDeliveryTotal(){
+  const d=selectedDelivery();
+  const total=subtotal()+d.fee;
+  const feeEl=document.getElementById('deliveryFeeValue');
+  const totalEl=document.getElementById('checkoutTotalValue');
+  const note=document.getElementById('deliveryFeeNote');
+  const feeLine=document.getElementById('deliveryFeeLine');
+  if(feeEl) feeEl.textContent=!d.city?'—':(d.fee?money(d.fee):'Grátis');
+  if(totalEl) totalEl.textContent=money(total);
+  if(feeLine) feeLine.style.display=(window._fulfillment||'delivery')==='delivery'?'flex':'none';
+  if(note) note.textContent=(window._fulfillment||'delivery')==='delivery'?(d.city?`${d.city}: ${d.fee?money(d.fee):'entrega grátis'}.`:'Escolha sua cidade para calcular a entrega.'):'Retirada no local — sem taxa de entrega.';
+}
+function setFulfillment(v){
+  window._fulfillment=v;
+  document.getElementById('deliveryBtn').classList.toggle('active',v==='delivery');
+  document.getElementById('pickupBtn').classList.toggle('active',v==='pickup');
+  document.getElementById('deliveryFields').style.display=v==='delivery'?'flex':'none';
+  document.getElementById('addressFields').style.display=v==='delivery'?'flex':'none';
+  updateDeliveryTotal();
+}
 function togglePixEmail(){
   const pay=document.getElementById('payment')?.value||'Pix';
   const field=document.getElementById('pixEmailField');
@@ -1933,7 +1960,11 @@ function buildOrderData(){
   const phone=document.getElementById('custPhone')?.value.trim()||'';
   if(!name){alert('Informe seu nome para finalizar o pedido.');return null;}
   const fulfillment=window._fulfillment||'delivery';
+  const delivery=selectedDelivery();
+  const city=delivery.city;
+  const deliveryFee=delivery.fee;
   const address=document.getElementById('address')?.value.trim()||'';
+  if(fulfillment==='delivery'&&!city){alert('Escolha sua cidade para a entrega.');return null;}
   if(fulfillment==='delivery'&&!address){alert('Informe o endereço de entrega.');return null;}
   const pay=document.getElementById('payment')?.value||'Pix';
   const email=document.getElementById('custEmail')?.value.trim().toLowerCase()||'';
@@ -1949,11 +1980,14 @@ function buildOrderData(){
     createdLabel:now.toLocaleString('pt-BR'),
     customer:{name,phone,email},
     fulfillment,
+    city:fulfillment==='delivery'?city:'',
     address,
     payment:pay,
     generalObs:gobs,
     items:cart.map(x=>({...x})),
-    subtotal:subtotal()
+    subtotal:subtotal(),
+    deliveryFee:fulfillment==='delivery'?deliveryFee:0,
+    total:subtotal()+(fulfillment==='delivery'?deliveryFee:0)
   };
 }
 function orderWhatsAppMessage(o){
@@ -1961,7 +1995,7 @@ function orderWhatsAppMessage(o){
   let msg=`🍕 *PEDIDO ${o.orderNo} — LA SUPREME*\n\nCliente: ${o.customer.name}`;
   if(o.customer.phone)msg+=`\nTelefone: ${o.customer.phone}`;
   msg+=`\n\n${lines.join('\n\n')}\n\n*Subtotal: ${money(o.subtotal)}*\n`;
-  msg+=o.fulfillment==='delivery'?`\n🛵 Entrega\nEndereço: ${o.address}\nTaxa de entrega: a confirmar\n`:`\n🏪 Retirada no local\n`;
+  msg+=o.fulfillment==='delivery'?`\n🛵 Entrega\nCidade: ${o.city}\nEndereço: ${o.address}\nTaxa de entrega: ${o.deliveryFee?money(o.deliveryFee):'Grátis'}\n*Total: ${money(o.total)}*\n`:`\n🏪 Retirada no local\n*Total: ${money(o.total)}*\n`;
   msg+=`\n💳 Pagamento: ${o.payment}`;
   if(o.generalObs)msg+=`\n\nObservações: ${o.generalObs}`;
   msg+=`\n\nPedido: *${o.orderNo}*\nGerado em: ${o.createdLabel}\nlasupremepizza.com.br`;
@@ -2003,12 +2037,14 @@ function receiptText(o){
 
   r.push(line);
   r.push(`SUBTOTAL: ${money(o.subtotal)}`);
-  if(o.fulfillment==='delivery')r.push('ENTREGA: A CONFIRMAR');
+  if(o.fulfillment==='delivery')r.push(`ENTREGA: ${o.deliveryFee?money(o.deliveryFee):'GRATIS'}`);
+  r.push(`TOTAL: ${money(o.total)}`);
   r.push(line);
   r.push(`PAGAMENTO: ${o.payment.toUpperCase()}`);
 
   if(o.fulfillment==='delivery'){
-    r.push('', 'ENDERECO:');
+    r.push('', `CIDADE: ${String(o.city||'').toUpperCase()}`);
+    r.push('ENDERECO:');
     wrap(o.address,30).forEach(v=>r.push(v.toUpperCase()));
   }
   if(o.generalObs){
@@ -2129,7 +2165,7 @@ async function createPixForOrder(orderId,email){
 function showPixPayment(order,pix){
   _pixOrderDbId=order.dbId||'';
   document.getElementById('pixOrderNo').textContent=order.orderNo||'—';
-  document.getElementById('pixAmount').textContent=money(Number(pix.amount||order.subtotal||0));
+  document.getElementById('pixAmount').textContent=money(Number(pix.amount||order.total||order.subtotal||0));
   document.getElementById('pixCode').value=pix.qr_code||'';
   const img=document.getElementById('pixQrImage');
   const b64=String(pix.qr_code_base64||'');
@@ -2315,12 +2351,12 @@ async function saveOrderOnline(order){
     customer_name: order.customer.name,
     customer_phone: order.customer.phone || '',
     fulfillment: order.fulfillment,
-    address: order.address || '',
+    address: order.fulfillment==='delivery' ? `${order.city} — ${order.address}` : '',
     payment: order.payment || '',
     general_obs: order.generalObs || '',
     subtotal: Number(order.subtotal || 0),
-    delivery_fee: null,
-    total: Number(order.subtotal || 0),
+    delivery_fee: Number(order.deliveryFee || 0),
+    total: Number(order.total || order.subtotal || 0),
     status: 'novo',
     printed: false,
     items: order.items
