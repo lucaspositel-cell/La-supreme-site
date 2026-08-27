@@ -152,7 +152,7 @@ async function startT(){
 }
 
 function showT(){
-  modal.innerHTML=`<div class="modalbg"><div class="modal"><div class="row"><h2>Mesa ${esc(curT.numero)}</h2><span class="grow"></span><button class="dark" onclick="closeM()">Fechar</button></div><div class="small">${curC.cliente_nome?'Cliente: '+esc(curC.cliente_nome):'Comanda aberta'}</div><div class="field"><input id="tq" placeholder="Buscar produto" oninput="renderProducts('t')"></div><div class="row field"><button class="yellow grow" onclick="openHalfHalf('t')">🍕 Pizza meio a meio 50/50</button></div><div id="tp" class="products"></div><h3>Itens</h3><div id="titems"></div><div class="total">Total: <span id="ttot">R$ 0,00</span></div><div class="actions"><button class="yellow" onclick="alert('Impressão parcial entra na próxima etapa')">🖨️ Parcial</button><button class="ok" onclick="closeTUI()">Fechar conta</button></div></div></div>`;
+  modal.innerHTML=`<div class="modalbg"><div class="modal"><div class="row"><h2>Mesa ${esc(curT.numero)}</h2><span class="grow"></span><button class="dark" onclick="closeM()">Fechar</button></div><div class="small">${curC.cliente_nome?'Cliente: '+esc(curC.cliente_nome):'Comanda aberta'}</div><div class="field"><input id="tq" placeholder="Buscar produto" oninput="renderProducts('t')"></div><div class="row field"><button class="yellow grow" onclick="openHalfHalf('t')">🍕 Pizza meio a meio 50/50</button></div><div id="tp" class="products"></div><h3>Itens</h3><div id="titems"></div><div class="total">Total: <span id="ttot">R$ 0,00</span></div><div class="actions" style="grid-template-columns:1fr 1fr 1fr"><button class="yellow" onclick="alert('Impressão parcial entra na próxima etapa')">🖨️ Parcial</button><button class="red" onclick="cancelT()">Cancelar pedido</button><button class="ok" onclick="closeTUI()">Fechar conta</button></div></div></div>`;
   renderProducts('t');renderTItems();
 }
 
@@ -202,6 +202,22 @@ function renderTItems(){
 async function delI(id){
   await api(`comanda_itens?id=eq.${id}`,{method:'DELETE'});
   sitems=sitems.filter(x=>String(x.id)!==String(id)); await recalc(); renderTItems();
+}
+
+async function cancelT(){
+  if(!curC||!curT)return;
+  const total=sitems.reduce((a,x)=>a+Number(x.total||0),0);
+  const ok=confirm(`Cancelar este pedido da Mesa ${curT.numero}?\n\nTotal atual: ${money(total)}\n\nEsta ação liberará a mesa e marcará a comanda como CANCELADA.`);
+  if(!ok)return;
+  try{
+    await api(`comandas?id=eq.${curC.id}`,{method:'PATCH',body:JSON.stringify({status:'cancelada',fechada_em:new Date().toISOString()})});
+    await api(`mesas?id=eq.${curT.id}`,{method:'PATCH',body:JSON.stringify({status:'livre'})});
+    closeM();
+    await load();
+    alert('Pedido cancelado e mesa liberada.');
+  }catch(e){
+    alert('Não foi possível cancelar o pedido: '+e.message);
+  }
 }
 
 function closeTUI(){
