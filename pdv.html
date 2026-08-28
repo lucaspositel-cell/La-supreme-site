@@ -3,8 +3,26 @@
 .store-status-wrap{display:flex;justify-content:flex-end;align-items:center;gap:10px;margin:10px 0 14px}.store-status-btn{border:0;border-radius:999px;padding:11px 16px;font-weight:900;cursor:pointer;box-shadow:0 6px 18px rgba(0,0,0,.12)}.store-status-btn.open{background:#1f9d55;color:#fff}.store-status-btn.closed{background:#c0392b;color:#fff}.store-status-label{font-size:13px;font-weight:800;opacity:.78}@media(max-width:700px){.store-status-wrap{justify-content:stretch}.store-status-btn{width:100%}.store-status-label{display:none}}
 
 .coupon-grid{display:grid;grid-template-columns:repeat(auto-fit,minmax(250px,1fr));gap:10px;margin-top:12px}.coupon-card{background:var(--p2);border:1px solid var(--l);border-radius:14px;padding:14px}.coupon-card.off{opacity:.58}.coupon-code{font:800 18px Georgia;color:var(--g);letter-spacing:.5px}.coupon-meta{display:grid;gap:5px;margin:9px 0;color:var(--m)}.coupon-form{display:grid;grid-template-columns:repeat(2,minmax(0,1fr));gap:10px}.coupon-form .wide{grid-column:1/-1}.coupon-form label{display:grid;gap:5px;color:var(--m);font-size:12px}.coupon-form input,.coupon-form select{width:100%;background:#120f0d;color:#fff;border:1px solid var(--l);border-radius:10px;padding:11px}.coupon-actions{display:flex;gap:7px;flex-wrap:wrap;margin-top:10px}.coupon-login{max-width:460px;margin:18px auto 0;background:var(--p2);border:1px solid var(--l);border-radius:14px;padding:16px}.coupon-login h3{margin:0 0 8px}.coupon-login .field{display:grid;gap:5px;margin:10px 0}.coupon-login input{width:100%;background:#120f0d;color:#fff;border:1px solid var(--l);border-radius:10px;padding:12px}.coupon-adminbar{display:flex;gap:8px;align-items:center;flex-wrap:wrap;margin-top:12px;padding:10px 12px;border:1px solid var(--l);border-radius:12px;background:var(--p2)}@media(max-width:620px){.coupon-form{grid-template-columns:1fr}}
+
+.cmv-grid{display:grid;grid-template-columns:repeat(auto-fit,minmax(210px,1fr));gap:10px;margin-top:10px}
+.cmv-kpi{background:var(--p2);border:1px solid var(--l);border-radius:14px;padding:14px}
+.cmv-kpi .v{font-size:24px;font-weight:900;margin-top:5px}
+.cmv-toolbar{display:flex;gap:8px;flex-wrap:wrap;margin:10px 0}
+.cmv-table{width:100%;border-collapse:collapse;margin-top:10px}
+.cmv-table th,.cmv-table td{padding:9px 7px;border-bottom:1px solid var(--l);text-align:left;vertical-align:top}
+.cmv-table th{color:var(--g);font-size:12px}
+.cmv-good{color:#63d69a}.cmv-warn{color:#f0c86c}.cmv-bad{color:#ff7b7b}
+.cmv-form{display:grid;grid-template-columns:repeat(2,minmax(0,1fr));gap:9px}
+.cmv-form .wide{grid-column:1/-1}
+.cmv-form label{display:grid;gap:5px;color:var(--m);font-size:12px}
+.cmv-login{max-width:460px;margin:18px auto;background:var(--p2);border:1px solid var(--l);border-radius:14px;padding:16px}
+@media(max-width:650px){.cmv-form{grid-template-columns:1fr}.cmv-table{font-size:12px}}
+
 </style></head><body>
-<header><div class="h"><h1>LA <span class="gold">SUPREME</span> — PDV</h1></div></header><main class="wrap"><div class="tabs"><button class="tab" onclick="location.href='painel.html'">Delivery</button><button class="tab" id="tb" onclick="tab('balcao')">Balcão</button><button class="tab on" id="tm" onclick="tab('mesas')">Mesas</button><button class="tab" id="tc" onclick="tab('caixa')">Caixa</button><button class="tab" id="tr" onclick="tab('relatorios')">Relatórios</button><button class="tab" id="tcu" onclick="tab('cupons')">Cupons</button></div><div class="store-status-wrap"><span class="store-status-label">Status da loja:</span><button id="storeStatusBtn" class="store-status-btn open" onclick="toggleStoreStatus()">🟢 Aberto agora</button></div><div id="notice" class="notice">Conectando...</div><section id="mesas"><div id="tables" class="tables"></div></section><section id="balcao" class="hidden"><div class="counter"><div class="card"><h2>Balcão</h2><input id="bq" placeholder="Buscar produto" oninput="renderProducts('b')"><div id="bp" class="products"></div></div><div class="card"><h2>Comanda</h2><div class="field"><input id="bc" placeholder="Cliente (opcional)"></div><div id="bitems"></div><div class="total">Total: <span id="btot">R$ 0,00</span></div><div class="field"><select id="bpay"><option>Pix</option><option>Dinheiro</option><option>Cartão Débito</option><option>Cartão Crédito</option></select></div><div class="actions"><button class="dark" onclick="bCart=[];renderBCart()">Limpar</button><button class="ok" onclick="finishB()">Fechar venda</button></div></div></div></section><section id="caixa" class="hidden"><div id="cashbox" class="card"><h2>Caixa</h2><div class="small">Carregando...</div></div></section><section id="relatorios" class="hidden"><div id="reports" class="card"><h2>Relatórios</h2><div class="small">Carregando...</div></div></section><section id="cupons" class="hidden"><div class="card"><div class="row"><div><h2 style="margin-bottom:3px">Cupons</h2><div class="small">Crie e gerencie os cupons usados no site.</div></div><span class="grow"></span><button class="ok" id="newCouponBtn" onclick="newCoupon()" style="display:none">+ Novo cupom</button></div><div id="couponAuth"></div><div id="couponList"></div></div></section></main><div id="modal"></div>
+<header><div class="h"><h1>LA <span class="gold">SUPREME</span> — PDV</h1></div></header><main class="wrap"><div class="tabs"><button class="tab" onclick="location.href='painel.html'">Delivery</button><button class="tab" id="tb" onclick="tab('balcao')">Balcão</button><button class="tab on" id="tm" onclick="tab('mesas')">Mesas</button><button class="tab" id="tc" onclick="tab('caixa')">Caixa</button><button class="tab" id="tr" onclick="tab('relatorios')">Relatórios</button><button class="tab" id="tcu" onclick="tab('cupons')">Cupons</button><button class="tab" id="tcmv" onclick="tab('cmv')">CMV</button></div><div class="store-status-wrap"><span class="store-status-label">Status da loja:</span><button id="storeStatusBtn" class="store-status-btn open" onclick="toggleStoreStatus()">🟢 Aberto agora</button></div><div id="notice" class="notice">Conectando...</div><section id="mesas"><div id="tables" class="tables"></div></section><section id="balcao" class="hidden"><div class="counter"><div class="card"><h2>Balcão</h2><input id="bq" placeholder="Buscar produto" oninput="renderProducts('b')"><div id="bp" class="products"></div></div><div class="card"><h2>Comanda</h2><div class="field"><input id="bc" placeholder="Cliente (opcional)"></div><div id="bitems"></div><div class="total">Total: <span id="btot">R$ 0,00</span></div><div class="field"><select id="bpay"><option>Pix</option><option>Dinheiro</option><option>Cartão Débito</option><option>Cartão Crédito</option></select></div><div class="actions"><button class="dark" onclick="bCart=[];renderBCart()">Limpar</button><button class="ok" onclick="finishB()">Fechar venda</button></div></div></div></section><section id="caixa" class="hidden"><div id="cashbox" class="card"><h2>Caixa</h2><div class="small">Carregando...</div></div></section><section id="relatorios" class="hidden"><div id="reports" class="card"><h2>Relatórios</h2><div class="small">Carregando...</div></div></section><section id="cupons" class="hidden"><div class="card"><div class="row"><div><h2 style="margin-bottom:3px">Cupons</h2><div class="small">Crie e gerencie os cupons usados no site.</div></div><span class="grow"></span><button class="ok" id="newCouponBtn" onclick="newCoupon()" style="display:none">+ Novo cupom</button></div><div id="couponAuth"></div><div id="couponList"></div></div></section><section id="cmv" class="hidden"><div class="card">
+<div class="row"><div><h2 style="margin-bottom:3px">CMV & Custos</h2><div class="small">Gestão de insumos, fichas técnicas, margens e preços.</div></div><span class="grow"></span></div>
+<div id="cmvAuth"></div><div id="cmvContent"></div>
+</div></section></main><div id="modal"></div>
 <script>
 let storeOpen=true;
 function renderStoreStatus(){const btn=document.getElementById('storeStatusBtn');if(!btn)return;btn.textContent=storeOpen?'🟢 Aberto agora':'🔴 Fechado agora';btn.classList.toggle('open',storeOpen);btn.classList.toggle('closed',!storeOpen);btn.setAttribute('aria-pressed',String(storeOpen));}
@@ -36,15 +54,18 @@ function tab(x){
   caixa.classList.toggle('hidden',x!='caixa');
   relatorios.classList.toggle('hidden',x!='relatorios');
   cupons.classList.toggle('hidden',x!='cupons');
+  cmv.classList.toggle('hidden',x!='cmv');
   tm.classList.toggle('on',x=='mesas');
   tb.classList.toggle('on',x=='balcao');
   tc.classList.toggle('on',x=='caixa');
   tr.classList.toggle('on',x=='relatorios');
   tcu.classList.toggle('on',x=='cupons');
+  tcmv.classList.toggle('on',x=='cmv');
   if(x=='balcao')renderProducts('b');
   if(x=='caixa')loadCaixa();
   if(x=='relatorios')loadRelatorios();
   if(x=='cupons')couponEntry();
+  if(x=='cmv')cmvEntry();
 }
 
 
@@ -396,6 +417,170 @@ setTimeout(()=>{
     c.insertBefore(b,document.getElementById('bp'));
   }
 },0);
+
+
+// ===================== CMV / GESTÃO =====================
+let cmvAccessToken=localStorage.getItem('lasupreme_cmv_token')||couponAccessToken||'';
+let cmvUserEmail=localStorage.getItem('lasupreme_cmv_email')||couponUserEmail||'';
+let cmvIngredients=[], cmvProducts=[], cmvRecipes=[];
+
+async function cmvApi(p,o={}){
+  if(!cmvAccessToken)throw Error('Faça login para acessar o CMV.');
+  let r=await fetch(`${SUPABASE_URL}/rest/v1/${p}`,{...o,headers:{apikey:SUPABASE_ANON_KEY,Authorization:`Bearer ${cmvAccessToken}`,'Content-Type':'application/json',Prefer:'return=representation',...(o.headers||{})}});
+  if(r.status===401){cmvLogout(false);throw Error('Sessão expirada. Entre novamente.');}
+  if(!r.ok)throw Error(await r.text());
+  let t=await r.text(); return t?JSON.parse(t):null;
+}
+async function cmvLogin(){
+  const email=(document.getElementById('cmvEmail')?.value||'').trim(), password=document.getElementById('cmvPassword')?.value||'';
+  if(!email||!password)return alert('Informe e-mail e senha.');
+  const b=document.getElementById('cmvLoginBtn'); if(b){b.disabled=true;b.textContent='Entrando...'}
+  try{
+    const r=await fetch(`${SUPABASE_URL}/auth/v1/token?grant_type=password`,{method:'POST',headers:{apikey:SUPABASE_ANON_KEY,'Content-Type':'application/json'},body:JSON.stringify({email,password})});
+    const d=await r.json(); if(!r.ok||!d.access_token)throw Error(d?.error_description||d?.msg||d?.message||'Login inválido.');
+    cmvAccessToken=d.access_token;cmvUserEmail=d.user?.email||email;
+    localStorage.setItem('lasupreme_cmv_token',cmvAccessToken);localStorage.setItem('lasupreme_cmv_email',cmvUserEmail);
+    renderCmvAuth();await loadCmv();
+  }catch(e){alert('Não foi possível entrar. '+e.message)}finally{if(b){b.disabled=false;b.textContent='Entrar'}}
+}
+function cmvLogout(reload=true){cmvAccessToken='';cmvUserEmail='';localStorage.removeItem('lasupreme_cmv_token');localStorage.removeItem('lasupreme_cmv_email');if(reload){renderCmvAuth();cmvContent.innerHTML=''}}
+function renderCmvAuth(){
+  const a=document.getElementById('cmvAuth'); if(!a)return;
+  if(cmvAccessToken)a.innerHTML=`<div class="coupon-adminbar"><b>🔐 Gestão conectada</b><span class="small">${esc(cmvUserEmail)}</span><span class="grow"></span><button class="dark" onclick="cmvChangePassword()">Alterar senha</button><button class="dark" onclick="cmvLogout()">Sair</button></div>`;
+  else a.innerHTML=`<div class="cmv-login"><h3>🔐 Acesso administrativo</h3><div class="small">Use seu usuário do Supabase.</div><div class="field"><input id="cmvEmail" type="email" placeholder="E-mail"></div><div class="field"><input id="cmvPassword" type="password" placeholder="Senha" onkeydown="if(event.key==='Enter')cmvLogin()"></div><button class="ok" id="cmvLoginBtn" onclick="cmvLogin()">Entrar</button></div>`;
+}
+async function cmvEntry(){renderCmvAuth();if(cmvAccessToken)await loadCmv();else cmvContent.innerHTML=''}
+
+function cmvChangePassword(){
+  if(!cmvAccessToken)return alert('Faça login primeiro.');
+  modal.innerHTML=`<div class="modalbg"><div class="modal">
+    <div class="row"><h2>Alterar senha</h2><span class="grow"></span><button class="dark" onclick="closeM()">Fechar</button></div>
+    <div class="small">Defina uma nova senha para o seu acesso administrativo.</div>
+    <div class="cmv-form" style="margin-top:12px">
+      <label class="wide">Nova senha<input id="cmvNewPassword" type="password" minlength="8" autocomplete="new-password" placeholder="Mínimo de 8 caracteres"></label>
+      <label class="wide">Confirmar nova senha<input id="cmvConfirmPassword" type="password" minlength="8" autocomplete="new-password" placeholder="Digite novamente"></label>
+    </div>
+    <div id="cmvPasswordMsg" class="small" style="margin-top:10px"></div>
+    <div class="actions" style="margin-top:14px">
+      <button class="dark" onclick="closeM()">Cancelar</button>
+      <button class="ok" id="cmvPasswordBtn" onclick="cmvSaveNewPassword()">Salvar nova senha</button>
+    </div>
+  </div></div>`;
+  setTimeout(()=>document.getElementById('cmvNewPassword')?.focus(),80);
+}
+async function cmvSaveNewPassword(){
+  const p=document.getElementById('cmvNewPassword')?.value||'';
+  const c=document.getElementById('cmvConfirmPassword')?.value||'';
+  const msg=document.getElementById('cmvPasswordMsg');
+  const btn=document.getElementById('cmvPasswordBtn');
+  if(p.length<8){msg.textContent='A senha precisa ter pelo menos 8 caracteres.';return}
+  if(p!==c){msg.textContent='As senhas não são iguais.';return}
+  btn.disabled=true;btn.textContent='Salvando...';msg.textContent='Atualizando senha...';
+  try{
+    const r=await fetch(`${SUPABASE_URL}/auth/v1/user`,{
+      method:'PUT',
+      headers:{apikey:SUPABASE_ANON_KEY,Authorization:`Bearer ${cmvAccessToken}`,'Content-Type':'application/json'},
+      body:JSON.stringify({password:p})
+    });
+    const d=await r.json().catch(()=>({}));
+    if(!r.ok)throw Error(d?.msg||d?.message||d?.error_description||'Não foi possível alterar a senha.');
+    msg.textContent='Senha alterada com sucesso.';
+    btn.textContent='Senha alterada ✓';
+    setTimeout(()=>closeM(),1200);
+  }catch(e){
+    msg.textContent='Erro: '+e.message;
+    btn.disabled=false;btn.textContent='Salvar nova senha';
+  }
+}
+
+
+function cmvClass(v){v=Number(v||0);return v<=30?'cmv-good':v<=35?'cmv-warn':'cmv-bad'}
+function cmvSize(p){return p.broto!=null?['Broto','Grande']:['Único']}
+function syncProductPricesPayload(){
+  const rows=[];
+  PRODUCTS.forEach(p=>{
+    if(p.broto!=null){rows.push({product_name:p.name,product_size:'Broto',sale_price:Number(p.broto),active:true});rows.push({product_name:p.name,product_size:'Grande',sale_price:Number(p.grande),active:true})}
+    else rows.push({product_name:p.name,product_size:'Único',sale_price:Number(p.price||0),active:true});
+  }); return rows;
+}
+async function syncCmvPrices(){
+  try{
+    const rows=syncProductPricesPayload();
+    await cmvApi('product_prices?on_conflict=product_name,product_size',{method:'POST',headers:{Prefer:'resolution=merge-duplicates,return=representation'},body:JSON.stringify(rows)});
+    alert('Preços do cardápio sincronizados com o CMV.');await loadCmv();
+  }catch(e){alert('Erro ao sincronizar preços: '+e.message)}
+}
+async function loadCmv(){
+  cmvContent.innerHTML='<div class="small" style="margin-top:12px">Carregando CMV...</div>';
+  try{
+    const [ings,prods,recs]=await Promise.all([
+      cmvApi('ingredients?select=*&active=eq.true&order=name.asc'),
+      cmvApi('product_cmv?select=*&order=product_name.asc'),
+      cmvApi('recipe_items?select=*&active=eq.true&order=product_name.asc')
+    ]);
+    cmvIngredients=ings||[];cmvProducts=prods||[];cmvRecipes=recs||[];
+    renderCmvDashboard();
+  }catch(e){cmvContent.innerHTML=`<div class="notice" style="margin-top:12px">Não foi possível carregar o CMV.<br><span class="small">${esc(e.message)}</span><br><br>Se aparecer erro de permissão, será necessário liberar as políticas RLS dessas novas tabelas para o usuário administrador.</div>`}
+}
+function renderCmvDashboard(){
+  const withCost=cmvProducts.filter(x=>Number(x.recipe_cost)>0);
+  const avg=withCost.length?withCost.reduce((n,x)=>n+Number(x.cmv_percent||0),0)/withCost.length:0;
+  const high=withCost.filter(x=>Number(x.cmv_percent)>35).length;
+  const noRecipe=cmvProducts.filter(x=>Number(x.recipe_cost)<=0).length;
+  const rows=cmvProducts.slice().sort((a,b)=>Number(b.cmv_percent||0)-Number(a.cmv_percent||0)).map(x=>`<tr><td><b>${esc(x.product_name)}</b><div class="small">${esc(x.product_size||'')}</div></td><td>${money(x.sale_price)}</td><td>${money(x.recipe_cost)}</td><td class="${cmvClass(x.cmv_percent)}"><b>${Number(x.cmv_percent||0).toFixed(2).replace('.',',')}%</b></td><td>${money(x.gross_margin_value)}</td><td>${Number(x.recipe_cost)>0?money(Number(x.recipe_cost)/0.30):'—'}</td></tr>`).join('');
+  cmvContent.innerHTML=`
+    <div class="cmv-toolbar"><button class="ok" onclick="newIngredient()">+ Insumo</button><button class="yellow" onclick="newRecipe()">+ Ficha técnica</button><button class="dark" onclick="syncCmvPrices()">Sincronizar preços do PDV</button><button class="dark" onclick="loadCmv()">Atualizar</button></div>
+    <div class="cmv-grid">
+      <div class="cmv-kpi"><div class="small">Insumos ativos</div><div class="v">${cmvIngredients.length}</div></div>
+      <div class="cmv-kpi"><div class="small">Produtos com ficha</div><div class="v">${withCost.length}</div></div>
+      <div class="cmv-kpi"><div class="small">CMV médio</div><div class="v ${cmvClass(avg)}">${avg.toFixed(1).replace('.',',')}%</div></div>
+      <div class="cmv-kpi"><div class="small">CMV acima de 35%</div><div class="v ${high?'cmv-bad':'cmv-good'}">${high}</div></div>
+    </div>
+    ${noRecipe?`<div class="notice" style="margin-top:10px">${noRecipe} produto(s) ainda sem custo/ficha técnica. Primeiro sincronize os preços e depois cadastre as fichas.</div>`:''}
+    <div class="card" style="margin-top:10px"><div class="row"><h3>Insumos</h3><span class="grow"></span><span class="small">${cmvIngredients.length} cadastrados</span></div>
+      ${cmvIngredients.length?`<div style="overflow:auto"><table class="cmv-table"><thead><tr><th>Insumo</th><th>Unidade</th><th>Compra</th><th>Custo unit.</th><th></th></tr></thead><tbody>${cmvIngredients.map(i=>`<tr><td><b>${esc(i.name)}</b><div class="small">${esc(i.category||'')}</div></td><td>${esc(i.unit)}</td><td>${Number(i.purchase_quantity||0).toLocaleString('pt-BR')} por ${money(i.purchase_price)}</td><td>${money(i.unit_cost)}</td><td><button class="dark" onclick="editIngredient('${i.id}')">Editar</button></td></tr>`).join('')}</tbody></table></div>`:'<div class="small">Nenhum insumo cadastrado ainda.</div>'}
+    </div>
+    <div class="card" style="margin-top:10px"><h3>CMV por produto</h3>
+      ${cmvProducts.length?`<div style="overflow:auto"><table class="cmv-table"><thead><tr><th>Produto</th><th>Venda</th><th>Custo</th><th>CMV</th><th>Margem bruta</th><th>Preço p/ 30%</th></tr></thead><tbody>${rows}</tbody></table></div>`:'<div class="small">Clique em “Sincronizar preços do PDV” para importar os preços atuais do cardápio.</div>'}
+    </div>`;
+}
+function newIngredient(){showIngredientEditor(null)}
+function editIngredient(id){showIngredientEditor(cmvIngredients.find(x=>String(x.id)===String(id))||null)}
+function showIngredientEditor(i){
+  modal.innerHTML=`<div class="modalbg"><div class="modal"><div class="row"><h2>${i?'Editar':'Novo'} insumo</h2><span class="grow"></span><button class="dark" onclick="closeM()">Fechar</button></div><div class="cmv-form">
+  <label>Nome<input id="igName" value="${i?esc(i.name):''}" placeholder="Ex.: Muçarela"></label>
+  <label>Categoria<input id="igCat" value="${i?esc(i.category||''):''}" placeholder="Ex.: Queijos"></label>
+  <label>Unidade da ficha<select id="igUnit">${['g','kg','ml','l','un'].map(u=>`<option ${i?.unit===u?'selected':''}>${u}</option>`).join('')}</select></label>
+  <label>Quantidade comprada<input id="igQty" type="number" min="0" step="0.001" value="${i?Number(i.purchase_quantity||0):1000}"></label>
+  <label>Valor pago (R$)<input id="igPrice" type="number" min="0" step="0.01" value="${i?Number(i.purchase_price||0):0}"></label>
+  <label>Fornecedor<input id="igSupplier" value="${i?esc(i.supplier||''):''}"></label>
+  </div><div class="actions" style="margin-top:14px"><button class="dark" onclick="closeM()">Cancelar</button><button class="ok" onclick="saveIngredient(${i?`'${i.id}'`:'null'})">Salvar</button></div></div></div>`;
+}
+async function saveIngredient(id){
+  const body={name:igName.value.trim(),category:igCat.value.trim()||null,unit:igUnit.value,purchase_quantity:Number(igQty.value||0),purchase_price:Number(igPrice.value||0),supplier:igSupplier.value.trim()||null,updated_at:new Date().toISOString()};
+  if(!body.name)return alert('Informe o nome do insumo.');
+  try{if(id)await cmvApi(`ingredients?id=eq.${encodeURIComponent(id)}`,{method:'PATCH',body:JSON.stringify(body)});else await cmvApi('ingredients',{method:'POST',body:JSON.stringify(body)});closeM();await loadCmv()}catch(e){alert('Erro ao salvar insumo: '+e.message)}
+}
+function newRecipe(){
+  if(!cmvIngredients.length)return alert('Cadastre pelo menos um insumo primeiro.');
+  const prodOpts=PRODUCTS.map((p,i)=>`<option value="${i}">${esc(p.name)} — ${esc(p.category)}</option>`).join('');
+  const ingOpts=cmvIngredients.map(i=>`<option value="${i.id}">${esc(i.name)} (${esc(i.unit)})</option>`).join('');
+  modal.innerHTML=`<div class="modalbg"><div class="modal"><div class="row"><h2>Adicionar item à ficha técnica</h2><span class="grow"></span><button class="dark" onclick="closeM()">Fechar</button></div><div class="cmv-form">
+  <label class="wide">Produto<select id="rcProd" onchange="recipeProductChanged()">${prodOpts}</select></label>
+  <label>Tamanho<select id="rcSize"></select></label>
+  <label>Insumo<select id="rcIng">${ingOpts}</select></label>
+  <label>Quantidade usada<input id="rcQty" type="number" min="0" step="0.001" value="0"></label>
+  </div><div class="small" style="margin-top:10px">Ex.: se a muçarela está cadastrada em gramas, informe 350 para usar 350 g.</div><div class="actions" style="margin-top:14px"><button class="dark" onclick="closeM()">Cancelar</button><button class="ok" onclick="saveRecipeItem()">Adicionar à ficha</button></div></div></div>`;
+  recipeProductChanged();
+}
+function recipeProductChanged(){
+  const p=PRODUCTS[Number(rcProd.value)], sizes=cmvSize(p);rcSize.innerHTML=sizes.map(x=>`<option>${x}</option>`).join('');
+}
+async function saveRecipeItem(){
+  const p=PRODUCTS[Number(rcProd.value)], q=Number(rcQty.value||0);if(!(q>0))return alert('Informe a quantidade usada.');
+  const body={product_name:p.name,product_size:rcSize.value,ingredient_id:rcIng.value,quantity_used:q,active:true,updated_at:new Date().toISOString()};
+  try{await cmvApi('recipe_items',{method:'POST',body:JSON.stringify(body)});closeM();await loadCmv()}catch(e){alert('Erro ao salvar ficha técnica: '+e.message)}
+}
 
 load();
 </script></body></html>
