@@ -1828,7 +1828,7 @@ function refreshProductPrice(){const el=document.getElementById('productPrice');
 function addCurrentPizza(){
   const c=calcPizza(), obs=document.getElementById('itemObs')?.value.trim()||'';
   const label=c.half?`1/2 ${currentProduct.name} + 1/2 ${c.half}`:currentProduct.name;
-  cart.push({id:Date.now()+Math.random(),name:label,kind:'pizza',size:c.size==='broto'?'Broto 25 cm':'Grande 35 cm',crust:c.crust,obs,unit:c.total,qty:1});
+  const second=c.half?findPizza(c.half):null; const sweet1=currentProduct.section==='cat-pizzas-doces'; const sweet2=second?second.section==='cat-pizzas-doces':sweet1; const sweetRatio=c.half?((sweet1?0.5:0)+(sweet2?0.5:0)):(sweet1?1:0); cart.push({id:Date.now()+Math.random(),name:label,kind:'pizza',size:c.size==='broto'?'Broto 25 cm':'Grande 35 cm',crust:c.crust,obs,unit:c.total,qty:1,section:currentProduct.section,sweetRatio});
   saveCart();closeProduct();showToast('Pizza adicionada ao pedido');
 }
 function addSimpleProduct(){
@@ -1939,9 +1939,11 @@ function setCouponMessage(msg,type=''){
   el.textContent=msg;
   el.className='coupon-msg'+(type?' '+type:'');
 }
+function sweetPizzaSubtotal(){return cart.reduce((sum,item)=>sum+(Number(item.unit||0)*Number(item.qty||1)*Math.max(0,Math.min(1,Number(item.sweetRatio!=null?item.sweetRatio:(item.section==='cat-pizzas-doces'?1:0))))),0);}
+function couponBase(coupon){return String(coupon?.applies_to||'all').toLowerCase()==='sweet_pizzas'?sweetPizzaSubtotal():subtotal();}
 function couponDiscountFor(coupon,delivery){
   if(!coupon)return 0;
-  const sub=subtotal();
+  const sub=couponBase(coupon);
   const type=String(coupon.discount_type||'').toLowerCase();
   const value=Math.max(0,Number(coupon.discount_value||0));
   if(type==='percent') return Math.min(sub, sub*(value/100));
@@ -1952,8 +1954,7 @@ function couponDiscountFor(coupon,delivery){
 function couponStillValid(coupon){
   if(!coupon)return {ok:false,msg:'Cupom não aplicado.'};
   if(coupon.active===false)return {ok:false,msg:'Este cupom está inativo.'};
-  const min=Math.max(0,Number(coupon.min_order||0));
-  if(subtotal()+0.0001<min)return {ok:false,msg:`Pedido mínimo para este cupom: ${money(min)}.`};
+  const min=Math.max(0,Number(coupon.min_order||0)); const applies=String(coupon.applies_to||'all').toLowerCase(); const eligible=couponBase(coupon); if(applies==='sweet_pizzas' && eligible<=0)return {ok:false,msg:'Este cupom é válido somente para pizzas doces.'}; if(eligible+0.0001<min)return {ok:false,msg:`Pedido mínimo elegível para este cupom: ${money(min)}.`};
   if(coupon.expires_at){
     const exp=new Date(coupon.expires_at);
     if(!Number.isNaN(exp.getTime()) && Date.now()>exp.getTime())return {ok:false,msg:'Este cupom expirou.'};
@@ -1975,7 +1976,7 @@ async function applyCoupon(){
   if(btn){btn.disabled=true;btn.textContent='Validando...';}
   try{
     const q=encodeURIComponent(code);
-    const r=await fetch(`${SUPABASE_URL}/rest/v1/coupons?select=id,code,discount_type,discount_value,min_order,active,expires_at,usage_limit,usage_count&code=eq.${q}&active=eq.true&limit=1`,{
+    const r=await fetch(`${SUPABASE_URL}/rest/v1/coupons?select=id,code,discount_type,discount_value,min_order,active,expires_at,usage_limit,usage_count,applies_to&code=eq.${q}&active=eq.true&limit=1`,{
       headers:{'apikey':SUPABASE_ANON_KEY,'Authorization':`Bearer ${SUPABASE_ANON_KEY}`},cache:'no-store'
     });
     if(!r.ok)throw new Error(await r.text());
@@ -1990,8 +1991,7 @@ async function applyCoupon(){
     const d=selectedDelivery();
     const disc=couponDiscountFor(coupon,d);
     const type=String(coupon.discount_type||'').toLowerCase();
-    const desc=type==='percent'?`${Number(coupon.discount_value||0)}% de desconto`:type==='fixed'?`${money(Number(coupon.discount_value||0))} de desconto`:'frete grátis';
-    setCouponMessage(`Cupom ${coupon.code} aplicado: ${desc}${disc>0?` (− ${money(disc)})`:''}.`,'ok');
+    const desc=type==='percent'?`${Number(coupon.discount_value||0)}% de desconto`:type==='fixed'?`${money(Number(coupon.discount_value||0))} de desconto`:'frete grátis'; const scope=String(coupon.applies_to||'all')==='sweet_pizzas'?' somente nas pizzas doces':''; setCouponMessage(`Cupom ${coupon.code} aplicado: ${desc}${scope}${disc>0?` (− ${money(disc)})`:''}.`,'ok');
     showToast('Cupom aplicado!');
   }catch(err){
     console.error('Falha ao validar cupom:',err);
