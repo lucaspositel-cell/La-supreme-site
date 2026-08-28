@@ -499,14 +499,14 @@ function cmvSize(p){return p.broto!=null?['Broto','Grande']:['Único']}
 function syncProductPricesPayload(){
   const rows=[];
   PRODUCTS.forEach(p=>{
-    if(p.broto!=null){rows.push({product_name:p.name,product_size:'Broto',sale_price:Number(p.broto),active:true});rows.push({product_name:p.name,product_size:'Grande',sale_price:Number(p.grande),active:true})}
-    else rows.push({product_name:p.name,product_size:'Único',sale_price:Number(p.price||0),active:true});
+    if(p.broto!=null){rows.push({product_category:p.category,product_name:p.name,product_size:'Broto',sale_price:Number(p.broto),active:true});rows.push({product_category:p.category,product_name:p.name,product_size:'Grande',sale_price:Number(p.grande),active:true})}
+    else rows.push({product_category:p.category,product_name:p.name,product_size:'Único',sale_price:Number(p.price||0),active:true});
   }); return rows;
 }
 async function syncCmvPrices(){
   try{
     const rows=syncProductPricesPayload();
-    await cmvApi('product_prices?on_conflict=product_name,product_size',{method:'POST',headers:{Prefer:'resolution=merge-duplicates,return=representation'},body:JSON.stringify(rows)});
+    await cmvApi('product_prices?on_conflict=product_category,product_name,product_size',{method:'POST',headers:{Prefer:'resolution=merge-duplicates,return=representation'},body:JSON.stringify(rows)});
     alert('Preços do cardápio sincronizados com o CMV.');await loadCmv();
   }catch(e){alert('Erro ao sincronizar preços: '+e.message)}
 }
@@ -527,7 +527,7 @@ function renderCmvDashboard(){
   const avg=withCost.length?withCost.reduce((n,x)=>n+Number(x.cmv_percent||0),0)/withCost.length:0;
   const high=withCost.filter(x=>Number(x.cmv_percent)>35).length;
   const noRecipe=cmvProducts.filter(x=>Number(x.recipe_cost)<=0).length;
-  const rows=cmvProducts.slice().sort((a,b)=>Number(b.cmv_percent||0)-Number(a.cmv_percent||0)).map(x=>`<tr><td><b>${esc(x.product_name)}</b><div class="small">${esc(x.product_size||'')}</div></td><td>${money(x.sale_price)}</td><td>${money(x.recipe_cost)}</td><td class="${cmvClass(x.cmv_percent)}"><b>${Number(x.cmv_percent||0).toFixed(2).replace('.',',')}%</b></td><td>${money(x.gross_margin_value)}</td><td>${Number(x.recipe_cost)>0?money(Number(x.recipe_cost)/0.30):'—'}</td></tr>`).join('');
+  const rows=cmvProducts.slice().sort((a,b)=>Number(b.cmv_percent||0)-Number(a.cmv_percent||0)).map(x=>`<tr><td><b>${esc(x.product_name)}</b><div class="small">${esc(x.product_category||'')} • ${esc(x.product_size||'')}</div></td><td>${money(x.sale_price)}</td><td>${money(x.recipe_cost)}</td><td class="${cmvClass(x.cmv_percent)}"><b>${Number(x.cmv_percent||0).toFixed(2).replace('.',',')}%</b></td><td>${money(x.gross_margin_value)}</td><td>${Number(x.recipe_cost)>0?money(Number(x.recipe_cost)/0.30):'—'}</td></tr>`).join('');
   cmvContent.innerHTML=`
     <div class="cmv-toolbar"><button class="ok" onclick="newIngredient()">+ Insumo</button><button class="yellow" onclick="newRecipe()">+ Ficha técnica</button><button class="dark" onclick="syncCmvPrices()">Sincronizar preços do PDV</button><button class="dark" onclick="loadCmv()">Atualizar</button></div>
     <div class="cmv-grid">
@@ -578,7 +578,7 @@ function recipeProductChanged(){
 }
 async function saveRecipeItem(){
   const p=PRODUCTS[Number(rcProd.value)], q=Number(rcQty.value||0);if(!(q>0))return alert('Informe a quantidade usada.');
-  const body={product_name:p.name,product_size:rcSize.value,ingredient_id:rcIng.value,quantity_used:q,active:true,updated_at:new Date().toISOString()};
+  const body={product_category:p.category,product_name:p.name,product_size:rcSize.value,ingredient_id:rcIng.value,quantity_used:q,active:true,updated_at:new Date().toISOString()};
   try{await cmvApi('recipe_items',{method:'POST',body:JSON.stringify(body)});closeM();await loadCmv()}catch(e){alert('Erro ao salvar ficha técnica: '+e.message)}
 }
 
