@@ -293,6 +293,36 @@ function imprimirAreaPDV(areaId,titulo){
 function imprimirCaixa(){imprimirAreaPDV('cashbox','Relatório de Caixa')}
 function imprimirRelatorios(){imprimirAreaPDV('reports','Relatório de Vendas')}
 
+function paymentBucket(v){
+  const p=String(v||'').trim().toLowerCase().normalize('NFD').replace(/[\u0300-\u036f]/g,'');
+  if(p.includes('pix'))return 'Pix';
+  if(p.includes('dinheiro'))return 'Dinheiro';
+  if(p.includes('debito'))return 'Cartão Débito';
+  if(p.includes('credito'))return 'Cartão Crédito';
+  if(p.includes('cartao')||p.includes('cartão'))return 'Cartão';
+  return v||'Não informado';
+}
+function normalizeDeliverySale(o){
+  return {
+    id:'delivery-'+o.id,
+    tipo:'delivery',
+    total:Number(o.total!=null?o.total:(Number(o.subtotal||0)+Number(o.delivery_fee||0))),
+    subtotal:Number(o.subtotal||0),
+    desconto:Number(o.discount||o.desconto||0),
+    forma_pagamento:paymentBucket(o.payment),
+    fechada_em:o.concluded_at||o.created_at,
+    delivery:true,
+    items:Array.isArray(o.items)?o.items:[]
+  };
+}
+async function deliverySalesBetween(startIso,endIso=''){
+  let q=`orders?status=eq.concluido&concluded_at=gte.${encodeURIComponent(startIso)}`;
+  if(endIso)q+=`&concluded_at=lte.${encodeURIComponent(endIso)}`;
+  q+='&select=id,total,subtotal,delivery_fee,payment,payment_status,concluded_at,created_at,items,status';
+  const rows=await api(q);
+  return (rows||[]).map(normalizeDeliverySale);
+}
+
 async function loadCaixa(){
   cashbox.innerHTML='<h2>Caixa</h2><div class="small">Carregando...</div>';
   try{
@@ -302,10 +332,12 @@ async function loadCaixa(){
       return;
     }
     const c=a[0], inicio=encodeURIComponent(c.aberto_em);
-    const vendas=await api(`comandas?status=eq.fechada&fechada_em=gte.${inicio}&select=total,forma_pagamento,fechada_em`);
+    const vendasPdv=await api(`comandas?status=eq.fechada&fechada_em=gte.${inicio}&select=total,forma_pagamento,fechada_em`);
+    const vendasDelivery=await deliverySalesBetween(c.aberto_em);
+    const vendas=[...(vendasPdv||[]).map(v=>({...v,forma_pagamento:paymentBucket(v.forma_pagamento)})),...vendasDelivery];
     const movs=await api(`caixa_movimentos?caixa_id=eq.${c.id}&select=*&order=criado_em.desc`);
     const soma=pg=>vendas.filter(v=>v.forma_pagamento===pg).reduce((n,v)=>n+Number(v.total||0),0);
-    const pix=soma('Pix'), din=soma('Dinheiro'), deb=soma('Cartão Débito'), cred=soma('Cartão Crédito');
+    const pix=soma('Pix'), din=soma('Dinheiro'), deb=soma('Cartão Débito'), cred=soma('Cartão Crédito')+soma('Cartão');
     const vendasTotal=vendas.reduce((n,v)=>n+Number(v.total||0),0);
     const supr=movs.filter(m=>m.tipo==='suprimento').reduce((n,m)=>n+Number(m.valor||0),0);
     const sang=movs.filter(m=>m.tipo==='sangria').reduce((n,m)=>n+Number(m.valor||0),0);
@@ -313,6 +345,7 @@ async function loadCaixa(){
     cashbox.innerHTML=`<div class="row"><h2>Caixa aberto</h2><span class="grow"></span><button class="dark no-print" onclick="imprimirCaixa()">🖨️ Imprimir caixa</button><b class="gold">${esc(c.operador||'Operador')}</b></div>
       <div class="small">Aberto em ${new Date(c.aberto_em).toLocaleString('pt-BR')}</div>
       <div class="total">Vendas do turno: ${money(vendasTotal)}</div>
+      <div class="small">PDV: ${money((vendasPdv||[]).reduce((n,v)=>n+Number(v.total||0),0))} · Delivery concluído: ${money(vendasDelivery.reduce((n,v)=>n+Number(v.total||0),0))}</div>
       <div class="card" style="margin-top:10px"><div class="row"><span class="grow">Dinheiro</span><b>${money(din)}</b></div><div class="row"><span class="grow">Pix</span><b>${money(pix)}</b></div><div class="row"><span class="grow">Débito</span><b>${money(deb)}</b></div><div class="row"><span class="grow">Crédito</span><b>${money(cred)}</b></div></div>
       <div class="card" style="margin-top:10px"><div class="row"><span class="grow">Abertura</span><b>${money(c.valor_abertura)}</b></div><div class="row"><span class="grow">Suprimentos</span><b>${money(supr)}</b></div><div class="row"><span class="grow">Sangrias</span><b>-${money(sang)}</b></div><div class="row"><span class="grow"><b>Dinheiro esperado</b></span><b>${money(esperado)}</b></div></div>
       <div class="actions" style="margin-top:10px"><button class="yellow" onclick="movCaixa('suprimento',${c.id})">+ Suprimento</button><button class="red" onclick="movCaixa('sangria',${c.id})">− Sangria</button></div>
@@ -385,10 +418,21 @@ async function loadRelatorios(){
     const rg=reportRange();
     if(!rg)return;
     const ini=encodeURIComponent(rg.start.toISOString()), fim=encodeURIComponent(rg.end.toISOString());
-    const vendas=await api(`comandas?status=eq.fechada&fechada_em=gte.${ini}&fechada_em=lte.${fim}&select=id,tipo,total,subtotal,desconto,forma_pagamento,fechada_em`);
-    const ids=vendas.map(v=>v.id);
+    const vendasPdv=await api(`comandas?status=eq.fechada&fechada_em=gte.${ini}&fechada_em=lte.${fim}&select=id,tipo,total,subtotal,desconto,forma_pagamento,fechada_em`);
+    const vendasDelivery=await deliverySalesBetween(rg.start.toISOString(),rg.end.toISOString());
+    const vendas=[...(vendasPdv||[]).map(v=>({...v,forma_pagamento:paymentBucket(v.forma_pagamento)})),...vendasDelivery];
+    const ids=(vendasPdv||[]).map(v=>v.id);
     let itens=[];
     if(ids.length)itens=await api(`comanda_itens?comanda_id=in.(${ids.join(',')})&select=comanda_id,produto_nome,tamanho,sabor_1,sabor_2,quantidade,total`);
+    vendasDelivery.forEach(v=>{
+      (v.items||[]).forEach(x=>{
+        const qtd=Number(x.qty||x.quantidade||1);
+        const nome=x.name||x.produto_nome||'Produto';
+        const tam=x.size||x.tamanho||'';
+        const totalItem=Number(x.total!=null?x.total:(Number(x.price||x.preco||0)*qtd));
+        itens.push({comanda_id:v.id,produto_nome:nome,tamanho:tam,sabor_1:x.sabor_1||x.flavor_1||null,sabor_2:x.sabor_2||x.flavor_2||null,quantidade:qtd,total:totalItem});
+      });
+    });
     const caixas=await api(`caixa_sessoes?aberto_em=gte.${ini}&aberto_em=lte.${fim}&select=*&order=aberto_em.desc&limit=50`);
 
     const faturamento=vendas.reduce((n,v)=>n+Number(v.total||0),0);
