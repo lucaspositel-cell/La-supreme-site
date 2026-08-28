@@ -2697,5 +2697,153 @@ window.addEventListener('DOMContentLoaded',()=>{
   }
   window.addEventListener('load',function(){syncTopCart(); setInterval(syncTopCart,700);});
 })();
-</script></body>
+</script>
+<style>
+/* ===== Recuperação de senha administrativa ===== */
+#lsRecoveryOverlay{
+  display:none;position:fixed;inset:0;z-index:99999;
+  background:rgba(0,0,0,.82);backdrop-filter:blur(7px);
+  padding:18px;align-items:center;justify-content:center
+}
+#lsRecoveryOverlay.open{display:flex}
+.ls-recovery-card{
+  width:min(460px,100%);background:#0f0e0c;color:#fff;
+  border:1px solid #6b4a1d;border-radius:20px;padding:22px;
+  box-shadow:0 24px 80px rgba(0,0,0,.6)
+}
+.ls-recovery-brand{color:#e9b95b;font-weight:900;font-size:12px;letter-spacing:1.5px;text-transform:uppercase}
+.ls-recovery-card h2{margin:7px 0 8px;font:800 27px/1.1 Georgia,serif}
+.ls-recovery-card p{margin:0 0 16px;color:#c9bfb1;font-size:13px;line-height:1.5}
+.ls-recovery-field{display:grid;gap:6px;margin-top:11px}
+.ls-recovery-field label{font-size:12px;font-weight:800;color:#d4cabd}
+.ls-recovery-field input{
+  width:100%;padding:13px;border:1px solid #493820;border-radius:11px;
+  background:#17130f;color:#fff;font:inherit;outline:none
+}
+.ls-recovery-field input:focus{border-color:#d99b32;box-shadow:0 0 0 3px rgba(217,155,50,.12)}
+.ls-recovery-btn{
+  width:100%;margin-top:16px;border:0;border-radius:999px;padding:13px 16px;
+  background:linear-gradient(135deg,#efc468,#b97719);color:#171006;
+  font-weight:900;cursor:pointer
+}
+.ls-recovery-btn:disabled{opacity:.6;cursor:not-allowed}
+#lsRecoveryMsg{margin-top:11px;font-size:12px;line-height:1.45;color:#c9bfb1}
+#lsRecoveryMsg.ok{color:#8ee59d}
+#lsRecoveryMsg.err{color:#ff9b9b}
+</style>
+
+<div id="lsRecoveryOverlay" aria-hidden="true">
+  <div class="ls-recovery-card">
+    <div class="ls-recovery-brand">La Supreme • Administração</div>
+    <h2>Definir nova senha</h2>
+    <p>Crie uma nova senha para acessar as áreas administrativas do PDV, como CMV e Cupons.</p>
+
+    <div class="ls-recovery-field">
+      <label for="lsNewPassword">Nova senha</label>
+      <input id="lsNewPassword" type="password" autocomplete="new-password" minlength="8" placeholder="Mínimo de 8 caracteres">
+    </div>
+
+    <div class="ls-recovery-field">
+      <label for="lsConfirmPassword">Confirmar nova senha</label>
+      <input id="lsConfirmPassword" type="password" autocomplete="new-password" minlength="8" placeholder="Digite novamente">
+    </div>
+
+    <button id="lsRecoveryBtn" class="ls-recovery-btn" type="button" onclick="lsUpdateRecoveredPassword()">Salvar nova senha</button>
+    <div id="lsRecoveryMsg"></div>
+  </div>
+</div>
+
+<script>
+/* ===== Fluxo de recuperação Supabase ===== */
+let lsRecoveryAccessToken = '';
+
+function lsRecoveryParams(){
+  const hash = new URLSearchParams((location.hash || '').replace(/^#/, ''));
+  const query = new URLSearchParams(location.search || '');
+  return {
+    type: hash.get('type') || query.get('type') || '',
+    accessToken: hash.get('access_token') || query.get('access_token') || ''
+  };
+}
+
+function lsOpenRecoveryIfNeeded(){
+  const p = lsRecoveryParams();
+  if(p.type !== 'recovery' || !p.accessToken) return;
+
+  lsRecoveryAccessToken = p.accessToken;
+
+  /* Retira tokens sensíveis da barra de endereço sem perder a sessão desta tela */
+  try{ history.replaceState({}, document.title, location.pathname); }catch(e){}
+
+  const overlay = document.getElementById('lsRecoveryOverlay');
+  if(overlay){
+    overlay.classList.add('open');
+    overlay.setAttribute('aria-hidden','false');
+  }
+  setTimeout(()=>document.getElementById('lsNewPassword')?.focus(),100);
+}
+
+async function lsUpdateRecoveredPassword(){
+  const pass = document.getElementById('lsNewPassword')?.value || '';
+  const confirmPass = document.getElementById('lsConfirmPassword')?.value || '';
+  const msg = document.getElementById('lsRecoveryMsg');
+  const btn = document.getElementById('lsRecoveryBtn');
+
+  if(pass.length < 8){
+    msg.className='err';
+    msg.textContent='A senha precisa ter pelo menos 8 caracteres.';
+    return;
+  }
+  if(pass !== confirmPass){
+    msg.className='err';
+    msg.textContent='As duas senhas não são iguais.';
+    return;
+  }
+  if(!lsRecoveryAccessToken){
+    msg.className='err';
+    msg.textContent='O link de recuperação expirou ou é inválido. Solicite um novo e-mail.';
+    return;
+  }
+
+  btn.disabled = true;
+  btn.textContent = 'Salvando...';
+  msg.className='';
+  msg.textContent='Atualizando sua senha...';
+
+  try{
+    const r = await fetch(`${SUPABASE_URL}/auth/v1/user`,{
+      method:'PUT',
+      headers:{
+        'apikey':SUPABASE_ANON_KEY,
+        'Authorization':`Bearer ${lsRecoveryAccessToken}`,
+        'Content-Type':'application/json'
+      },
+      body:JSON.stringify({password:pass})
+    });
+
+    const data = await r.json().catch(()=>({}));
+    if(!r.ok) throw new Error(data?.msg || data?.message || data?.error_description || 'Não foi possível alterar a senha.');
+
+    msg.className='ok';
+    msg.textContent='Senha alterada com sucesso! Você já pode usar a nova senha no PDV.';
+    btn.textContent='Senha alterada ✓';
+
+    setTimeout(()=>{
+      const overlay = document.getElementById('lsRecoveryOverlay');
+      overlay?.classList.remove('open');
+      overlay?.setAttribute('aria-hidden','true');
+      lsRecoveryAccessToken='';
+    },1800);
+  }catch(e){
+    msg.className='err';
+    msg.textContent='Erro: '+e.message;
+    btn.disabled=false;
+    btn.textContent='Salvar nova senha';
+  }
+}
+
+document.addEventListener('DOMContentLoaded', lsOpenRecoveryIfNeeded);
+</script>
+
+</body>
 </html>
