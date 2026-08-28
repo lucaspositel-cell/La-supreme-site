@@ -540,6 +540,9 @@ function renderCmvDashboard(){
     <div class="card" style="margin-top:10px"><div class="row"><h3>Insumos</h3><span class="grow"></span><span class="small">${cmvIngredients.length} cadastrados</span></div>
       ${cmvIngredients.length?`<div style="overflow:auto"><table class="cmv-table"><thead><tr><th>Insumo</th><th>Unidade</th><th>Compra</th><th>Custo unit.</th><th></th></tr></thead><tbody>${cmvIngredients.map(i=>`<tr><td><b>${esc(i.name)}</b><div class="small">${esc(i.category||'')}</div></td><td>${esc(i.unit)}</td><td>${Number(i.purchase_quantity||0).toLocaleString('pt-BR')} por ${money(i.purchase_price)}</td><td>${money(i.unit_cost)}</td><td><button class="dark" onclick="editIngredient('${i.id}')">Editar</button></td></tr>`).join('')}</tbody></table></div>`:'<div class="small">Nenhum insumo cadastrado ainda.</div>'}
     </div>
+    <div class="card" style="margin-top:10px"><div class="row"><h3>Fichas técnicas cadastradas</h3><span class="grow"></span><span class="small">${cmvRecipes.length} item(ns)</span></div>
+      ${cmvRecipes.length?`<div style="overflow:auto"><table class="cmv-table"><thead><tr><th>Produto</th><th>Insumo</th><th>Qtd.</th><th>Custo</th><th></th></tr></thead><tbody>${cmvRecipes.map(r=>{const i=cmvIngredients.find(x=>String(x.id)===String(r.ingredient_id));const c=Number(i?.unit_cost||0)*Number(r.quantity_used||0);return `<tr><td><b>${esc(r.product_name)}</b><div class="small">${esc(r.product_category||'')} • ${esc(r.product_size||'')}</div></td><td>${esc(i?.name||'Insumo')}</td><td>${Number(r.quantity_used||0).toLocaleString('pt-BR',{maximumFractionDigits:3})} ${esc(i?.unit||'')}</td><td>${money(c)}</td><td><div style="display:flex;gap:5px"><button class="dark" onclick="editRecipeItem('${r.id}')">Editar</button><button class="red" onclick="deleteRecipeItem('${r.id}')">Excluir</button></div></td></tr>`}).join('')}</tbody></table></div>`:'<div class="small">Nenhuma ficha técnica cadastrada ainda.</div>'}
+    </div>
     <div class="card" style="margin-top:10px"><h3>CMV por produto</h3>
       ${cmvProducts.length?`<div style="overflow:auto"><table class="cmv-table"><thead><tr><th>Produto</th><th>Venda</th><th>Custo</th><th>CMV</th><th>Margem bruta</th><th>Preço p/ 30%</th></tr></thead><tbody>${rows}</tbody></table></div>`:'<div class="small">Clique em “Sincronizar preços do PDV” para importar os preços atuais do cardápio.</div>'}
     </div>`;
@@ -580,6 +583,19 @@ async function saveRecipeItem(){
   const p=PRODUCTS[Number(rcProd.value)], q=Number(rcQty.value||0);if(!(q>0))return alert('Informe a quantidade usada.');
   const body={product_category:p.category,product_name:p.name,product_size:rcSize.value,ingredient_id:rcIng.value,quantity_used:q,active:true,updated_at:new Date().toISOString()};
   try{await cmvApi('recipe_items',{method:'POST',body:JSON.stringify(body)});closeM();await loadCmv()}catch(e){alert('Erro ao salvar ficha técnica: '+e.message)}
+}
+function editRecipeItem(id){
+  const r=cmvRecipes.find(x=>String(x.id)===String(id));if(!r)return;
+  const i=cmvIngredients.find(x=>String(x.id)===String(r.ingredient_id));
+  modal.innerHTML=`<div class="modalbg"><div class="modal"><div class="row"><h2>Editar item da ficha</h2><span class="grow"></span><button class="dark" onclick="closeM()">Fechar</button></div><div class="notice"><b>${esc(r.product_name)}</b><div class="small">${esc(r.product_category||'')} • ${esc(r.product_size||'')}</div></div><div class="cmv-form"><label class="wide">Insumo<input value="${esc(i?.name||'')}" disabled></label><label class="wide">Quantidade usada (${esc(i?.unit||'')})<input id="rcEditQty" type="number" min="0" step="0.001" value="${Number(r.quantity_used||0)}"></label></div><div class="actions" style="margin-top:14px"><button class="dark" onclick="closeM()">Cancelar</button><button class="ok" onclick="saveRecipeEdit('${r.id}')">Salvar alteração</button></div></div></div>`;
+}
+async function saveRecipeEdit(id){
+  const q=Number(document.getElementById('rcEditQty')?.value||0);if(!(q>0))return alert('Informe uma quantidade maior que zero.');
+  try{await cmvApi(`recipe_items?id=eq.${encodeURIComponent(id)}`,{method:'PATCH',body:JSON.stringify({quantity_used:q,updated_at:new Date().toISOString()})});closeM();await loadCmv()}catch(e){alert('Erro ao editar ficha técnica: '+e.message)}
+}
+async function deleteRecipeItem(id){
+  const r=cmvRecipes.find(x=>String(x.id)===String(id));if(!r)return;if(!confirm(`Excluir este item da ficha de ${r.product_name}?`))return;
+  try{await cmvApi(`recipe_items?id=eq.${encodeURIComponent(id)}`,{method:'DELETE'});await loadCmv()}catch(e){alert('Erro ao excluir item da ficha: '+e.message)}
 }
 
 load();
