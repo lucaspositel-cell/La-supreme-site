@@ -104,6 +104,15 @@ a{color:inherit}
 .choice-row{display:grid;grid-template-columns:1fr 1fr;gap:8px}.choice{border:1px solid var(--line);background:#211a17;color:#fff;padding:11px;border-radius:10px;cursor:pointer;font-weight:800}.choice.active{border-color:var(--gold);background:#34271e}
 .modal-price{margin:14px 0;padding:12px;border-radius:12px;background:#211a17;display:flex;justify-content:space-between;gap:12px}.modal-price strong{color:var(--gold);font-size:20px}.modal-actions{display:grid;grid-template-columns:1fr 1fr;gap:8px}.btn-muted,.btn-main{border:0;border-radius:11px;padding:12px;font-weight:900;cursor:pointer}.btn-muted{background:#30251f;color:#fff}.btn-main{background:var(--green);color:#fff}
 .cart-list{display:flex;flex-direction:column;gap:9px}.cart-row{border:1px solid var(--line);background:#211a17;border-radius:12px;padding:12px;display:grid;grid-template-columns:1fr auto;gap:8px}.cart-row h4{margin:0 0 4px;font-size:15px}.cart-row p{margin:2px 0;color:var(--muted);font-size:12px;line-height:1.4}.qty-controls{display:flex;align-items:center;gap:6px;justify-content:flex-end}.qty-controls button{border:0;background:#352a25;color:#fff;width:29px;height:29px;border-radius:8px;font-weight:900}.remove-item{border:0;background:none;color:#eaa;font-size:12px;cursor:pointer;padding:2px 0}.cart-summary{margin-top:14px;border-top:1px solid var(--line);padding-top:12px}.sum-line{display:flex;justify-content:space-between;gap:12px;margin:7px 0}.sum-line.total{font-size:20px;font-weight:900;color:var(--gold)}.small-note{color:var(--muted);font-size:11px;line-height:1.4}.checkout-block{margin-top:16px;padding-top:14px;border-top:1px solid var(--line)}
+.checkout-drink-suggest{margin:14px 0 16px;padding:14px;border:1px solid #5b431f;border-radius:14px;background:linear-gradient(180deg,#18130d,#0e0d0b)}
+.checkout-drink-suggest h4{margin:0 0 4px;font-size:17px;color:#fff}
+.checkout-drink-suggest>p{margin:0 0 11px;color:var(--muted);font-size:12px;line-height:1.4}
+.checkout-drink-grid{display:grid;grid-template-columns:1fr 1fr;gap:8px}
+.checkout-drink-btn{border:1px solid #4d3a20;background:#11100e;color:#fff;border-radius:11px;padding:10px;text-align:left;cursor:pointer;font-weight:800;font-size:12px}
+.checkout-drink-btn span{display:block;color:var(--gold);font-size:13px;margin-top:3px}
+.checkout-drink-btn:hover{border-color:var(--gold);transform:translateY(-1px)}
+.checkout-drink-skip{display:block;width:100%;margin-top:9px;border:0;background:transparent;color:#a99d90;font-size:11px;cursor:pointer;padding:5px}
+@media(max-width:600px){.checkout-drink-grid{grid-template-columns:1fr}}
 .coupon-box{border:1px solid rgba(214,170,74,.35);background:#241c18;border-radius:12px;padding:12px}.coupon-row{display:grid;grid-template-columns:1fr auto;gap:8px}.coupon-row input{text-transform:uppercase}.coupon-apply{border:0;border-radius:10px;padding:0 16px;background:var(--gold);color:#24170a;font-weight:900;cursor:pointer}.coupon-apply:disabled{opacity:.6;cursor:not-allowed}.coupon-msg{margin-top:7px;font-size:12px;line-height:1.35;color:var(--muted)}.coupon-msg.ok{color:#8ee59d}.coupon-msg.err{color:#ff9b9b}.sum-line.discount{color:#8ee59d;font-weight:800}
 .empty-cart{text-align:center;color:var(--muted);padding:24px 10px}.half-note{font-size:11px;color:var(--muted);margin:5px 0 0}.toast{position:fixed;left:50%;bottom:145px;transform:translateX(-50%) translateY(20px);opacity:0;z-index:100;background:#fff;color:#211a17;padding:10px 14px;border-radius:99px;font-weight:900;transition:.2s;pointer-events:none}.toast.show{opacity:1;transform:translateX(-50%) translateY(0)}
 @media(max-width:600px){.form-grid,.choice-row,.modal-actions{grid-template-columns:1fr}.field.full{grid-column:auto}.order-overlay{padding:8px}.order-modal{padding:14px;border-radius:14px}.cart-fab{bottom:74px;right:10px}}
@@ -282,6 +291,8 @@ body{background:#050505!important;color:#fff!important;padding-bottom:142px!impo
 .search-wrap{top:94px!important;background:#050505!important;padding:10px 0 5px!important}.search{border-radius:16px!important;background:#111!important;border-color:#393126!important}
 .category-shell{position:sticky!important;top:155px!important;z-index:42!important;background:rgba(5,5,5,.98)!important;padding-top:8px!important;padding-bottom:9px!important;border-bottom:1px solid #29241a!important}
 .category-nav{gap:8px!important}.cat-btn{min-width:112px!important;min-height:92px!important;border-radius:13px!important;background:#0d0d0d!important;border:1px solid #6a5022!important;display:flex!important;flex-direction:column!important;justify-content:center!important;gap:8px!important;color:#eee!important;padding:10px!important}.cat-btn .ci{font-size:28px!important}.cat-btn span:last-child{font-size:10px!important;text-transform:uppercase!important;letter-spacing:.3px!important}.cat-btn.active,.cat-btn:hover{border-color:#e1477d!important;box-shadow:inset 0 0 0 1px #e1477d;background:#15100f!important}
+.pizza-main-cat{position:relative!important;min-width:126px!important;background:linear-gradient(180deg,#24180d,#110f0c)!important;border-color:#bd8a35!important;color:#f1d39a!important;box-shadow:0 5px 18px rgba(0,0,0,.28)!important}.pizza-main-cat .ci{font-size:30px!important}.pizza-chevron{font-size:17px!important;line-height:10px!important;transition:transform .2s ease}.pizza-main-cat.open .pizza-chevron{transform:rotate(180deg)}.pizza-groups{display:none;grid-template-columns:repeat(3,minmax(120px,1fr));gap:8px;padding:10px 0 12px;border-top:1px solid rgba(189,138,53,.22);animation:pizzaGroupsIn .18s ease}.pizza-groups.open{display:grid}.pizza-group-btn{min-width:0!important;min-height:58px!important;border-color:#4b3920!important;background:#11100e!important;font-size:11px!important}.pizza-group-btn .ci{font-size:21px!important}.pizza-group-btn:hover{border-color:#bd8a35!important;color:#f1d39a!important;transform:translateY(-1px)}@keyframes pizzaGroupsIn{from{opacity:0;transform:translateY(-5px)}to{opacity:1;transform:translateY(0)}}
+
 
 .featured-wrap{background:#0c0c0c!important;border:1px solid #29271f!important;border-radius:18px!important;padding:18px!important;margin-top:20px!important}.featured-head h2{font-family:Arial,sans-serif!important;text-transform:uppercase!important;font-size:26px!important}.featured-head h2 span{color:#ef4d87!important}.featured-card{border-color:#6a5022!important;background:#0b0b0b!important}.featured-add{width:42px!important;height:42px!important;border-radius:50%!important;padding:0!important;font-size:0!important;background:#d82f6b!important;color:white!important;position:absolute!important;right:12px!important;bottom:12px!important}.featured-add:after{content:'+';font-size:25px}.featured-card{position:relative!important}.featured-body{padding-bottom:58px!important}.featured-price strong{color:#fff!important}
 
@@ -305,7 +316,48 @@ body{background:#050505!important;color:#fff!important;padding-bottom:142px!impo
 .account-delete{background:#3a1717!important;color:#ffd0d0!important}
 @media(max-width:620px){.account-actions{grid-template-columns:1fr}.top-actions .top-action.account-top{display:none}}
 
+
+/* ===== Bebidas em destaque ===== */
+.drink-highlight{margin:22px 0 28px;padding:18px;border:1px solid #4a3921;border-radius:20px;background:linear-gradient(180deg,#15120e,#090908);box-shadow:0 14px 38px rgba(0,0,0,.25)}
+.drink-highlight-head{display:flex;align-items:end;justify-content:space-between;gap:12px;margin-bottom:14px}
+.drink-highlight-head h2{margin:0;font:800 clamp(25px,4vw,34px)/1.05 Georgia,serif;color:#fff}
+.drink-highlight-head h2 span{color:#e9b95b}
+.drink-highlight-head p{margin:5px 0 0;color:var(--muted);font-size:13px}
+.drink-highlight-link{border:1px solid #765522;background:#100e0b;color:#f3c86d;border-radius:999px;padding:9px 13px;text-decoration:none;font-size:11px;font-weight:900;white-space:nowrap}
+.drink-highlight-grid{display:grid;grid-template-columns:repeat(5,minmax(0,1fr));gap:10px}
+.drink-highlight-card{position:relative;overflow:hidden;border:1px solid #3f3322;border-radius:15px;background:linear-gradient(180deg,#1a1610,#0c0b09);padding:10px;min-width:0}
+.drink-highlight-card img{width:100%;height:130px;display:block;object-fit:contain;background:linear-gradient(180deg,#f7f5ef,#e9e4d9);border-radius:11px;margin-bottom:9px}
+.drink-highlight-card h3{font-size:14px;margin:0;color:#fff;min-height:32px}
+.drink-highlight-card .dh-price{color:#f0c366;font-size:15px;font-weight:900;margin:6px 0 9px}
+.drink-highlight-card button{width:100%;border:0;border-radius:10px;padding:9px;background:linear-gradient(135deg,#efc468,#b97719);color:#171006;font-weight:900;cursor:pointer}
+.drink-highlight-card .dh-age{font-size:9px;color:#9f9487;margin-top:5px}
+.drink-cat{position:relative;border-color:#a97b2d!important;background:linear-gradient(180deg,#2a1c0b,#12100d)!important;color:#f3c86d!important;box-shadow:0 0 0 1px rgba(224,180,93,.18),0 8px 22px rgba(224,180,93,.08)}
+.drink-cat:after{content:'NOVO';position:absolute;top:5px;right:6px;background:#d82f6b;color:#fff;border-radius:999px;padding:2px 5px;font-size:7px;font-weight:900}
+.drink-photo{height:125px;border-radius:11px;overflow:hidden;background:linear-gradient(180deg,#f7f5ef,#e9e4d9);margin:-2px -2px 12px}
+.drink-photo img{width:100%;height:100%;object-fit:contain;display:block}
+#cat-bebidas .item{position:relative}
+#cat-bebidas .item h3{font-size:18px}
+@media(max-width:900px){.drink-highlight-grid{grid-template-columns:repeat(3,minmax(0,1fr))}}
+@media(max-width:620px){.drink-highlight{padding:13px;margin:16px 0 22px}.drink-highlight-head{align-items:flex-start}.drink-highlight-link{display:none}.drink-highlight-grid{display:flex;overflow-x:auto;gap:9px;scroll-snap-type:x mandatory;padding-bottom:4px}.drink-highlight-card{min-width:165px;scroll-snap-align:start}.drink-highlight-card img{height:125px}.drink-photo{height:135px}}
 </style>
+
+<style id="remove-bottom-cart-bar">
+/* Barra inferior de itens no carrinho removida */
+.bottom-cart-bar,
+.bottom-cart,
+.cart-bottom-bar,
+.sticky-cart,
+.sticky-cart-bar,
+.cart-bar,
+.cart-sticky,
+#bottomCart,
+#cartBar,
+#stickyCart,
+#cartBottomBar {
+  display: none !important;
+}
+</style>
+
 </head>
 <body>
 <nav class="site-nav app-topbar">
@@ -348,7 +400,44 @@ body{background:#050505!important;color:#fff!important;padding-bottom:142px!impo
 <div class="search-wrap">
 <input class="search" id="search" oninput="filterMenu()" placeholder="🔎 Buscar sabor ou ingrediente..." type="search"/>
 </div>
-<div class="category-shell"><nav class="category-nav"><button class="cat-btn active" onclick="document.getElementById('cat-pizzas-doces').scrollIntoView({behavior:'smooth',block:'start'})" type="button"><span class="ci">🍫</span><span>Pizzas Doces</span></button><button class="cat-btn" onclick="document.getElementById('cat-calzones').scrollIntoView({behavior:'smooth',block:'start'})" type="button"><span class="ci">🥟</span><span>Calzones</span></button><button class="cat-btn" onclick="document.getElementById('cat-crostinis').scrollIntoView({behavior:'smooth',block:'start'})" type="button"><span class="ci">🥖</span><span>Crostinis</span></button><button class="cat-btn" onclick="document.getElementById('cat-pizza-rolls').scrollIntoView({behavior:'smooth',block:'start'})" type="button"><span class="ci">🍕</span><span>Pizza Rolls</span></button><button class="cat-btn" onclick="document.getElementById('cat-tradicionais').scrollIntoView({behavior:'smooth',block:'start'})" type="button"><span class="ci">🍕</span><span>Tradicionais</span></button><button class="cat-btn" onclick="document.getElementById('cat-queijos').scrollIntoView({behavior:'smooth',block:'start'})" type="button"><span class="ci">🧀</span><span>Queijos</span></button><button class="cat-btn" onclick="document.getElementById('cat-carnes').scrollIntoView({behavior:'smooth',block:'start'})" type="button"><span class="ci">🥩</span><span>Carnes</span></button><button class="cat-btn" onclick="document.getElementById('cat-frutos-do-mar').scrollIntoView({behavior:'smooth',block:'start'})" type="button"><span class="ci">🦐</span><span>Frutos do Mar</span></button><button class="cat-btn" onclick="document.getElementById('cat-verduras-e-legumes').scrollIntoView({behavior:'smooth',block:'start'})" type="button"><span class="ci">🥬</span><span>Verduras e Legumes</span></button><button class="cat-btn" onclick="document.getElementById('cat-bebidas').scrollIntoView({behavior:'smooth',block:'start'})" type="button"><span class="ci">🥤</span><span>Bebidas</span></button></nav></div>
+<div class="category-shell">
+<nav class="category-nav">
+<button class="cat-btn drink-cat" onclick="document.getElementById('cat-bebidas').scrollIntoView({behavior:'smooth',block:'start'})" type="button"><span class="ci">🥤</span><span>Bebidas</span></button>
+<button class="cat-btn pizza-main-cat" id="pizzaMainBtn" onclick="togglePizzaGroups()" type="button" aria-expanded="false" aria-controls="pizzaGroups"><span class="ci">🍕</span><span>Pizza</span><span class="pizza-chevron">⌄</span></button>
+<button class="cat-btn" onclick="document.getElementById('cat-calzones').scrollIntoView({behavior:'smooth',block:'start'})" type="button"><span class="ci">🥟</span><span>Calzones</span></button>
+<button class="cat-btn" onclick="document.getElementById('cat-crostinis').scrollIntoView({behavior:'smooth',block:'start'})" type="button"><span class="ci">🥖</span><span>Crostinis</span></button>
+<button class="cat-btn" onclick="document.getElementById('cat-pizza-rolls').scrollIntoView({behavior:'smooth',block:'start'})" type="button"><span class="ci">🍕</span><span>Pizza Rolls</span></button>
+</nav>
+<div class="pizza-groups" id="pizzaGroups" aria-label="Grupos de pizzas">
+<button class="cat-btn pizza-group-btn" onclick="selectPizzaGroup('cat-tradicionais')" type="button"><span class="ci">🍕</span><span>Tradicionais</span></button>
+<button class="cat-btn pizza-group-btn" onclick="selectPizzaGroup('cat-queijos')" type="button"><span class="ci">🧀</span><span>Queijos</span></button>
+<button class="cat-btn pizza-group-btn" onclick="selectPizzaGroup('cat-carnes')" type="button"><span class="ci">🥩</span><span>Carnes</span></button>
+<button class="cat-btn pizza-group-btn" onclick="selectPizzaGroup('cat-frutos-do-mar')" type="button"><span class="ci">🦐</span><span>Frutos do Mar</span></button>
+<button class="cat-btn pizza-group-btn" onclick="selectPizzaGroup('cat-verduras-e-legumes')" type="button"><span class="ci">🥬</span><span>Verduras e Legumes</span></button>
+<button class="cat-btn pizza-group-btn" onclick="selectPizzaGroup('cat-pizzas-doces')" type="button"><span class="ci">🍫</span><span>Pizzas Doces</span></button>
+</div>
+</div>
+<section class="drink-highlight" aria-label="Bebidas em destaque">
+  <div class="drink-highlight-head">
+    <div><h2>Bebidas <span>em Destaque</span></h2><p>Complete sua pizza com a bebida perfeita.</p></div>
+    <a class="drink-highlight-link" href="#cat-bebidas">VER TODAS →</a>
+  </div>
+  <div class="drink-highlight-grid">
+    <article class="drink-highlight-card"><img src="https://swiftbr.vteximg.com.br/arquivos/ids/212288-702-702/622532-coca-cola-lata_mck.webp?v=638995819113070000" alt="Coca-Cola Lata"><h3>Coca-Cola Lata</h3><div class="dh-price">R$ 7,00</div><button onclick="addCheckoutBeverage('Coca-Cola Lata',7)" type="button">+ ADICIONAR</button></article>
+    <article class="drink-highlight-card"><img src="https://cdn-shopkit.com/usercontent/aminhamercearia/media/images/square/623e601-160014-coca-cola-1l.jpg" alt="Coca-Cola 1 Litro"><h3>Coca-Cola 1 Litro</h3><div class="dh-price">R$ 12,00</div><button onclick="addCheckoutBeverage('Coca-Cola 1 Litro',12)" type="button">+ ADICIONAR</button></article>
+    <article class="drink-highlight-card"><img src="https://tfdfn2.vtexassets.com/arquivos/ids/227729-800-800?aspect=true&height=800&v=638206364061600000&width=800" alt="Coca-Cola 2 Litros"><h3>Coca-Cola 2 Litros</h3><div class="dh-price">R$ 19,00</div><button onclick="addCheckoutBeverage('Coca-Cola 2L',19)" type="button">+ ADICIONAR</button></article>
+    <article class="drink-highlight-card"><img src="https://www.drogariaminasbrasil.com.br/media/webp/catalog/product/cache/74c1057f7991b4edb2bc7bdaa94de933/image/22814b2ac/refrigerante-fanta-uva-2-litros_jpg.webp" alt="Fanta Uva 2 Litros"><h3>Fanta Uva 2L</h3><div class="dh-price">R$ 16,00</div><button onclick="addCheckoutBeverage('Fanta Uva 2L',16)" type="button">+ ADICIONAR</button></article>
+    <article class="drink-highlight-card"><img src="https://cdn.awsli.com.br/800x800/1847/1847175/produto/94341333/364c5bdfdd.jpg" alt="Fanta Laranja 2 Litros"><h3>Fanta Laranja 2L</h3><div class="dh-price">R$ 16,00</div><button onclick="addCheckoutBeverage('Fanta Laranja 2L',16)" type="button">+ ADICIONAR</button></article>
+    <article class="drink-highlight-card"><img src="https://www.imigrantesbebidas.com.br/img/bebida/images/products/full/7633-vinho-pergola-tinto-suave-1l.jpg?p=product_regular&s=d7ad3fd58b4e7be33f0d70af4dc6c965" alt="Pérgola Tinto Suave"><h3>Pérgola Tinto Suave</h3><div class="dh-price">R$ 36,00</div><button onclick="addCheckoutBeverage('Pérgola Tinto Suave',36)" type="button">+ ADICIONAR</button><div class="dh-age">18+ • Beba com moderação</div></article>
+    <article class="drink-highlight-card"><img src="https://www.imigrantesbebidas.com.br/img/bebida/images/products/full/7636-vinho-pergola-tinto-seco-1-l.20250918141332.jpg?p=product_regular&s=462b7b82b70426ed97b6c5afeae8c615" alt="Pérgola Tinto Seco"><h3>Pérgola Tinto Seco</h3><div class="dh-price">R$ 36,00</div><button onclick="addCheckoutBeverage('Pérgola Tinto Seco',36)" type="button">+ ADICIONAR</button><div class="dh-age">18+ • Beba com moderação</div></article>
+    <article class="drink-highlight-card"><img src="https://higa.arquivos.gruvo.com.br/uploads/produtos/vinho-pergola-tinto-bordo-demi-sec-1-litro.webp" alt="Pérgola Bordô Demi-Sec"><h3>Pérgola Bordô Demi-Sec</h3><div class="dh-price">R$ 40,00</div><button onclick="addCheckoutBeverage('Pérgola Bordô Demi-Sec',40)" type="button">+ ADICIONAR</button><div class="dh-age">18+ • Beba com moderação</div></article>
+    <article class="drink-highlight-card"><img src="https://carrefourbr.vtexassets.com/arquivos/ids/183222927/image-0.jpg?v=638741898431330000" alt="Heineken Long Neck"><h3>Heineken Long Neck</h3><div class="dh-price">R$ 11,00</div><button onclick="addCheckoutBeverage('Heineken Long Neck',11)" type="button">+ ADICIONAR</button><div class="dh-age">18+ • Beba com moderação</div></article>
+    <article class="drink-highlight-card"><img src="https://cdnx.jumpseller.com/imperio-do-brasil/image/13711474/cerveja_skol_350ml.jpg?1650452486=" alt="Skol Lata"><h3>Skol Lata</h3><div class="dh-price">R$ 7,00</div><button onclick="addCheckoutBeverage('Skol Lata',7)" type="button">+ ADICIONAR</button><div class="dh-age">18+ • Beba com moderação</div></article>
+    <article class="drink-highlight-card"><img src="https://cdnx.jumpseller.com/imperio-do-brasil/image/23212275/75AF9492-4BEB-4879-A5D6-B2A714F63618.png?1658222494=" alt="Original Lata"><h3>Original Lata</h3><div class="dh-price">R$ 8,00</div><button onclick="addCheckoutBeverage('Original Lata',8)" type="button">+ ADICIONAR</button><div class="dh-age">18+ • Beba com moderação</div></article>
+  </div>
+  <p style="margin:12px 0 0;color:#9f9487;font-size:10px">Bebidas alcoólicas: venda proibida para menores de 18 anos.</p>
+</section>
+
 <section aria-label="Pizzas em destaque" class="featured-wrap">
 <div class="featured-head"><div><h2>As Mais <span>Pedidas</span></h2><p>Comece pelas pizzas doces favoritas da casa.</p></div><a class="featured-all" href="#cat-pizzas-doces">VER DOCES →</a></div>
 <div class="featured-grid">
@@ -1459,6 +1548,7 @@ body{background:#050505!important;color:#fff!important;padding-bottom:142px!impo
 </div>
 <div class="grid">
 <article class="item" data-search="coca-cola 2l refrigerante 2 litros">
+<div class="drink-photo"><img src="https://tfdfn2.vtexassets.com/arquivos/ids/227729-800-800?aspect=true&height=800&v=638206364061600000&width=800" alt="Coca-Cola 2L"></div>
 <div class="item-top"><h3>Coca-Cola 2L</h3></div>
 <p class="desc">Refrigerante 2 litros</p>
 <div class="prices single">
@@ -1467,6 +1557,7 @@ body{background:#050505!important;color:#fff!important;padding-bottom:142px!impo
 <a class="order-btn" href="https://wa.me/5515997398019?text=Ol%C3%A1%21%20Quero%20fazer%20um%20pedido%20na%20La%20Supreme.%0A%0AItem%3A%20Coca-Cola%202L%0A%0APode%20me%20ajudar%20a%20finalizar%20o%20pedido%3F" rel="noopener" target="_blank">Pedir pelo WhatsApp</a>
 </article>
 <article class="item" data-search="fanta uva 2l refrigerante 2 litros">
+<div class="drink-photo"><img src="https://www.drogariaminasbrasil.com.br/media/webp/catalog/product/cache/74c1057f7991b4edb2bc7bdaa94de933/image/22814b2ac/refrigerante-fanta-uva-2-litros_jpg.webp" alt="Fanta Uva 2L"></div>
 <div class="item-top"><h3>Fanta Uva 2L</h3></div>
 <p class="desc">Refrigerante 2 litros</p>
 <div class="prices single">
@@ -1475,6 +1566,7 @@ body{background:#050505!important;color:#fff!important;padding-bottom:142px!impo
 <a class="order-btn" href="https://wa.me/5515997398019?text=Ol%C3%A1%21%20Quero%20fazer%20um%20pedido%20na%20La%20Supreme.%0A%0AItem%3A%20Fanta%20Uva%202L%0A%0APode%20me%20ajudar%20a%20finalizar%20o%20pedido%3F" rel="noopener" target="_blank">Pedir pelo WhatsApp</a>
 </article>
 <article class="item" data-search="fanta laranja 2l refrigerante 2 litros">
+<div class="drink-photo"><img src="https://cdn.awsli.com.br/800x800/1847/1847175/produto/94341333/364c5bdfdd.jpg" alt="Fanta Laranja 2L"></div>
 <div class="item-top"><h3>Fanta Laranja 2L</h3></div>
 <p class="desc">Refrigerante 2 litros</p>
 <div class="prices single">
@@ -1483,6 +1575,7 @@ body{background:#050505!important;color:#fff!important;padding-bottom:142px!impo
 <a class="order-btn" href="https://wa.me/5515997398019?text=Ol%C3%A1%21%20Quero%20fazer%20um%20pedido%20na%20La%20Supreme.%0A%0AItem%3A%20Fanta%20Laranja%202L%0A%0APode%20me%20ajudar%20a%20finalizar%20o%20pedido%3F" rel="noopener" target="_blank">Pedir pelo WhatsApp</a>
 </article>
 <article class="item" data-search="tubaína refrigerante">
+<div class="drink-photo"><img src="https://www.kdindetudo.com.br/media/catalog/product/cache/1/image/800x800/040ec09b1e35df139433887a97daa66f/re/f/refrigerante-tubaina-2-litros.jpg" alt="Tubaína"></div>
 <div class="item-top"><h3>Tubaína</h3></div>
 <p class="desc">Refrigerante</p>
 <div class="prices single">
@@ -1490,7 +1583,53 @@ body{background:#050505!important;color:#fff!important;padding-bottom:142px!impo
 </div>
 <a class="order-btn" href="https://wa.me/5515997398019?text=Ol%C3%A1%21%20Quero%20fazer%20um%20pedido%20na%20La%20Supreme.%0A%0AItem%3A%20Tuba%C3%ADna%0A%0APode%20me%20ajudar%20a%20finalizar%20o%20pedido%3F" rel="noopener" target="_blank">Pedir pelo WhatsApp</a>
 </article>
+<article class="item" data-search="coca cola lata refrigerante">
+<div class="drink-photo"><img src="https://swiftbr.vteximg.com.br/arquivos/ids/212288-702-702/622532-coca-cola-lata_mck.webp?v=638995819113070000" alt="Coca-Cola Lata"></div>
+<div class="item-top"><h3>Coca-Cola Lata</h3></div>
+<p class="desc">Refrigerante lata</p>
+<div class="prices single">
+<div><span>Preço</span><strong>R$ 7,00</strong></div>
+</div>
+<a class="order-btn" href="#">Pedir pelo WhatsApp</a>
+</article>
+<article class="item" data-search="coca cola 1 litro refrigerante">
+<div class="drink-photo"><img src="https://cdn-shopkit.com/usercontent/aminhamercearia/media/images/square/623e601-160014-coca-cola-1l.jpg" alt="Coca-Cola 1 Litro"></div>
+<div class="item-top"><h3>Coca-Cola 1 Litro</h3></div>
+<p class="desc">Refrigerante 1 litro</p>
+<div class="prices single">
+<div><span>Preço</span><strong>R$ 12,00</strong></div>
+</div>
+<a class="order-btn" href="#">Pedir pelo WhatsApp</a>
+</article>
+<article class="item" data-search="pergola tinto suave vinho">
+<div class="drink-photo"><img src="https://www.imigrantesbebidas.com.br/img/bebida/images/products/full/7633-vinho-pergola-tinto-suave-1l.jpg?p=product_regular&s=d7ad3fd58b4e7be33f0d70af4dc6c965" alt="Pérgola Tinto Suave"></div>
+<div class="item-top"><h3>Pérgola Tinto Suave</h3></div>
+<p class="desc">Vinho</p>
+<div class="prices single">
+<div><span>Preço</span><strong>R$ 36,00</strong></div>
+</div>
+<a class="order-btn" href="#">Pedir pelo WhatsApp</a>
+</article>
+<article class="item" data-search="pergola tinto seco vinho">
+<div class="drink-photo"><img src="https://www.imigrantesbebidas.com.br/img/bebida/images/products/full/7636-vinho-pergola-tinto-seco-1-l.20250918141332.jpg?p=product_regular&s=462b7b82b70426ed97b6c5afeae8c615" alt="Pérgola Tinto Seco"></div>
+<div class="item-top"><h3>Pérgola Tinto Seco</h3></div>
+<p class="desc">Vinho</p>
+<div class="prices single">
+<div><span>Preço</span><strong>R$ 36,00</strong></div>
+</div>
+<a class="order-btn" href="#">Pedir pelo WhatsApp</a>
+</article>
+<article class="item" data-search="pergola bordo demi sec vinho">
+<div class="drink-photo"><img src="https://higa.arquivos.gruvo.com.br/uploads/produtos/vinho-pergola-tinto-bordo-demi-sec-1-litro.webp" alt="Pérgola Bordô Demi-Sec"></div>
+<div class="item-top"><h3>Pérgola Bordô Demi-Sec</h3></div>
+<p class="desc">Vinho</p>
+<div class="prices single">
+<div><span>Preço</span><strong>R$ 40,00</strong></div>
+</div>
+<a class="order-btn" href="#">Pedir pelo WhatsApp</a>
+</article>
 <article class="item" data-search="heineken long neck cerveja">
+<div class="drink-photo"><img src="https://carrefourbr.vtexassets.com/arquivos/ids/183222927/image-0.jpg?v=638741898431330000" alt="Heineken Long Neck"></div>
 <div class="item-top"><h3>Heineken Long Neck</h3></div>
 <p class="desc">Cerveja</p>
 <div class="prices single">
@@ -1499,6 +1638,7 @@ body{background:#050505!important;color:#fff!important;padding-bottom:142px!impo
 <a class="order-btn" href="https://wa.me/5515997398019?text=Ol%C3%A1%21%20Quero%20fazer%20um%20pedido%20na%20La%20Supreme.%0A%0AItem%3A%20Heineken%20Long%20Neck%0A%0APode%20me%20ajudar%20a%20finalizar%20o%20pedido%3F" rel="noopener" target="_blank">Pedir pelo WhatsApp</a>
 </article>
 <article class="item" data-search="skol lata cerveja">
+<div class="drink-photo"><img src="https://cdnx.jumpseller.com/imperio-do-brasil/image/13711474/cerveja_skol_350ml.jpg?1650452486=" alt="Skol Lata"></div>
 <div class="item-top"><h3>Skol Lata</h3></div>
 <p class="desc">Cerveja</p>
 <div class="prices single">
@@ -1507,6 +1647,7 @@ body{background:#050505!important;color:#fff!important;padding-bottom:142px!impo
 <a class="order-btn" href="https://wa.me/5515997398019?text=Ol%C3%A1%21%20Quero%20fazer%20um%20pedido%20na%20La%20Supreme.%0A%0AItem%3A%20Skol%20Lata%0A%0APode%20me%20ajudar%20a%20finalizar%20o%20pedido%3F" rel="noopener" target="_blank">Pedir pelo WhatsApp</a>
 </article>
 <article class="item" data-search="original lata cerveja">
+<div class="drink-photo"><img src="https://cdnx.jumpseller.com/imperio-do-brasil/image/23212275/75AF9492-4BEB-4879-A5D6-B2A714F63618.png?1658222494=" alt="Original Lata"></div>
 <div class="item-top"><h3>Original Lata</h3></div>
 <p class="desc">Cerveja</p>
 <div class="prices single">
@@ -1559,7 +1700,7 @@ body{background:#050505!important;color:#fff!important;padding-bottom:142px!impo
 <button data-mobile-nav="pedidos" onclick="openOrderTracking()" type="button"><span class="mn-icon">◉</span><span>Pedidos</span></button>
 <button data-mobile-nav="carrinho" onclick="openCart()" style="position:relative" type="button"><span class="cart-dot" id="mobileCartCount">0</span><span class="mn-icon">🛒</span><span>Carrinho</span></button>
 </nav>
-
+<div class="bottom-bar"><div class="bottom-inner"></div><button class="bottom-open-cart" onclick="openCart()">VER PEDIDO →</button></div></div>
 <div aria-hidden="true" class="order-overlay" id="productOverlay">
 <div class="order-modal">
 <div class="modal-head"><h2 id="productTitle">Adicionar ao pedido</h2><button class="close-x" onclick="closeProduct()">×</button></div>
@@ -1906,11 +2047,22 @@ function openCart(){renderCart();document.getElementById('cartOverlay').classLis
 function closeCart(){document.getElementById('cartOverlay').classList.remove('open');}
 function changeQty(id,d){const x=cart.find(i=>i.id==id);if(!x)return;x.qty=Math.max(1,x.qty+d);saveCart();renderCart();}
 function removeItem(id){cart=cart.filter(i=>i.id!=id);saveCart();renderCart();}
+function addCheckoutBeverage(name,price){
+  const existing=cart.find(x=>x.kind==='beverage' && x.name===name);
+  if(existing){existing.qty=(Number(existing.qty)||1)+1;}else{cart.push({id:Date.now()+Math.random(),name,kind:'beverage',obs:'',unit:Number(price),qty:1,section:'cat-bebidas'});}
+  saveCart();
+  renderCart();
+  showToast(name+' adicionado ao pedido');
+}
+function skipCheckoutBeverages(){
+  const el=document.getElementById('checkoutDrinkSuggest');
+  if(el){el.innerHTML='<p style="margin:0;color:var(--muted);font-size:12px">Bebidas não adicionadas. Você pode finalizar seu pedido abaixo.</p>';}
+}
 function renderCart(){
   const b=document.getElementById('cartBody');
   if(!cart.length){b.innerHTML='<div class="empty-cart">Seu carrinho está vazio.<br>Escolha os itens no cardápio.</div><button class="btn-main" style="width:100%" onclick="closeCart()">Voltar ao cardápio</button>';return;}
   const rows=cart.map(x=>`<div class="cart-row"><div><h4>${escapeHtml(x.name)}</h4><p>${x.size?escapeHtml(x.size):''}${x.crust?` • Borda ${escapeHtml(x.crust)}`:''}</p>${x.obs?`<p>Obs.: ${escapeHtml(x.obs)}</p>`:''}<strong>${money(x.unit*x.qty)}</strong><br><button class="remove-item" onclick="removeItem(${x.id})">Remover</button></div><div class="qty-controls"><button onclick="changeQty(${x.id},-1)">−</button><b>${x.qty}</b><button onclick="changeQty(${x.id},1)">+</button></div></div>`).join('');
-  b.innerHTML=`<div class="cart-list">${rows}</div><div class="cart-summary"><div class="sum-line"><span>Subtotal</span><span>${money(subtotal())}</span></div><div class="sum-line" id="deliveryFeeLine"><span>Entrega</span><span id="deliveryFeeValue">Grátis</span></div><div class="sum-line discount" id="discountLine" style="display:none"><span>Desconto</span><span id="discountValue">− R$ 0,00</span></div><div class="sum-line total"><span>Total</span><span id="checkoutTotalValue">${money(subtotal())}</span></div><div class="small-note" id="deliveryFeeNote">Escolha sua cidade abaixo. Maristela tem entrega grátis; Laranjal Paulista e Pereiras têm taxa de R$ 5,00.</div></div><div class="checkout-block"><div class="account-card"><h3>👤 Cadastro opcional</h3><p id="checkoutAccountText">Você pode continuar sem cadastro ou salvar seus dados para agilizar os próximos pedidos.</p><div class="account-actions"><button class="btn-muted" type="button" onclick="openCustomerAccount()">Minha conta</button><button class="btn-muted" type="button" onclick="fillCheckoutFromProfile();showToast('Dados preenchidos!')">Usar dados salvos</button></div></div><div class="checkout-steps"><div class="checkout-step active"><b>1</b>Pedido</div><div class="checkout-step active"><b>2</b>Entrega</div><div class="checkout-step active"><b>3</b>Pagamento</div><div class="checkout-step"><b>4</b>Confirmar</div></div><h3>Finalizar pedido</h3><div class="form-grid"><div class="field full"><label>Seu nome</label><input id="custName" placeholder="Nome do cliente"></div><div class="field full"><label>Telefone</label><input id="custPhone" inputmode="tel" placeholder="(15) 99999-9999"></div><div class="field full"><label>Recebimento</label><div class="choice-row"><button id="deliveryBtn" class="choice active" onclick="setFulfillment('delivery')">Entrega</button><button id="pickupBtn" class="choice" onclick="setFulfillment('pickup')">Retirada</button></div></div><div id="deliveryFields" class="field full"><label>Sua cidade</label><select id="deliveryCity" onchange="updateDeliveryTotal()"><option value="" data-fee="0" selected disabled>Selecione sua cidade</option><option value="Maristela" data-fee="0">Maristela — entrega grátis</option><option value="Laranjal Paulista" data-fee="5">Laranjal Paulista — entrega R$ 5,00</option><option value="Pereiras" data-fee="5">Pereiras — entrega R$ 5,00</option></select></div><div id="addressFields" class="field full"><label>Endereço de entrega</label><textarea id="address" placeholder="Rua, número, bairro e referência"></textarea></div><div class="field full"><label>Cupom de desconto</label><div class="coupon-box"><div class="coupon-row"><input id="couponCode" maxlength="40" autocomplete="off" placeholder="Ex.: SUPREME10" oninput="couponInputChanged()"><button id="couponApplyBtn" class="coupon-apply" type="button" onclick="applyCoupon()">Aplicar</button></div><div id="couponMsg" class="coupon-msg">Tem um cupom? Digite o código e toque em Aplicar.</div></div></div><div class="field full"><label>Forma de pagamento</label><select id="payment" onchange="togglePixEmail()"><option value="Pix">Pix</option><option value="Dinheiro">Dinheiro</option><option value="Cartão na entrega">Cartão na entrega</option></select></div><div id="pixEmailField" class="field full"><label>E-mail para gerar o Pix</label><input id="custEmail" type="email" inputmode="email" autocomplete="email" placeholder="seuemail@exemplo.com"><div class="small-note">Necessário somente para o Pix Mercado Pago.</div></div><div class="field full"><label>Observações gerais</label><textarea id="generalObs" placeholder="Alguma observação para o pedido?"></textarea></div><div class="field full"><label style="display:flex;gap:9px;align-items:flex-start;cursor:pointer"><input id="saveCustomerData" type="checkbox" style="width:auto;margin-top:2px"> <span>Salvar nome, telefone e endereço neste aparelho para os próximos pedidos.</span></label></div></div><button class="btn-main finish-btn" style="width:100%;margin-top:12px" onclick="checkoutWhatsApp()">✅ Finalizar pedido</button></div>`;
+  b.innerHTML=`<div class="cart-list">${rows}</div><div class="cart-summary"><div class="sum-line"><span>Subtotal</span><span>${money(subtotal())}</span></div><div class="sum-line" id="deliveryFeeLine"><span>Entrega</span><span id="deliveryFeeValue">Grátis</span></div><div class="sum-line discount" id="discountLine" style="display:none"><span>Desconto</span><span id="discountValue">− R$ 0,00</span></div><div class="sum-line total"><span>Total</span><span id="checkoutTotalValue">${money(subtotal())}</span></div><div class="small-note" id="deliveryFeeNote">Escolha sua cidade abaixo. Maristela tem entrega grátis; Laranjal Paulista e Pereiras têm taxa de R$ 5,00.</div></div><div class="checkout-block"><div class="checkout-drink-suggest" id="checkoutDrinkSuggest"><h4>🥤 Não esqueça sua bebida!</h4><p>Que tal completar seu pedido? Adicione uma bebida sem sair da finalização.</p><div class="checkout-drink-grid"><button type="button" class="checkout-drink-btn" onclick="addCheckoutBeverage('Coca-Cola Lata',7)">Coca-Cola Lata<span>R$ 7,00</span></button><button type="button" class="checkout-drink-btn" onclick="addCheckoutBeverage('Coca-Cola 1 Litro',12)">Coca-Cola 1 Litro<span>R$ 12,00</span></button><button type="button" class="checkout-drink-btn" onclick="addCheckoutBeverage('Coca-Cola 2L',19)">Coca-Cola 2L<span>R$ 19,00</span></button><button type="button" class="checkout-drink-btn" onclick="addCheckoutBeverage('Pérgola Tinto Suave',36)">Pérgola Tinto Suave<span>R$ 36,00</span></button><button type="button" class="checkout-drink-btn" onclick="addCheckoutBeverage('Pérgola Tinto Seco',36)">Pérgola Tinto Seco<span>R$ 36,00</span></button><button type="button" class="checkout-drink-btn" onclick="addCheckoutBeverage('Pérgola Bordô Demi-Sec',40)">Pérgola Bordô Demi-Sec<span>R$ 40,00</span></button></div><button type="button" class="checkout-drink-skip" onclick="skipCheckoutBeverages()">Continuar sem adicionar bebida</button></div><div class="account-card"><h3>👤 Cadastro opcional</h3><p id="checkoutAccountText">Você pode continuar sem cadastro ou salvar seus dados para agilizar os próximos pedidos.</p><div class="account-actions"><button class="btn-muted" type="button" onclick="openCustomerAccount()">Minha conta</button><button class="btn-muted" type="button" onclick="fillCheckoutFromProfile();showToast('Dados preenchidos!')">Usar dados salvos</button></div></div><div class="checkout-steps"><div class="checkout-step active"><b>1</b>Pedido</div><div class="checkout-step active"><b>2</b>Entrega</div><div class="checkout-step active"><b>3</b>Pagamento</div><div class="checkout-step"><b>4</b>Confirmar</div></div><h3>Finalizar pedido</h3><div class="form-grid"><div class="field full"><label>Seu nome</label><input id="custName" placeholder="Nome do cliente"></div><div class="field full"><label>Telefone</label><input id="custPhone" inputmode="tel" placeholder="(15) 99999-9999"></div><div class="field full"><label>Recebimento</label><div class="choice-row"><button id="deliveryBtn" class="choice active" onclick="setFulfillment('delivery')">Entrega</button><button id="pickupBtn" class="choice" onclick="setFulfillment('pickup')">Retirada</button></div></div><div id="deliveryFields" class="field full"><label>Sua cidade</label><select id="deliveryCity" onchange="updateDeliveryTotal()"><option value="" data-fee="0" selected disabled>Selecione sua cidade</option><option value="Maristela" data-fee="0">Maristela — entrega grátis</option><option value="Laranjal Paulista" data-fee="5">Laranjal Paulista — entrega R$ 5,00</option><option value="Pereiras" data-fee="5">Pereiras — entrega R$ 5,00</option></select></div><div id="addressFields" class="field full"><label>Endereço de entrega</label><textarea id="address" placeholder="Rua, número, bairro e referência"></textarea></div><div class="field full"><label>Cupom de desconto</label><div class="coupon-box"><div class="coupon-row"><input id="couponCode" maxlength="40" autocomplete="off" placeholder="Ex.: SUPREME10" oninput="couponInputChanged()"><button id="couponApplyBtn" class="coupon-apply" type="button" onclick="applyCoupon()">Aplicar</button></div><div id="couponMsg" class="coupon-msg">Tem um cupom? Digite o código e toque em Aplicar.</div></div></div><div class="field full"><label>Forma de pagamento</label><select id="payment" onchange="togglePixEmail()"><option value="Pix">Pix</option><option value="Dinheiro">Dinheiro</option><option value="Cartão na entrega">Cartão na entrega</option></select></div><div id="pixEmailField" class="field full"><label>E-mail para gerar o Pix</label><input id="custEmail" type="email" inputmode="email" autocomplete="email" placeholder="seuemail@exemplo.com"><div class="small-note">Necessário somente para o Pix Mercado Pago.</div></div><div class="field full"><label>Observações gerais</label><textarea id="generalObs" placeholder="Alguma observação para o pedido?"></textarea></div><div class="field full"><label style="display:flex;gap:9px;align-items:flex-start;cursor:pointer"><input id="saveCustomerData" type="checkbox" style="width:auto;margin-top:2px"> <span>Salvar nome, telefone e endereço neste aparelho para os próximos pedidos.</span></label></div></div><button class="btn-main finish-btn" style="width:100%;margin-top:12px" onclick="checkoutWhatsApp()">✅ Finalizar pedido</button></div>`;
   window._fulfillment='delivery';
   applyStoreStatusUI();
   togglePixEmail();
@@ -2664,6 +2816,23 @@ window.addEventListener('DOMContentLoaded',()=>{
       if(menu && window.scrollY>menu.offsetTop-150)setActive('cardapio'); else setActive('inicio');
     },{passive:true});
     links.forEach(x=>x.addEventListener('click',()=>setActive(x.dataset.mobileNav)));
+  }
+
+  window.togglePizzaGroups=function togglePizzaGroups(){
+    const groups=document.getElementById('pizzaGroups');
+    const btn=document.getElementById('pizzaMainBtn');
+    if(!groups||!btn)return;
+    const open=groups.classList.toggle('open');
+    btn.classList.toggle('open',open);
+    btn.setAttribute('aria-expanded',String(open));
+  }
+  window.selectPizzaGroup=function selectPizzaGroup(id){
+    const el=document.getElementById(id);
+    const groups=document.getElementById('pizzaGroups');
+    const btn=document.getElementById('pizzaMainBtn');
+    if(el)el.scrollIntoView({behavior:'smooth',block:'start'});
+    if(groups)groups.classList.remove('open');
+    if(btn){btn.classList.remove('open');btn.setAttribute('aria-expanded','false');}
   }
   function categorySpy(){
     const sections=[...document.querySelectorAll('.menu-section[id^="cat-"]')];
