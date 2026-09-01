@@ -250,7 +250,7 @@ body{padding-bottom:0}
 .hero-smartbar{max-width:900px;margin:18px auto 0;display:flex;align-items:center;justify-content:center;gap:10px;flex-wrap:wrap;position:relative;z-index:2}
 .hero-smartbar .smart-pill{display:inline-flex;align-items:center;gap:8px;border:1px solid #5a4321;background:rgba(12,11,9,.86);border-radius:999px;padding:9px 13px;color:#e9dfcf;font-size:12px;font-weight:800}
 .hero-smartbar .smart-pill strong{color:#f1c66d}.smart-live{width:8px;height:8px;border-radius:50%;background:#28c364;box-shadow:0 0 0 4px rgba(40,195,100,.13)}
-.item{position:relative}.item-supreme-mark{position:absolute;right:12px;top:12px;background:linear-gradient(135deg,#f0c86e,#b9791a);color:#171006;font-size:9px;font-weight:1000;letter-spacing:.8px;border-radius:999px;padding:5px 8px;z-index:2}.item .item-top{padding-right:0}.item.has-supreme .item-top{padding-right:70px}
+.item{position:relative}.item-supreme-mark{position:absolute;right:12px;top:12px;background:linear-gradient(135deg,#f0c86e,#b9791a);color:#171006;font-size:9px;font-weight:1000;letter-spacing:.8px;border-radius:999px;padding:5px 8px;z-index:2}.item-supreme-border-note{position:absolute;right:12px;top:39px;color:#f0c86e;font-size:9px;font-weight:900;letter-spacing:.35px;white-space:nowrap;z-index:2}.item .item-top{padding-right:0}.item.has-supreme .item-top{padding-right:90px}
 .checkout-steps{display:grid;grid-template-columns:repeat(4,1fr);gap:6px;margin:0 0 15px}.checkout-step{border:1px solid #3f321f;background:#11100d;border-radius:10px;padding:8px 5px;text-align:center;font-size:10px;color:#a99d90;font-weight:800}.checkout-step.active{border-color:#9d6f28;color:#f0c86e;background:#1d170f}.checkout-step b{display:block;font-size:11px;color:#fff;margin-bottom:2px}
 .order-modal{border-radius:22px}.modal-head{position:sticky;top:0;z-index:3;background:linear-gradient(180deg,#0c0c0b 82%,rgba(12,12,11,0));padding-bottom:8px}.choice{transition:.16s}.choice.active{box-shadow:inset 0 0 0 1px rgba(240,196,104,.25)}
 .mobile-app-nav{display:none}.mobile-app-nav button,.mobile-app-nav a{font:inherit}
@@ -1980,7 +1980,7 @@ function openProduct(p){
             <option value="Avelã">Avelã</option>
             <option value="Chocolate ao leite">Chocolate ao leite</option>
           </select>
-          <div class="half-note">A borda escolhida vale para a pizza inteira, inclusive nas pizzas meio a meio.</div>
+          <div class="half-note" id="crustRuleNote">A borda escolhida vale para a pizza inteira, inclusive nas pizzas meio a meio.</div>
         </div>
         <div class="field full"><label>Observações</label><textarea id="itemObs" placeholder="Ex.: sem cebola, pouco orégano..."></textarea></div>
       </div>
@@ -1994,6 +1994,39 @@ function openProduct(p){
 }
 function chooseSize(btn){document.querySelectorAll('[data-size]').forEach(b=>b.classList.remove('active'));btn.classList.add('active');refreshProductPrice();}
 function selectedSize(){return document.querySelector('[data-size].active')?.dataset.size||'broto';}
+const crustPrices={
+  broto:{'Catupiry':8,'Cheddar':8,'Pistache':10,'Avelã':10,'Chocolate ao leite':8},
+  grande:{'Catupiry':12,'Cheddar':12,'Pistache':15,'Avelã':15,'Chocolate ao leite':12}
+};
+function isSupremePizza(p){return /supreme/i.test(p?.name||'');}
+function includedCrustsFor(p){
+  if(!isSupremePizza(p)) return [];
+  if(p.section==='cat-pizzas-doces') return ['Catupiry','Cheddar','Pistache','Avelã','Chocolate ao leite'];
+  return ['Catupiry','Cheddar'];
+}
+function updateCrustOptionPrices(){
+  const select=document.getElementById('crust');
+  if(!select) return;
+  const size=selectedSize();
+  const selected=select.value;
+  const included=includedCrustsFor(currentProduct);
+  [...select.options].forEach(opt=>{
+    if(!opt.value){ opt.textContent='Sem borda'; return; }
+    const price=Number(crustPrices[size]?.[opt.value]||0);
+    opt.textContent=included.includes(opt.value)?`${opt.value} — INCLUSA`:`${opt.value} — + ${money(price)}`;
+  });
+  select.value=selected;
+  const note=document.getElementById('crustRuleNote');
+  if(note){
+    if(isSupremePizza(currentProduct)){
+      note.textContent=currentProduct.section==='cat-pizzas-doces'
+        ? 'Supreme doce: todas as opções de borda estão inclusas no preço.'
+        : 'Supreme: borda de Catupiry ou Cheddar inclusa no preço. As demais são cobradas conforme o tamanho.';
+    }else{
+      note.textContent='A borda escolhida vale para a pizza inteira, inclusive nas pizzas meio a meio.';
+    }
+  }
+}
 function findPizza(name){return allPizzaProducts().find(p=>p.name===name);}
 function calcPizza(){
   const size=selectedSize(), p=currentProduct;
@@ -2007,14 +2040,11 @@ function calcPizza(){
     }
   }
   const crust=document.getElementById('crust')?.value||'';
-  const crustPrices={
-    broto:{'Catupiry':8,'Cheddar':8,'Pistache':10,'Avelã':10,'Chocolate ao leite':8},
-    grande:{'Catupiry':12,'Cheddar':12,'Pistache':15,'Avelã':15,'Chocolate ao leite':12}
-  };
-  const crustPrice=crust?Number(crustPrices[size]?.[crust]||0):0;
+  const included=includedCrustsFor(p);
+  const crustPrice=crust&&!included.includes(crust)?Number(crustPrices[size]?.[crust]||0):0;
   return {base,total:base+crustPrice,half,crust,size,crustPrice};
 }
-function refreshProductPrice(){const el=document.getElementById('productPrice'); if(el) el.textContent=money(calcPizza().total);}
+function refreshProductPrice(){updateCrustOptionPrices();const el=document.getElementById('productPrice'); if(el) el.textContent=money(calcPizza().total);}
 function addCurrentPizza(){
   const c=calcPizza(), obs=document.getElementById('itemObs')?.value.trim()||'';
   const label=c.half?`1/2 ${currentProduct.name} + 1/2 ${c.half}`:currentProduct.name;
@@ -2851,7 +2881,7 @@ window.addEventListener('DOMContentLoaded',()=>{
       const h=card.querySelector('h3');
       if(h && /supreme/i.test(h.textContent) && !card.querySelector('.item-supreme-mark')){
         card.classList.add('has-supreme');
-        const tag=document.createElement('span');tag.className='item-supreme-mark';tag.textContent='SUPREME';card.appendChild(tag);
+        const tag=document.createElement('span');tag.className='item-supreme-mark';tag.textContent='SUPREME';card.appendChild(tag); const note=document.createElement('span');note.className='item-supreme-border-note';note.textContent='BORDA INCLUSA';card.appendChild(note);
       }
     });
   }
