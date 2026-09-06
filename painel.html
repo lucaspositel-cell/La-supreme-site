@@ -109,7 +109,8 @@ function render(rows){
       <div class="muted">${o.customer_phone?esc(o.customer_phone)+'<br>':''}${o.fulfillment==='delivery'?'🛵 '+esc(o.address):'🏪 Retirada'}<br>${paymentLine(o)}</div>
       <div class="items">${items.map(x=>`<div class="item"><b>${x.qty||1}x ${esc(x.name)}</b>${x.size?'<br><span class="muted">'+esc(x.size)+'</span>':''}${x.crust?'<br><span class="muted">Borda: '+esc(x.crust)+'</span>':''}${x.obs?'<br><span class="muted">Obs.: '+esc(x.obs)+'</span>':''}</div>`).join('')}</div>
       ${o.general_obs?`<div class="muted" style="margin-top:8px"><b>Obs. gerais:</b> ${esc(o.general_obs)}</div>`:''}
-      <div class="total">Subtotal: ${money(o.subtotal)}</div>
+      ${Number(o.discount||0)>0?`<div class="muted" style="margin-top:10px">Subtotal: ${money(o.subtotal)}<br>Desconto${o.coupon_code?` (${esc(o.coupon_code)})`:''}: − ${money(o.discount)}${Number(o.delivery_fee||0)>0?`<br>Taxa de entrega: ${money(o.delivery_fee)}`:''}</div>`:''}
+      <div class="total">Total: ${money(o.total!=null ? o.total : Number(o.subtotal||0)+Number(o.delivery_fee||0)-Number(o.discount||0))}</div>
       <div class="actions">
         <button class="print" onclick='printOrder(${JSON.stringify(o).replace(/'/g,"&#39;")})'>🖨️ Imprimir cozinha</button>
         ${o.fulfillment==='delivery'?`<button class="print" onclick='printDelivery(${JSON.stringify(o).replace(/'/g,"&#39;")})'>🛵 Imprimir delivery</button>`:''}
@@ -256,6 +257,8 @@ function deliveryReceipt(o){
 
   r.push(L);
   r.push(`SUBTOTAL: ${brl(subtotal)}`);
+  const discount=Number(o.discount||0);
+  if(discount>0) r.push(`DESCONTO${o.coupon_code?` (${String(o.coupon_code).toUpperCase()})`:''}: - ${brl(discount)}`);
   if(fee>0) r.push(`TAXA ENTREGA: ${brl(fee)}`);
   r.push(`TOTAL: ${brl(total)}`);
 
