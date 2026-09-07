@@ -2766,6 +2766,57 @@ function lsStatusLabel(status){
   })[status] || 'Pedido recebido';
 }
 
+
+function lsQueueIsPizzaItem(x){
+  const name=String(x?.name ?? x?.produto_nome ?? x?.sabor ?? '').toLowerCase();
+  const cat=String(x?.category ?? x?.categoria ?? '').toLowerCase();
+  const size=String(x?.size ?? x?.tamanho ?? '').toLowerCase();
+  const excluded=/(calzone|crostini|crostine|pizza roll|roll|bebida|refrigerante|coca|fanta|sprite|guaran|vinho|cerveja|suco|água|agua)/i;
+  if(excluded.test(name)||excluded.test(cat)) return false;
+  if(cat.includes('pizza')) return true;
+  return ['broto','grande'].some(v=>size.includes(v));
+}
+function lsQueuePizzaCount(o){
+  const items=Array.isArray(o.items)?o.items:[];
+  return items.reduce((n,x)=>{
+    const qty=Math.max(1,Number(x?.qty ?? x?.quantidade ?? 1)||1);
+    return n+(lsQueueIsPizzaItem(x)?qty:0);
+  },0);
+}
+function lsQueueTransport15(o){
+  if(String(o.fulfillment||'').toLowerCase()!=='delivery') return false;
+  const a=String(o.address||'').toLowerCase();
+  return a.includes('pereiras') || a.includes('laranjal paulista') || a.includes('laranjal');
+}
+function lsQueuePixAllowed(o){
+  const method=String(o.payment||'').trim().toLowerCase();
+  if(method!=='pix') return true;
+  const st=String(o.payment_status||'').trim().toLowerCase();
+  return ['approved','paid','processed','accredited'].includes(st);
+}
+function lsBuildQueueMeta(rows){
+  const active=(rows||[])
+    .filter(o=>['novo','preparo'].includes(String(o.status||'').toLowerCase()))
+    .filter(lsQueuePixAllowed)
+    .sort((a,b)=>new Date(a.created_at)-new Date(b.created_at));
+  let kitchen=0;
+  const meta=new Map();
+  active.forEach((o,i)=>{
+    const pizzas=lsQueuePizzaCount(o);
+    const production=Math.max(0,pizzas*10);
+    kitchen+=production;
+    const transport=lsQueueTransport15(o)?15:0;
+    meta.set(String(o.id||o.order_no),{
+      position:i+1,
+      pizzas,
+      production,
+      transport,
+      eta:kitchen+transport
+    });
+  });
+  return meta;
+}
+
 function renderTrackedOrder(o){
   const box=document.getElementById('lsTrackResult');
   const status=String(o.status||'novo').toLowerCase();
@@ -2790,6 +2841,10 @@ function renderTrackedOrder(o){
     <div class="ls-track-order">Pedido ${escapeHtml(o.order_no||'')}</div>
     <div class="ls-track-muted">${o.created_at?new Date(o.created_at).toLocaleString('pt-BR'):''}</div>
     <div class="ls-track-statusbox"><b>Status atual:</b> ${escapeHtml(lsStatusLabel(status))}</div>
+    ${o._queue?`<div class="ls-track-statusbox" style="border-color:#c89235;background:#fff8e8;color:#3b2a12">
+      <b>🍕 Sua fila: #${String(o._queue.position).padStart(2,'0')}</b><br>
+      <span>⏱️ Previsão aproximada: <b>${o._queue.eta} minutos</b></span>
+    </div>`:''}
     ${String(o.payment||'').toLowerCase()==='pix'?`<div class="ls-track-statusbox"><b>Pagamento Pix:</b> ${pixPaidStatus(paymentStatus)?'✅ Confirmado':'⏳ Aguardando confirmação'}</div>`:''}
     <div class="ls-steps">
       ${steps.map((s,i)=>`
@@ -2832,7 +2887,7 @@ async function trackOrderNow(manual){
     const rows=await r.json();
 
     // Confere o telefone usando uma segunda consulta somente do pedido exato.
-    const r2=await fetch(`${SUPABASE_URL}/rest/v1/orders?select=order_no,created_at,status,fulfillment,customer_phone,payment,payment_status&order_no=eq.${qNo}&limit=10`,{
+    const r2=await fetch(`${SUPABASE_URL}/rest/v1/orders?select=id,order_no,created_at,status,fulfillment,address,customer_phone,payment,payment_status,items&order_no=eq.${qNo}&limit=10`,{
       headers:{
         'apikey':SUPABASE_ANON_KEY,
         'Authorization':`Bearer ${SUPABASE_ANON_KEY}`
@@ -2847,6 +2902,25 @@ async function trackOrderNow(manual){
     if(!o){
       result.innerHTML='<div class="ls-track-statusbox">Pedido não encontrado. Confira o número e o telefone.</div>';
     }else{
+      const st=String(o.status||'').toLowerCase();
+      if(['novo','preparo'].includes(st) && lsQueuePixAllowed(o)){
+        try{
+          const rq=await fetch(`${SUPABASE_URL}/rest/v1/orders?select=id,order_no,created_at,status,fulfillment,address,payment,payment_status,items&status=in.(novo,preparo)&order=created_at.asc&limit=100`,{
+            headers:{
+              'apikey':SUPABASE_ANON_KEY,
+              'Authorization':`Bearer ${SUPABASE_ANON_KEY}`
+            },
+            cache:'no-store'
+          });
+          if(rq.ok){
+            const activeRows=await rq.json();
+            const qm=lsBuildQueueMeta(activeRows);
+            o._queue=qm.get(String(o.id||o.order_no))||null;
+          }
+        }catch(e){
+          console.warn('Não foi possível calcular a fila:',e);
+        }
+      }
       renderTrackedOrder(o);
     }
   }catch(err){
