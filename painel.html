@@ -20,7 +20,7 @@ button{cursor:pointer}.arm{border:0;border-radius:10px;padding:10px 12px;backgro
 .items{margin-top:10px;border-top:1px dashed #4d3b32;padding-top:8px}.item{padding:7px 0;border-bottom:1px dashed #3b2e28}.item:last-child{border-bottom:0}
 .total{font-size:18px;font-weight:900;margin:12px 0}.actions{display:grid;grid-template-columns:1fr 1fr;gap:8px}
 .actions button{border:0;border-radius:10px;padding:11px;font-weight:900}.print{background:var(--gold);color:#271904}.next{background:var(--green);color:#fff}.cancel{background:var(--red);color:#fff}.done{background:#3c302a;color:#fff}.empty{text-align:center;color:var(--muted);padding:50px 10px}
-.payline{margin-top:5px;font-weight:900}.pay-paid{color:#54d98c}.pay-pending{color:#f0bd55}.notice{background:#251c18;border:1px solid var(--line);border-radius:12px;padding:12px;margin-bottom:14px;color:var(--muted);font-size:13px}
+.queueinfo{margin:10px 0;padding:9px 10px;border:1px solid var(--line);border-radius:10px;background:#171210;font-weight:900;line-height:1.45}.queueinfo .muted{font-weight:400}.payline{margin-top:5px;font-weight:900}.pay-paid{color:#54d98c}.pay-pending{color:#f0bd55}.notice{background:#251c18;border:1px solid var(--line);border-radius:12px;padding:12px;margin-bottom:14px;color:var(--muted);font-size:13px}
 @media print{
   body{background:#fff!important;color:#000!important;margin:0!important;padding:0!important}
   body>*:not(#iosPrintArea){display:none!important}
@@ -66,6 +66,39 @@ async function api(path,opts={}){
   if(!r.ok)throw new Error(await r.text());
   const t=await r.text();return t?JSON.parse(t):null;
 }
+function isPizzaItem(x){
+  const name=String(x?.name ?? x?.produto_nome ?? x?.sabor ?? '').toLowerCase();
+  const cat=String(x?.category ?? x?.categoria ?? '').toLowerCase();
+  const size=String(x?.size ?? x?.tamanho ?? '').toLowerCase();
+  const excluded=/(calzone|crostini|crostine|pizza roll|roll|bebida|refrigerante|coca|fanta|sprite|guaran|vinho|cerveja|suco|água|agua)/i;
+  if(excluded.test(name)||excluded.test(cat)) return false;
+  if(cat.includes('pizza')) return true;
+  return ['broto','grande'].some(v=>size.includes(v));
+}
+function pizzaCount(o){
+  const items=Array.isArray(o.items)?o.items:[];
+  return items.reduce((n,x)=>n+(isPizzaItem(x)?Math.max(1,Number(x.qty ?? x.quantidade ?? 1)||1):0),0);
+}
+function needsTransport15(o){
+  if(String(o.fulfillment||'').toLowerCase()!=='delivery') return false;
+  const a=String(o.address||'').toLowerCase();
+  return a.includes('pereiras') || a.includes('laranjal paulista') || a.includes('laranjal');
+}
+function buildQueueMeta(rows){
+  const active=rows.filter(o=>['novo','preparo'].includes(String(o.status||'').toLowerCase()))
+    .sort((a,b)=>new Date(a.created_at)-new Date(b.created_at));
+  let kitchenMinutes=0;
+  const meta=new Map();
+  active.forEach((o,i)=>{
+    const pizzas=pizzaCount(o);
+    const production=Math.max(0,pizzas*10);
+    kitchenMinutes+=production;
+    const transport=needsTransport15(o)?15:0;
+    meta.set(String(o.id),{position:i+1,pizzas,production,transport,eta:kitchenMinutes+transport});
+  });
+  return meta;
+}
+let queueMeta=new Map();
 async function loadOrders(){
   if(!configured()){
     document.getElementById('notice').textContent='Falta configurar SUPABASE_URL e SUPABASE_ANON_KEY.';
@@ -74,20 +107,19 @@ async function loadOrders(){
   }
   document.getElementById('notice').textContent='🟢 Online — verificando novos pedidos automaticamente.';
   let q='orders?select=*&order=created_at.desc&limit=60';
-  if(filter!=='todos')q+=`&status=eq.${filter}`;
   try{
-    let rows=await api(q);
+    let allRows=await api(q);
 
-    // Regra operacional: pedidos Pix só aparecem em "Novos" após confirmação do pagamento.
-    // Nas demais etapas, continuamos exibindo normalmente para preservar o histórico.
-    if(filter==='novo'){
-      rows = rows.filter(o=>{
-        const method=String(o.payment||'').trim().toLowerCase();
-        if(method!=='pix') return true;
-        const st=String(o.payment_status||'').trim().toLowerCase();
-        return ['approved','paid','processed','accredited'].includes(st);
-      });
-    }
+    // Pix ainda não confirmado não entra na fila de produção.
+    const productionRows=allRows.filter(o=>{
+      const method=String(o.payment||'').trim().toLowerCase();
+      const st=String(o.payment_status||'').trim().toLowerCase();
+      return !(String(o.status||'').toLowerCase()==='novo' && method==='pix' && !['approved','paid','processed','accredited'].includes(st));
+    });
+    queueMeta=buildQueueMeta(productionRows);
+
+    let rows=filter==='todos' ? allRows : allRows.filter(o=>String(o.status||'').toLowerCase()===filter);
+    if(filter==='novo') rows=productionRows.filter(o=>String(o.status||'').toLowerCase()==='novo');
 
     if(!firstLoad && filter==='novo'){
       rows.forEach(o=>{if(!lastSeen.has(o.id)){beep();}});
@@ -105,6 +137,7 @@ function render(rows){
     const items=Array.isArray(o.items)?o.items:[];
     return `<article class="card ${o.status==='novo'?'new':''}">
       <div class="row"><div><div class="order">${esc(o.order_no)}</div><div class="time">${new Date(o.created_at).toLocaleString('pt-BR')}</div></div><div class="grow"></div><span class="tag">${esc(o.status)}</span></div>
+      ${queueMeta.has(String(o.id))?(()=>{const q=queueMeta.get(String(o.id));return `<div class="queueinfo">FILA #${String(q.position).padStart(2,'0')} — ⏱️ aprox. ${q.eta} min<div class="muted">${q.pizzas} pizza${q.pizzas===1?'':'s'} × 10 min${q.transport?` + 15 min de transporte`:''}</div></div>`})():''}
       <div class="customer">${esc(o.customer_name)}</div>
       <div class="muted">${o.customer_phone?esc(o.customer_phone)+'<br>':''}${o.fulfillment==='delivery'?'🛵 '+esc(o.address):'🏪 Retirada'}<br>${paymentLine(o)}</div>
       <div class="items">${items.map(x=>`<div class="item"><b>${x.qty||1}x ${esc(x.name)}</b>${x.size?'<br><span class="muted">'+esc(x.size)+'</span>':''}${x.crust?'<br><span class="muted">Borda: '+esc(x.crust)+'</span>':''}${x.obs?'<br><span class="muted">Obs.: '+esc(x.obs)+'</span>':''}</div>`).join('')}</div>
