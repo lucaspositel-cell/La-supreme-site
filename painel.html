@@ -59,10 +59,143 @@ button{cursor:pointer}.arm{border:0;border-radius:10px;padding:10px 12px;backgro
  .card{padding:12px}
 }
 
+
+/* ===== PEDIDO RÁPIDO — BALCÃO / WHATSAPP ===== */
+.quick-new{border:0;border-radius:11px;padding:11px 14px;background:var(--gold);color:#24180b;font-weight:900}
+.quick-overlay{position:fixed;inset:0;z-index:50;background:#090706e8;display:none;overflow:auto;padding:12px}
+.quick-overlay.open{display:block}
+.quick-shell{width:min(1050px,100%);margin:auto;background:#17120f;border:1px solid var(--line);border-radius:18px;overflow:hidden}
+.quick-head{position:sticky;top:0;z-index:5;background:#17120ff5;border-bottom:1px solid var(--line);padding:12px 14px;display:flex;align-items:center;gap:10px}
+.quick-head h2{margin:0;font:700 21px Georgia}.quick-close{margin-left:auto;border:0;background:#3b302a;color:white;border-radius:10px;padding:10px 12px;font-weight:900}
+.quick-body{display:grid;grid-template-columns:minmax(0,1.45fr) minmax(300px,.8fr);gap:12px;padding:12px}
+.quick-panel{background:#211a17;border:1px solid var(--line);border-radius:14px;padding:12px;min-width:0}
+.quick-step{font-size:11px;color:var(--gold);font-weight:900;text-transform:uppercase;margin:0 0 8px}
+.quick-type{display:grid;grid-template-columns:repeat(3,1fr);gap:7px}
+.quick-type button,.quick-choice{border:1px solid var(--line);background:#171210;color:#fff;border-radius:10px;padding:10px;font-weight:900}
+.quick-type button.active,.quick-choice.active{background:var(--gold);color:#261a0b;border-color:var(--gold)}
+.quick-fields{display:grid;grid-template-columns:1fr 1fr;gap:8px;margin-top:9px}
+.quick-fields .full{grid-column:1/-1}
+.quick-fields label{font-size:11px;color:var(--muted);font-weight:800;display:block;margin-bottom:4px}
+.quick-fields input,.quick-fields select,.quick-fields textarea,.quick-search{width:100%;border:1px solid var(--line);background:#120f0d;color:#fff;border-radius:10px;padding:11px;box-sizing:border-box}
+.quick-search{margin-bottom:8px}
+.quick-catbar{display:flex;gap:6px;overflow:auto;margin-bottom:8px;padding-bottom:2px}
+.quick-catbar button{white-space:nowrap;border:1px solid var(--line);background:#171210;color:#fff;border-radius:999px;padding:7px 9px;font-size:11px;font-weight:900}
+.quick-catbar button.active{background:var(--gold);color:#24180b}
+.quick-products{display:grid;grid-template-columns:repeat(2,minmax(0,1fr));gap:7px;max-height:440px;overflow:auto}
+.quick-product{border:1px solid var(--line);background:#171210;color:#fff;border-radius:11px;padding:10px;text-align:left;min-width:0}
+.quick-product b{display:block;font-size:13px}.quick-product small{display:block;color:var(--muted);margin-top:4px}.quick-product strong{display:block;color:var(--gold);margin-top:7px}
+.quick-cart-item{border-bottom:1px dashed #4d3b32;padding:9px 0}.quick-cart-item:last-child{border-bottom:0}
+.quick-cart-row{display:flex;gap:8px;align-items:flex-start}.quick-cart-row b{flex:1}.quick-remove{border:0;background:#55272a;color:#fff;border-radius:8px;padding:5px 8px}
+.quick-total{font-size:22px;font-weight:900;color:var(--gold);margin:12px 0}
+.quick-submit{width:100%;border:0;background:var(--green);color:#fff;border-radius:11px;padding:14px;font-size:15px;font-weight:900}
+.quick-repeat{width:100%;border:1px solid var(--gold);background:#2a2117;color:var(--gold);border-radius:10px;padding:10px;font-weight:900;margin-top:8px;display:none}
+.quick-found{font-size:12px;color:#76e5a6;margin-top:6px;min-height:16px}
+.item-overlay{position:fixed;inset:0;z-index:60;background:#090706e8;display:none;padding:12px;overflow:auto}
+.item-overlay.open{display:flex;align-items:center;justify-content:center}
+.item-box{width:min(560px,100%);background:#211a17;border:1px solid var(--line);border-radius:16px;padding:14px}
+.item-box h3{margin:0 0 4px}.item-options{display:grid;grid-template-columns:1fr 1fr;gap:8px;margin:12px 0}
+.item-options button{border:1px solid var(--line);background:#171210;color:#fff;border-radius:10px;padding:11px;font-weight:900}.item-options button.active{background:var(--gold);color:#24180b}
+.item-box select,.item-box textarea{width:100%;box-sizing:border-box;border:1px solid var(--line);background:#120f0d;color:#fff;border-radius:10px;padding:11px;margin-top:7px}
+.item-add{width:100%;border:0;background:var(--green);color:#fff;border-radius:10px;padding:13px;font-weight:900;margin-top:10px}
+@media(max-width:760px){
+ .quick-body{grid-template-columns:1fr}
+ .quick-fields{grid-template-columns:1fr}.quick-fields .full{grid-column:auto}
+ .quick-products{grid-template-columns:1fr;max-height:350px}
+ .quick-type{grid-template-columns:1fr 1fr 1fr}
+}
+
+
+/* ===== CORREÇÃO MOBILE — NOVO PEDIDO ===== */
+.quick-overlay{
+  box-sizing:border-box!important;
+  width:100vw!important;
+  max-width:100vw!important;
+  padding:6px!important;
+  overflow-x:hidden!important;
+}
+.quick-shell{
+  width:100%!important;
+  max-width:1050px!important;
+  box-sizing:border-box!important;
+  overflow-x:hidden!important;
+}
+.quick-head,.quick-body,.quick-panel,
+.quick-fields,.quick-type,.quick-products,
+.quick-cart-row,.quick-catbar{
+  min-width:0!important;
+  max-width:100%!important;
+  box-sizing:border-box!important;
+}
+.quick-fields input,.quick-fields select,.quick-fields textarea,
+.quick-search,.quick-submit,.quick-repeat{
+  min-width:0!important;
+  max-width:100%!important;
+  box-sizing:border-box!important;
+}
+.quick-product,.quick-product b,.quick-product small,
+.quick-cart-item,.quick-cart-row b{
+  min-width:0!important;
+  max-width:100%!important;
+  overflow-wrap:anywhere!important;
+  word-break:break-word!important;
+}
+.quick-catbar{
+  width:100%!important;
+  overflow-x:auto!important;
+  overflow-y:hidden!important;
+  -webkit-overflow-scrolling:touch;
+}
+.item-overlay{
+  box-sizing:border-box!important;
+  width:100vw!important;
+  max-width:100vw!important;
+  padding:6px!important;
+  overflow-x:hidden!important;
+}
+.item-box{
+  width:min(560px,100%)!important;
+  max-width:100%!important;
+  box-sizing:border-box!important;
+  overflow-x:hidden!important;
+}
+.item-box select,.item-box textarea{
+  max-width:100%!important;
+  min-width:0!important;
+  box-sizing:border-box!important;
+}
+@media(max-width:760px){
+  .quick-shell{border-radius:12px!important}
+  .quick-head{padding:9px!important;gap:6px!important;flex-wrap:wrap!important}
+  .quick-head h2{font-size:17px!important}
+  .quick-head .muted{font-size:10px!important;flex:1}
+  .quick-close{padding:8px 9px!important;font-size:11px!important}
+  .quick-body{display:block!important;padding:7px!important}
+  .quick-panel{padding:9px!important;border-radius:11px!important}
+  .quick-body>div,.quick-body>aside{width:100%!important;max-width:100%!important;min-width:0!important}
+  .quick-body>aside{margin-top:8px!important}
+  .quick-type{grid-template-columns:repeat(3,minmax(0,1fr))!important;gap:5px!important}
+  .quick-type button{padding:9px 3px!important;font-size:10px!important;white-space:normal!important}
+  .quick-fields{grid-template-columns:1fr!important;gap:7px!important}
+  .quick-fields .full{grid-column:auto!important}
+  .quick-products{grid-template-columns:1fr!important;max-height:330px!important}
+  .quick-product{padding:9px!important}
+  .quick-total{font-size:20px!important}
+  .quick-submit{padding:13px 8px!important;font-size:12px!important}
+  .item-options{grid-template-columns:1fr 1fr!important}
+}
+@media(max-width:390px){
+  .quick-overlay{padding:3px!important}
+  .quick-head{position:sticky!important}
+  .quick-head .muted{display:none!important}
+  .quick-type{grid-template-columns:1fr!important}
+  .quick-type button{font-size:11px!important}
+  .item-options{grid-template-columns:1fr!important}
+}
+
 </style>
 </head>
 <body>
-<header><div class="head"><h1>LA <span class="brand">SUPREME</span> — Pedidos</h1><div class="spacer"></div><button class="arm" onclick="armAudio()">🔔 Ativar alertas</button></div></header>
+<header><div class="head"><h1>LA <span class="brand">SUPREME</span> — Pedidos</h1><div class="spacer"></div><button class="quick-new" onclick="openQuickOrder()">➕ NOVO PEDIDO</button><button class="arm" onclick="armAudio()">🔔 Ativar alertas</button></div></header>
 <main class="wrap">
 <div class="notice" id="notice">Painel preparado. Falta inserir as chaves do banco online no código.</div>
 <div class="dashboard" id="dashboard">
@@ -80,6 +213,58 @@ button{cursor:pointer}.arm{border:0;border-radius:10px;padding:10px 12px;backgro
 </div>
 <div id="orders" class="grid"></div>
 </main>
+
+<div id="quickOverlay" class="quick-overlay">
+  <div class="quick-shell">
+    <div class="quick-head"><h2>➕ Pedido Rápido</h2><span class="muted">Balcão • WhatsApp • Delivery</span><button class="quick-close" onclick="closeQuickOrder()">✕ Fechar</button></div>
+    <div class="quick-body">
+      <div>
+        <section class="quick-panel">
+          <div class="quick-step">1. Atendimento</div>
+          <div class="quick-type">
+            <button id="qtCounter" class="active" onclick="setQuickType('counter')">🧾 Balcão</button>
+            <button id="qtPickup" onclick="setQuickType('pickup')">🏪 Retirada</button>
+            <button id="qtDelivery" onclick="setQuickType('delivery')">🛵 Delivery</button>
+          </div>
+          <div class="quick-fields">
+            <div><label>Telefone</label><input id="qPhone" inputmode="tel" placeholder="(15) 99999-9999" onblur="lookupQuickCustomer()"></div>
+            <div><label>Nome</label><input id="qName" placeholder="Nome do cliente"></div>
+            <div id="qCityWrap" style="display:none"><label>Cidade</label><select id="qCity" onchange="updateQuickTotals()"><option value="Maristela">Maristela — grátis</option><option value="Laranjal Paulista">Laranjal Paulista — R$ 5,00</option><option value="Pereiras">Pereiras — R$ 5,00</option></select></div>
+            <div id="qAddressWrap" class="full" style="display:none"><label>Endereço</label><input id="qAddress" placeholder="Rua, número, bairro, complemento"></div>
+          </div>
+          <div id="qFound" class="quick-found"></div>
+          <button id="qRepeat" class="quick-repeat" onclick="repeatLastQuickOrder()">↻ REPETIR ÚLTIMO PEDIDO</button>
+        </section>
+        <section class="quick-panel" style="margin-top:10px">
+          <div class="quick-step">2. Adicionar itens</div>
+          <input id="qSearch" class="quick-search" placeholder="🔎 Buscar Calabresa, Portuguesa, Coca..." oninput="renderQuickCatalog()">
+          <div id="qCats" class="quick-catbar"></div>
+          <div id="qProducts" class="quick-products"></div>
+        </section>
+      </div>
+      <aside class="quick-panel">
+        <div class="quick-step">3. Pedido</div>
+        <div id="qCart"><div class="muted">Nenhum item adicionado.</div></div>
+        <div class="quick-fields">
+          <div><label>Pagamento</label><select id="qPayment"><option>Dinheiro</option><option>Pix</option><option>Cartão</option></select></div>
+          <div><label>Troco para</label><input id="qChange" inputmode="decimal" placeholder="Ex.: 100,00"></div>
+          <div class="full"><label>Observação geral</label><textarea id="qGeneralObs" rows="2" placeholder="Ex.: chamar no portão..."></textarea></div>
+        </div>
+        <div id="qFeeLine" class="muted" style="margin-top:10px"></div>
+        <div id="qTotal" class="quick-total">R$ 0,00</div>
+        <button class="quick-submit" onclick="submitQuickOrder()">✓ CONFIRMAR E ENVIAR PARA A FILA</button>
+      </aside>
+    </div>
+  </div>
+</div>
+<div id="itemOverlay" class="item-overlay">
+  <div class="item-box">
+    <h3 id="qiTitle"></h3><div id="qiDesc" class="muted"></div>
+    <div id="qiBody"></div>
+    <button class="quick-close" style="width:100%;margin-top:8px" onclick="closeQuickItem()">Cancelar</button>
+  </div>
+</div>
+
 <div id="iosPrintArea" aria-hidden="true"><pre id="iosPrintText"></pre></div>
 <script>
 const SUPABASE_URL='https://stacwvpsfjvyvbjwagtd.supabase.co';
@@ -88,6 +273,180 @@ let filter='novo', lastSeen=new Set(), audioArmed=false, firstLoad=true;
 
 const money=v=>'R$ '+Number(v||0).toFixed(2).replace('.',',');
 const esc=s=>String(s??'').replace(/[&<>"']/g,m=>({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&#039;'}[m]));
+
+const QUICK_CATALOG=[{"name":"Abacaxi Supreme","desc":"Abacaxi, doce de leite, canela e mel","section":"cat-pizzas-doces","isPizza":true,"broto":45.0,"grande":90.0,"price":null},{"name":"Banana Nevada","desc":"Banana, chocolate branco e canela em pó","section":"cat-pizzas-doces","isPizza":true,"broto":36.0,"grande":72.0,"price":null},{"name":"Banana c/ Doce de Leite","desc":"Banana, doce de leite e canela em pó","section":"cat-pizzas-doces","isPizza":true,"broto":37.5,"grande":75.0,"price":null},{"name":"Banana c/ Nutella","desc":"Banana e Nutella","section":"cat-pizzas-doces","isPizza":true,"broto":47.5,"grande":95.0,"price":null},{"name":"Brigadeiro","desc":"Chocolate em ganache e chocolate granulado","section":"cat-pizzas-doces","isPizza":true,"broto":40.0,"grande":80.0,"price":null},{"name":"Romeu e Julieta","desc":"Goiabada e mussarela","section":"cat-pizzas-doces","isPizza":true,"broto":39.0,"grande":78.0,"price":null},{"name":"Confeti","desc":"Chocolate em ganache e confetes","section":"cat-pizzas-doces","isPizza":true,"broto":40.0,"grande":80.0,"price":null},{"name":"Paçoca","desc":"Chocolate em ganache e paçoca","section":"cat-pizzas-doces","isPizza":true,"broto":40.0,"grande":80.0,"price":null},{"name":"Morango","desc":"Chocolate em ganache e morangos","section":"cat-pizzas-doces","isPizza":true,"broto":45.0,"grande":90.0,"price":null},{"name":"Nutella","desc":"Nutella","section":"cat-pizzas-doces","isPizza":true,"broto":50.0,"grande":100.0,"price":null},{"name":"Nutella c/ Morango","desc":"Nutella e morangos","section":"cat-pizzas-doces","isPizza":true,"broto":55.0,"grande":110.0,"price":null},{"name":"Cereja","desc":"Chocolate em ganache e cerejas","section":"cat-pizzas-doces","isPizza":true,"broto":40.0,"grande":80.0,"price":null},{"name":"Ferrero Rocher","desc":"Chocolate em ganache e Ferrero Rocher","section":"cat-pizzas-doces","isPizza":true,"broto":59.0,"grande":118.0,"price":null},{"name":"Kit Kat","desc":"Chocolate em ganache e Kit Kat","section":"cat-pizzas-doces","isPizza":true,"broto":42.0,"grande":84.0,"price":null},{"name":"Kinder Bueno","desc":"Chocolate em ganache e Kinder Bueno","section":"cat-pizzas-doces","isPizza":true,"broto":42.5,"grande":85.0,"price":null},{"name":"Prestígio","desc":"Chocolate em ganache e flocos de coco","section":"cat-pizzas-doces","isPizza":true,"broto":38.0,"grande":76.0,"price":null},{"name":"Leite Ninho com Avelã","desc":"Creme de avelã com leite Ninho em pó","section":"cat-pizzas-doces","isPizza":true,"broto":49.0,"grande":98.0,"price":null},{"name":"Pistache","desc":"Creme de pistache com pistache triturado","section":"cat-pizzas-doces","isPizza":true,"broto":50.0,"grande":100.0,"price":null},{"name":"Ovomaltine","desc":"Creme de Ovomaltine com flocos de Ovomaltine","section":"cat-pizzas-doces","isPizza":true,"broto":45.0,"grande":90.0,"price":null},{"name":"Frango Catupiry","desc":"Molho, frango desfiado, mussarela e Catupiry, orégano","section":"cat-calzones","isPizza":false,"broto":null,"grande":null,"price":80.0},{"name":"Calabresa","desc":"Molho, calabresa, cebola e mussarela, orégano","section":"cat-calzones","isPizza":false,"broto":null,"grande":null,"price":80.0},{"name":"4 Queijos","desc":"Molho, mussarela, Catupiry, provolone e parmesão, orégano","section":"cat-calzones","isPizza":false,"broto":null,"grande":null,"price":90.0},{"name":"Alho-Poró","desc":"Molho, alho-poró, Catupiry e mussarela, orégano","section":"cat-calzones","isPizza":false,"broto":null,"grande":null,"price":80.0},{"name":"Filé Mignon","desc":"Molho, filé mignon em tiras, Catupiry e mussarela, orégano","section":"cat-calzones","isPizza":false,"broto":null,"grande":null,"price":120.0},{"name":"Alcatra","desc":"Molho, miolo de alcatra em cubos, Catupiry e mussarela, orégano","section":"cat-calzones","isPizza":false,"broto":null,"grande":null,"price":120.0},{"name":"Gorgonzola e azeite","desc":"Orégano","section":"cat-crostinis","isPizza":false,"broto":null,"grande":null,"price":50.0},{"name":"Parmesão e azeite","desc":"Orégano","section":"cat-crostinis","isPizza":false,"broto":null,"grande":null,"price":50.0},{"name":"Gorgo Peppe","desc":"Gorgonzola, mussarela e pepperoni, orégano","section":"cat-pizza-rolls","isPizza":false,"broto":null,"grande":null,"price":50.0},{"name":"4 Queijos","desc":"Mussarela, Catupiry, parmesão e provolone, orégano","section":"cat-pizza-rolls","isPizza":false,"broto":null,"grande":null,"price":50.0},{"name":"Portuguesa Especial","desc":"Molho, presunto, milho, ervilha, palmito, ovos, cebola, mussarela, azeitonas e orégano","section":"cat-tradicionais","isPizza":true,"broto":40.0,"grande":80.0,"price":null},{"name":"Portuguesa Supreme","desc":"Molho, lombo, milho, ervilha, palmito, ovos, cebola, Catupiry, mussarela, azeitonas e orégano","section":"cat-tradicionais","isPizza":true,"broto":44.0,"grande":88.0,"price":null},{"name":"Mista","desc":"Molho, presunto, tomate, cebola, mussarela, azeitonas e orégano","section":"cat-tradicionais","isPizza":true,"broto":32.5,"grande":65.0,"price":null},{"name":"Mista Especial","desc":"Molho, presunto, tomate, cebola, Catupiry, mussarela, azeitonas e orégano","section":"cat-tradicionais","isPizza":true,"broto":35.0,"grande":70.0,"price":null},{"name":"Frango","desc":"Molho, frango, mussarela, azeitonas e orégano","section":"cat-tradicionais","isPizza":true,"broto":38.0,"grande":76.0,"price":null},{"name":"Frango Catupiry","desc":"Molho, frango, Catupiry, azeitonas e orégano","section":"cat-tradicionais","isPizza":true,"broto":38.0,"grande":76.0,"price":null},{"name":"Frango Cheddar","desc":"Molho, frango, cheddar, azeitonas e orégano","section":"cat-tradicionais","isPizza":true,"broto":38.0,"grande":76.0,"price":null},{"name":"Frango Especial","desc":"Molho, frango, Catupiry, milho, mussarela, azeitonas e orégano","section":"cat-tradicionais","isPizza":true,"broto":44.0,"grande":88.0,"price":null},{"name":"Frango Bacon","desc":"Molho, frango, Catupiry, bacon, azeitonas e orégano","section":"cat-tradicionais","isPizza":true,"broto":40.0,"grande":80.0,"price":null},{"name":"Calabresa","desc":"Molho, calabresa, mussarela, cebola, azeitonas e orégano","section":"cat-tradicionais","isPizza":true,"broto":40.0,"grande":80.0,"price":null},{"name":"Calabresa Especial","desc":"Molho, calabresa, Catupiry, mussarela, azeitonas e orégano","section":"cat-tradicionais","isPizza":true,"broto":45.0,"grande":90.0,"price":null},{"name":"Calábria","desc":"Molho, calabresa fatiada, ovos, cebola, Catupiry, mussarela, azeitonas e orégano","section":"cat-tradicionais","isPizza":true,"broto":45.0,"grande":90.0,"price":null},{"name":"Calabresa Supreme","desc":"Molho, mussarela, calabresa, cebola roxa, gorgonzola, azeitonas e orégano","section":"cat-tradicionais","isPizza":true,"broto":50.0,"grande":100.0,"price":null},{"name":"Catupyresa","desc":"Molho, calabresa, Catupiry, azeitonas e orégano","section":"cat-tradicionais","isPizza":true,"broto":38.0,"grande":76.0,"price":null},{"name":"Palmito","desc":"Molho, palmito, mussarela, azeitonas e orégano","section":"cat-tradicionais","isPizza":true,"broto":40.0,"grande":80.0,"price":null},{"name":"Palmito Especial","desc":"Molho, palmito, mussarela, Catupiry, azeitonas e orégano","section":"cat-tradicionais","isPizza":true,"broto":42.0,"grande":84.0,"price":null},{"name":"Palmito Supreme","desc":"Molho, palmito, mussarela, cream cheese, bacon, azeitonas e orégano","section":"cat-tradicionais","isPizza":true,"broto":50.0,"grande":100.0,"price":null},{"name":"Atum","desc":"Molho, atum, mussarela, azeitonas e orégano","section":"cat-tradicionais","isPizza":true,"broto":40.0,"grande":80.0,"price":null},{"name":"Atum Especial","desc":"Molho, atum, cebola, Catupiry, mussarela, azeitonas e orégano","section":"cat-tradicionais","isPizza":true,"broto":42.5,"grande":85.0,"price":null},{"name":"Atum Supreme","desc":"Molho, atum, tomate, palmito, cebola roxa, mussarela, azeitonas e orégano","section":"cat-tradicionais","isPizza":true,"broto":50.0,"grande":100.0,"price":null},{"name":"Bacon","desc":"Molho, mussarela, bacon, azeitonas e orégano","section":"cat-tradicionais","isPizza":true,"broto":40.0,"grande":80.0,"price":null},{"name":"Baiana","desc":"Molho, calabresa moída, ovos, parmesão, pimenta, azeitonas e orégano","section":"cat-tradicionais","isPizza":true,"broto":40.0,"grande":80.0,"price":null},{"name":"Baiana Especial","desc":"Molho, calabresa moída, ovos, Catupiry, parmesão, mussarela, pimenta, azeitonas e orégano","section":"cat-tradicionais","isPizza":true,"broto":44.0,"grande":88.0,"price":null},{"name":"Baiana Supreme","desc":"Molho, calabresa moída, ovos, Catupiry, gorgonzola, pimenta, azeitonas e orégano","section":"cat-tradicionais","isPizza":true,"broto":49.0,"grande":98.0,"price":null},{"name":"Hot Dog","desc":"Molho, purê de batata, salsicha, Catupiry, mussarela, azeitonas e orégano","section":"cat-tradicionais","isPizza":true,"broto":45.0,"grande":90.0,"price":null},{"name":"Lombo","desc":"Molho, lombo, tomate, cebola, mussarela, azeitonas e orégano","section":"cat-tradicionais","isPizza":true,"broto":40.0,"grande":80.0,"price":null},{"name":"Lombo Especial","desc":"Molho, lombo, cebola, Catupiry, parmesão, manjericão, azeitonas e orégano","section":"cat-tradicionais","isPizza":true,"broto":47.5,"grande":95.0,"price":null},{"name":"Lombo Supreme","desc":"Molho, lombo, tomate, palmito, cebola, cheddar, mussarela, bacon, azeitonas e orégano","section":"cat-tradicionais","isPizza":true,"broto":57.5,"grande":115.0,"price":null},{"name":"Supreme Defumada","desc":"Molho, lombo, champignon, Catupiry, bacon, azeitonas e orégano","section":"cat-tradicionais","isPizza":true,"broto":47.5,"grande":95.0,"price":null},{"name":"Nova Delícia","desc":"Molho, lombo, calabresa moída, mussarela, bacon, azeitonas e orégano","section":"cat-tradicionais","isPizza":true,"broto":47.0,"grande":94.0,"price":null},{"name":"Pepperoni","desc":"Molho, mussarela, Catupiry, pepperoni, azeitonas e orégano","section":"cat-tradicionais","isPizza":true,"broto":47.0,"grande":94.0,"price":null},{"name":"Pepperoni Especial","desc":"Molho, mussarela, pepperoni, cebola, Catupiry, azeitonas e orégano","section":"cat-tradicionais","isPizza":true,"broto":50.0,"grande":100.0,"price":null},{"name":"Pepperoni Supreme","desc":"Molho, 5 queijos, pepperoni, azeitonas e orégano","section":"cat-tradicionais","isPizza":true,"broto":57.5,"grande":115.0,"price":null},{"name":"Marguerita","desc":"Molho, mussarela, parmesão, tomate, manjericão in natura, azeitonas e orégano","section":"cat-queijos","isPizza":true,"broto":44.0,"grande":88.0,"price":null},{"name":"Mussarela","desc":"Molho, mussarela, azeitonas e orégano","section":"cat-queijos","isPizza":true,"broto":40.0,"grande":80.0,"price":null},{"name":"2 Queijos","desc":"Molho, mussarela, Catupiry, azeitonas e orégano","section":"cat-queijos","isPizza":true,"broto":44.0,"grande":88.0,"price":null},{"name":"3 Queijos","desc":"Molho, mussarela, Catupiry, parmesão, azeitonas e orégano","section":"cat-queijos","isPizza":true,"broto":46.0,"grande":92.0,"price":null},{"name":"4 Queijos","desc":"Molho, mussarela, Catupiry, parmesão, provolone, azeitonas e orégano","section":"cat-queijos","isPizza":true,"broto":49.0,"grande":98.0,"price":null},{"name":"5 Queijos","desc":"Molho, mussarela, Catupiry, parmesão, provolone, gorgonzola, azeitonas e orégano","section":"cat-queijos","isPizza":true,"broto":52.5,"grande":105.0,"price":null},{"name":"Gorgonzola Supreme","desc":"Molho, mussarela, parmesão, gorgonzola, azeitonas e orégano","section":"cat-queijos","isPizza":true,"broto":54.0,"grande":108.0,"price":null},{"name":"Alcatra Supreme","desc":"Molho, miolo de alcatra, Catupiry, mussarela, parmesão, azeitonas e orégano","section":"cat-carnes","isPizza":true,"broto":60.0,"grande":120.0,"price":null},{"name":"Coreana","desc":"Molho, frango em cubos, Catupiry, mussarela, bacon, azeitonas e orégano","section":"cat-carnes","isPizza":true,"broto":49.0,"grande":98.0,"price":null},{"name":"Coreana Especial","desc":"Molho, frango em cubos, cream cheese, mussarela, bacon, azeitonas e orégano","section":"cat-carnes","isPizza":true,"broto":52.0,"grande":104.0,"price":null},{"name":"Costela","desc":"Molho, costela desfiada, mussarela, azeitonas e orégano. Vinagrete para acompanhamento","section":"cat-carnes","isPizza":true,"broto":45.0,"grande":90.0,"price":null},{"name":"Costela Especial","desc":"Molho, costela desfiada, Catupiry, mussarela, azeitonas e orégano. Vinagrete para acompanhamento","section":"cat-carnes","isPizza":true,"broto":48.0,"grande":96.0,"price":null},{"name":"Costela Supreme","desc":"Molho, costela desfiada, cebola roxa, mussarela, gorgonzola, azeitonas e orégano. Vinagrete para acompanhamento","section":"cat-carnes","isPizza":true,"broto":60.0,"grande":120.0,"price":null},{"name":"Costela Acebolada","desc":"Molho, costela desfiada, cebola, mussarela, azeitonas e orégano. Vinagrete para acompanhamento","section":"cat-carnes","isPizza":true,"broto":47.5,"grande":95.0,"price":null},{"name":"Strogonoff de Alcatra","desc":"Molho, strogonoff de alcatra, Catupiry, champignon, mussarela, azeitonas e orégano","section":"cat-carnes","isPizza":true,"broto":57.5,"grande":115.0,"price":null},{"name":"Filé Supreme","desc":"Molho, filé mignon, Catupiry, mussarela, parmesão ralado, azeitonas e orégano","section":"cat-carnes","isPizza":true,"broto":67.5,"grande":135.0,"price":null},{"name":"Chef Supreme","desc":"Molho, miolo de alcatra, Catupiry, mussarela, gorgonzola, azeitonas e orégano","section":"cat-carnes","isPizza":true,"broto":60.0,"grande":120.0,"price":null},{"name":"Camarão","desc":"Molho, camarão, Catupiry, mussarela, azeitonas e orégano","section":"cat-frutos-do-mar","isPizza":true,"broto":60.0,"grande":120.0,"price":null},{"name":"Camarão Especial","desc":"Molho, camarão, molho branco, mussarela, azeitonas e orégano","section":"cat-frutos-do-mar","isPizza":true,"broto":65.0,"grande":130.0,"price":null},{"name":"Strogonoff de Camarão","desc":"Molho, strogonoff de camarão, Catupiry, champignon, mussarela, azeitonas e orégano","section":"cat-frutos-do-mar","isPizza":true,"broto":67.5,"grande":135.0,"price":null},{"name":"Abobrinha","desc":"Molho, abobrinha, mussarela, parmesão, azeitonas e orégano","section":"cat-verduras-e-legumes","isPizza":true,"broto":45.0,"grande":90.0,"price":null},{"name":"Escarola","desc":"Molho, escarola, Catupiry, mussarela, azeitonas e orégano","section":"cat-verduras-e-legumes","isPizza":true,"broto":40.0,"grande":80.0,"price":null},{"name":"Escarola Especial","desc":"Molho, escarola, Catupiry, mussarela, bacon, azeitonas e orégano","section":"cat-verduras-e-legumes","isPizza":true,"broto":42.0,"grande":84.0,"price":null},{"name":"Escarola Supreme","desc":"Molho, escarola, Catupiry, parmesão, bacon, azeitonas e orégano","section":"cat-verduras-e-legumes","isPizza":true,"broto":47.5,"grande":95.0,"price":null},{"name":"Alho-Poró","desc":"Molho, alho-poró, mussarela, azeitonas e orégano","section":"cat-verduras-e-legumes","isPizza":true,"broto":40.0,"grande":80.0,"price":null},{"name":"Alho-Poró Especial","desc":"Molho, alho-poró, mussarela, Catupiry, azeitonas e orégano","section":"cat-verduras-e-legumes","isPizza":true,"broto":42.5,"grande":85.0,"price":null},{"name":"Alho-Poró Supreme","desc":"Molho, alho-poró, Catupiry, bacon, azeitonas e orégano","section":"cat-verduras-e-legumes","isPizza":true,"broto":49.0,"grande":98.0,"price":null},{"name":"Rúcula","desc":"Molho, mussarela, rúcula, azeitonas e orégano","section":"cat-verduras-e-legumes","isPizza":true,"broto":39.0,"grande":78.0,"price":null},{"name":"Rúcula Especial","desc":"Molho, mussarela, tomate seco, rúcula, azeitonas e orégano","section":"cat-verduras-e-legumes","isPizza":true,"broto":42.0,"grande":84.0,"price":null},{"name":"Rúcula Supreme","desc":"molho, rúcula, mussarela de búfala, tomate seco, azeitonas e orégano","section":"cat-verduras-e-legumes","isPizza":true,"broto":47.5,"grande":95.0,"price":null},{"name":"Brócolis","desc":"Molho, mussarela, brócolis, tomate seco, azeitonas e orégano","section":"cat-verduras-e-legumes","isPizza":true,"broto":40.0,"grande":80.0,"price":null},{"name":"Brócolis Especial","desc":"Molho, mussarela de búfala, brócolis, tomate seco, azeitonas e orégano","section":"cat-verduras-e-legumes","isPizza":true,"broto":42.5,"grande":85.0,"price":null},{"name":"Brócolis Supreme","desc":"Molho, mussarela, Catupiry, brócolis, tomate seco, bacon, azeitonas e orégano","section":"cat-verduras-e-legumes","isPizza":true,"broto":49.0,"grande":98.0,"price":null},{"name":"Vegetariana","desc":"Molho, tomate, champignon, palmito, cebola, brócolis, mussarela, azeitonas e orégano","section":"cat-verduras-e-legumes","isPizza":true,"broto":45.0,"grande":90.0,"price":null},{"name":"Vegetariana Supreme","desc":"Molho, tomate, champignon, palmito, cebola, brócolis, parmesão, azeitonas e orégano","section":"cat-verduras-e-legumes","isPizza":true,"broto":52.5,"grande":105.0,"price":null},{"name":"Coca-Cola 2L","desc":"Refrigerante 2 litros","section":"cat-bebidas","isPizza":false,"broto":null,"grande":null,"price":19.0},{"name":"Fanta Uva 2L","desc":"Refrigerante 2 litros","section":"cat-bebidas","isPizza":false,"broto":null,"grande":null,"price":16.0},{"name":"Fanta Laranja 2L","desc":"Refrigerante 2 litros","section":"cat-bebidas","isPizza":false,"broto":null,"grande":null,"price":16.0},{"name":"Tubaína","desc":"Refrigerante","section":"cat-bebidas","isPizza":false,"broto":null,"grande":null,"price":12.0},{"name":"Coca-Cola Lata","desc":"Refrigerante lata","section":"cat-bebidas","isPizza":false,"broto":null,"grande":null,"price":7.0},{"name":"Coca-Cola 1 Litro","desc":"Refrigerante 1 litro","section":"cat-bebidas","isPizza":false,"broto":null,"grande":null,"price":12.0},{"name":"Pérgola Tinto Suave","desc":"Vinho","section":"cat-bebidas","isPizza":false,"broto":null,"grande":null,"price":36.0},{"name":"Pérgola Tinto Seco","desc":"Vinho","section":"cat-bebidas","isPizza":false,"broto":null,"grande":null,"price":36.0},{"name":"Pérgola Bordô Demi-Sec","desc":"Vinho","section":"cat-bebidas","isPizza":false,"broto":null,"grande":null,"price":40.0},{"name":"Heineken Long Neck","desc":"Cerveja","section":"cat-bebidas","isPizza":false,"broto":null,"grande":null,"price":11.0},{"name":"Skol Lata","desc":"Cerveja","section":"cat-bebidas","isPizza":false,"broto":null,"grande":null,"price":7.0},{"name":"Original Lata","desc":"Cerveja","section":"cat-bebidas","isPizza":false,"broto":null,"grande":null,"price":8.0}];
+let quickType='counter', quickCart=[], quickCategory='all', quickProduct=null, quickSize='grande', quickHalf='', quickLastOrder=null;
+const QUICK_CATS=[
+ ['all','Todos'],['cat-tradicionais','Tradicionais'],['cat-queijos','Queijos'],['cat-carnes','Carnes'],
+ ['cat-frutos-do-mar','Frutos do Mar'],['cat-verduras-e-legumes','Verduras'],['cat-pizzas-doces','Doces'],
+ ['cat-calzones','Calzones'],['cat-crostinis','Crostinis'],['cat-pizza-rolls','Pizza Rolls'],['cat-bebidas','Bebidas']
+];
+function normQ(s){return String(s||'').normalize('NFD').replace(/[\u0300-\u036f]/g,'').toLowerCase()}
+function quickOrderNo(){
+ const d=new Date(),pad=n=>String(n).padStart(2,'0');
+ return `LS${pad(d.getDate())}${pad(d.getMonth()+1)}${pad(d.getHours())}${pad(d.getMinutes())}${pad(d.getSeconds())}${Math.floor(Math.random()*90)+10}`;
+}
+function openQuickOrder(){
+ document.getElementById('quickOverlay').classList.add('open');
+ renderQuickCats();renderQuickCatalog();renderQuickCart();
+ setTimeout(()=>document.getElementById('qPhone')?.focus(),100);
+}
+function closeQuickOrder(){document.getElementById('quickOverlay').classList.remove('open')}
+function resetQuickOrder(){
+ quickCart=[];quickLastOrder=null;
+ ['qPhone','qName','qAddress','qChange','qGeneralObs'].forEach(id=>{const e=document.getElementById(id);if(e)e.value=''});
+ document.getElementById('qFound').textContent='';
+ document.getElementById('qRepeat').style.display='none';
+ setQuickType('counter');renderQuickCart();
+}
+function setQuickType(v){
+ quickType=v;
+ ['Counter','Pickup','Delivery'].forEach(x=>document.getElementById('qt'+x)?.classList.remove('active'));
+ document.getElementById(v==='counter'?'qtCounter':v==='pickup'?'qtPickup':'qtDelivery')?.classList.add('active');
+ const del=v==='delivery';
+ document.getElementById('qCityWrap').style.display=del?'block':'none';
+ document.getElementById('qAddressWrap').style.display=del?'block':'none';
+ updateQuickTotals();
+}
+async function lookupQuickCustomer(){
+ const raw=document.getElementById('qPhone').value.trim(), digits=raw.replace(/\D/g,'');
+ if(digits.length<8)return;
+ const found=document.getElementById('qFound'),rep=document.getElementById('qRepeat');
+ found.textContent='Buscando cliente...';rep.style.display='none';quickLastOrder=null;
+ try{
+   const rows=await api(`orders?select=*&customer_phone=ilike.*${encodeURIComponent(digits.slice(-8))}*&order=created_at.desc&limit=1`);
+   const o=rows?.[0];
+   if(!o){found.textContent='Cliente novo.';return}
+   quickLastOrder=o;
+   document.getElementById('qName').value=o.customer_name||'';
+   if(o.address){
+     const parts=String(o.address).split(' — ');
+     if(parts.length>1){
+       const city=parts.shift(); const sel=document.getElementById('qCity');
+       [...sel.options].forEach(op=>{if(normQ(op.value)===normQ(city))sel.value=op.value});
+       document.getElementById('qAddress').value=parts.join(' — ');
+     }else document.getElementById('qAddress').value=o.address;
+   }
+   found.textContent='✓ Cliente encontrado — dados preenchidos.';
+   if(Array.isArray(o.items)&&o.items.length)rep.style.display='block';
+ }catch(e){found.textContent='Não foi possível consultar o histórico agora.'}
+}
+function repeatLastQuickOrder(){
+ if(!quickLastOrder||!Array.isArray(quickLastOrder.items))return;
+ quickCart=quickLastOrder.items.map(x=>({...x,id:Date.now()+Math.random(),unit:Number(x.unit||0)}));
+ renderQuickCart();
+}
+function renderQuickCats(){
+ document.getElementById('qCats').innerHTML=QUICK_CATS.map(([id,n])=>`<button class="${quickCategory===id?'active':''}" onclick="quickCategory='${id}';renderQuickCats();renderQuickCatalog()">${n}</button>`).join('');
+}
+function renderQuickCatalog(){
+ const q=normQ(document.getElementById('qSearch')?.value||'');
+ const rows=QUICK_CATALOG.filter(p=>(quickCategory==='all'||p.section===quickCategory)&&(!q||normQ(p.name+' '+p.desc).includes(q)));
+ document.getElementById('qProducts').innerHTML=rows.map((p,i)=>{
+   const price=p.isPizza?`Grande ${money(p.grande)}`:`${money(p.price)}`;
+   const idx=QUICK_CATALOG.indexOf(p);
+   return `<button class="quick-product" onclick="openQuickItem(${idx})"><b>${esc(p.name)}</b><small>${esc(p.desc||'')}</small><strong>${price}</strong></button>`;
+ }).join('')||'<div class="muted">Nenhum item encontrado.</div>';
+}
+function quickIncludedCrusts(p){
+ if(!/supreme/i.test(p?.name||''))return [];
+ return p.section==='cat-pizzas-doces'?['Catupiry','Cheddar','Pistache','Avelã','Chocolate ao leite']:['Catupiry','Cheddar'];
+}
+const QUICK_CRUST={broto:{'Catupiry':8,'Cheddar':8,'Pistache':10,'Avelã':10,'Chocolate ao leite':8},grande:{'Catupiry':12,'Cheddar':12,'Pistache':15,'Avelã':15,'Chocolate ao leite':12}};
+function openQuickItem(idx){
+ quickProduct=QUICK_CATALOG[idx];quickSize='grande';quickHalf='';
+ document.getElementById('qiTitle').textContent=quickProduct.name;
+ document.getElementById('qiDesc').textContent=quickProduct.desc||'';
+ document.getElementById('itemOverlay').classList.add('open');
+ renderQuickItemBody();
+}
+function closeQuickItem(){document.getElementById('itemOverlay').classList.remove('open')}
+function renderQuickItemBody(){
+ const p=quickProduct,b=document.getElementById('qiBody');
+ if(!p.isPizza){
+   b.innerHTML=`<div class="quick-total">${money(p.price)}</div><textarea id="qiObs" placeholder="Observação do item"></textarea><button class="item-add" onclick="addQuickItem()">+ ADICIONAR</button>`;
+   return;
+ }
+ const others=QUICK_CATALOG.filter(x=>x.isPizza&&x.name!==p.name);
+ const inc=quickIncludedCrusts(p);
+ const crustOpts=['','Catupiry','Cheddar','Pistache','Avelã','Chocolate ao leite'].map(c=>{
+   if(!c)return '<option value="">Sem borda</option>';
+   const add=inc.includes(c)?'INCLUSA':'+ '+money(QUICK_CRUST[quickSize][c]||0);
+   return `<option value="${c}">${c} — ${add}</option>`;
+ }).join('');
+ b.innerHTML=`<div class="item-options">
+   <button class="${quickSize==='broto'?'active':''}" onclick="quickSize='broto';renderQuickItemBody()">Broto<br>${money(p.broto)}</button>
+   <button class="${quickSize==='grande'?'active':''}" onclick="quickSize='grande';renderQuickItemBody()">Grande<br>${money(p.grande)}</button>
+ </div>
+ <select id="qiHalf" onchange="quickHalf=this.value;updateQuickItemTotal()"><option value="">Pizza inteira</option>${others.map(x=>`<option value="${esc(x.name)}">½ ${esc(x.name)}</option>`).join('')}</select>
+ <select id="qiCrust" onchange="updateQuickItemTotal()">${crustOpts}</select>
+ <textarea id="qiObs" placeholder="Observação: sem cebola, pouco orégano..."></textarea>
+ <div id="qiTotal" class="quick-total"></div>
+ <button class="item-add" onclick="addQuickItem()">+ ADICIONAR</button>`;
+ if(quickHalf)document.getElementById('qiHalf').value=quickHalf;
+ updateQuickItemTotal();
+}
+function quickItemCalc(){
+ const p=quickProduct;
+ if(!p.isPizza)return {unit:Number(p.price||0),name:p.name,size:'',crust:''};
+ const half=document.getElementById('qiHalf')?.value||'';
+ const p2=half?QUICK_CATALOG.find(x=>x.isPizza&&x.name===half):null;
+ let base=Number(p[quickSize]||0);
+ if(p2)base=(Number(p[quickSize]||0)+Number(p2[quickSize]||0))/2;
+ const crust=document.getElementById('qiCrust')?.value||'';
+ const add=crust&&!quickIncludedCrusts(p).includes(crust)?Number(QUICK_CRUST[quickSize][crust]||0):0;
+ return {unit:base+add,name:p2?`1/2 ${p.name} + 1/2 ${p2.name}`:p.name,size:quickSize==='broto'?'Broto':'Grande',crust};
+}
+function updateQuickItemTotal(){
+ const e=document.getElementById('qiTotal');if(e)e.textContent='Total: '+money(quickItemCalc().unit);
+}
+function addQuickItem(){
+ const c=quickItemCalc(),obs=document.getElementById('qiObs')?.value.trim()||'';
+ quickCart.push({id:Date.now()+Math.random(),qty:1,name:c.name,size:c.size,crust:c.crust,obs,unit:c.unit});
+ closeQuickItem();renderQuickCart();
+}
+function removeQuickItem(id){quickCart=quickCart.filter(x=>String(x.id)!==String(id));renderQuickCart()}
+function quickSubtotal(){return quickCart.reduce((n,x)=>n+Number(x.unit||0)*Number(x.qty||1),0)}
+function quickFee(){return quickType==='delivery'?(document.getElementById('qCity').value==='Maristela'?0:5):0}
+function updateQuickTotals(){
+ const sub=quickSubtotal(),fee=quickFee(),tot=sub+fee;
+ document.getElementById('qFeeLine').textContent=fee?`Subtotal: ${money(sub)} • Entrega: ${money(fee)}`:(quickType==='delivery'?'Entrega grátis':'');
+ document.getElementById('qTotal').textContent=money(tot);
+}
+function renderQuickCart(){
+ const el=document.getElementById('qCart');
+ el.innerHTML=quickCart.length?quickCart.map(x=>`<div class="quick-cart-item"><div class="quick-cart-row"><b>${x.qty}× ${esc(x.name)}</b><button class="quick-remove" onclick="removeQuickItem('${x.id}')">✕</button></div><div class="muted">${x.size?esc(x.size)+' • ':''}${x.crust?'Borda '+esc(x.crust)+' • ':''}${money(Number(x.unit||0)*Number(x.qty||1))}${x.obs?'<br>⚠️ '+esc(x.obs):''}</div></div>`).join(''):'<div class="muted">Nenhum item adicionado.</div>';
+ updateQuickTotals();
+}
+async function submitQuickOrder(){
+ if(!quickCart.length){alert('Adicione pelo menos um item.');return}
+ const name=document.getElementById('qName').value.trim()||'Cliente balcão';
+ const phone=document.getElementById('qPhone').value.trim();
+ const city=document.getElementById('qCity').value;
+ const address=document.getElementById('qAddress').value.trim();
+ if(quickType==='delivery'&&!address){alert('Informe o endereço de entrega.');return}
+ const subtotal=quickSubtotal(),fee=quickFee(),payment=document.getElementById('qPayment').value;
+ const change=document.getElementById('qChange').value.trim(),general=document.getElementById('qGeneralObs').value.trim();
+ const source=quickType==='counter'?'BALCÃO':quickType==='pickup'?'WHATSAPP / RETIRADA':'WHATSAPP / DELIVERY';
+ const generalObs=[`ORIGEM: ${source}`,change&&payment==='Dinheiro'?`TROCO PARA: R$ ${change}`:'',general].filter(Boolean).join(' | ');
+ const row={
+   order_no:quickOrderNo(),created_at:new Date().toISOString(),customer_name:name,customer_phone:phone,
+   fulfillment:quickType==='delivery'?'delivery':'pickup',
+   address:quickType==='delivery'?`${city} — ${address}`:'',
+   payment,payment_status:payment==='Pix'?'manual':'',general_obs:generalObs,
+   subtotal,delivery_fee:fee,coupon_code:'',discount:0,total:subtotal+fee,status:'novo',printed:false,
+   items:quickCart.map(x=>({qty:x.qty,name:x.name,size:x.size,crust:x.crust,obs:x.obs,unit:x.unit}))
+ };
+ try{
+   const saved=await api('orders',{method:'POST',body:JSON.stringify(row)});
+   const no=saved?.[0]?.order_no||row.order_no;
+   alert(`Pedido ${no} lançado com sucesso e enviado para a fila.`);
+   closeQuickOrder();resetQuickOrder();setFilter('novo');loadOrders();
+ }catch(e){
+   alert('Não foi possível lançar o pedido: '+e.message);
+ }
+}
+
 function configured(){return SUPABASE_URL.startsWith('https://')&&!SUPABASE_URL.includes('COLE_AQUI')&&!SUPABASE_ANON_KEY.includes('COLE_AQUI')}
 function setFilter(v){
   filter=v;
