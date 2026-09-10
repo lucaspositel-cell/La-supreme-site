@@ -348,6 +348,130 @@ body{background:#050505!important;color:#fff!important;padding-bottom:142px!impo
 .drink-cat.open-menu{border-color:var(--gold);color:var(--gold)}
 .drink-cat.open-menu .ci{transform:scale(1.05)}
 @media(max-width:680px){.drink-group-btn{min-width:118px!important}}
+
+/* ===== LA SUPREME — ESCOLHA RÁPIDA DE PIZZA ===== */
+.pizza-mode-row{display:grid;grid-template-columns:1fr 1fr;gap:9px}
+.pizza-mode-btn{border:1px solid #49391f;background:#15130f;color:#eee5d9;border-radius:13px;padding:13px 10px;font-weight:900;cursor:pointer}
+.pizza-mode-btn.active{border-color:var(--gold);background:#2b2113;color:#f3c66d;box-shadow:inset 0 0 0 1px rgba(217,155,50,.2)}
+.half-builder{display:none;margin-top:12px}
+.half-builder.open{display:block}
+.half-selected{display:grid;grid-template-columns:1fr 1fr;gap:8px;margin-bottom:10px}
+.half-selected-card{border:1px solid #44351f;background:#12110e;border-radius:12px;padding:10px}
+.half-selected-card small{display:block;color:var(--muted);font-size:10px;text-transform:uppercase;font-weight:900;margin-bottom:4px}
+.half-selected-card b{display:block;color:#f4e9d8;font-size:13px;line-height:1.25}
+.half-selected-card.pending{border-style:dashed;color:var(--muted)}
+.half-search{position:relative;margin:9px 0}
+.half-search input{width:100%;box-sizing:border-box;padding:12px 13px;border:1px solid #44351f;border-radius:12px;background:#11100e;color:#fff;font-weight:700}
+.half-cats{display:flex;gap:7px;overflow-x:auto;padding:2px 0 8px;scrollbar-width:none}
+.half-cats::-webkit-scrollbar{display:none}
+.half-cat{flex:0 0 auto;border:1px solid #463721;background:#17140f;color:#ddd2c4;border-radius:999px;padding:8px 11px;font-size:11px;font-weight:900;cursor:pointer}
+.half-cat.active{background:var(--gold);color:#1d1308;border-color:var(--gold)}
+.half-flavor-list{display:grid;grid-template-columns:1fr 1fr;gap:8px;max-height:310px;overflow:auto;padding-right:2px}
+.half-flavor-card{border:1px solid #40321e;background:#15130f;color:#fff;border-radius:12px;padding:11px;text-align:left;cursor:pointer;min-height:84px;display:flex;flex-direction:column;justify-content:space-between}
+.half-flavor-card b{font-size:13px;line-height:1.2}
+.half-flavor-card small{color:var(--muted);font-size:10px;margin-top:5px}
+.half-flavor-card .half-price{color:var(--gold);font-weight:900;font-size:12px;margin-top:7px}
+.half-flavor-card.selected{border-color:var(--gold);background:#2b2113}
+.pizza-summary{margin:12px 0;border:1px solid #44351f;background:#11100e;border-radius:13px;padding:11px}
+.pizza-summary-title{font-size:10px;text-transform:uppercase;color:var(--muted);font-weight:900;margin-bottom:6px}
+.pizza-summary-main{font-weight:900;color:#f2c76d;line-height:1.45}
+.product-sticky-buy{position:sticky;bottom:-14px;z-index:4;margin:14px -14px -14px;padding:11px 14px 14px;background:linear-gradient(0deg,#0c0c0b 82%,rgba(12,12,11,0));}
+.product-sticky-buy .modal-price{margin:0 0 8px}
+.quick-card-actions{display:grid;grid-template-columns:1fr auto;gap:7px;margin-top:8px}
+.quick-card-actions .order-btn{margin:0!important}
+.half-quick-btn{border:1px solid #a97625;background:#20180d;color:#efc267;border-radius:10px;padding:9px 10px;font-weight:900;cursor:pointer;white-space:nowrap}
+@media(max-width:600px){
+  .half-flavor-list{grid-template-columns:1fr;max-height:280px}
+  .half-selected{grid-template-columns:1fr}
+  .pizza-mode-row{grid-template-columns:1fr 1fr}
+  .product-sticky-buy{bottom:-14px}
+}
+
+
+/* ===== CORREÇÃO RESPONSIVA — MEIO A MEIO ===== */
+#productOverlay .modal-card,
+#productOverlay .product-card,
+#productOverlay .modal,
+#productOverlay .overlay-card{
+  width:min(560px,calc(100vw - 20px))!important;
+  max-width:calc(100vw - 20px)!important;
+  box-sizing:border-box!important;
+  overflow-x:hidden!important;
+}
+#productForm,
+#productForm .form-grid,
+#productForm .field,
+#productForm .field.full,
+.pizza-mode-row,
+.half-builder,
+.half-selected,
+.half-search,
+.half-cats,
+.half-flavor-list,
+.pizza-summary,
+.product-sticky-buy{
+  min-width:0!important;
+  max-width:100%!important;
+  box-sizing:border-box!important;
+}
+.half-search input,
+#productForm select,
+#productForm textarea{
+  width:100%!important;
+  max-width:100%!important;
+  min-width:0!important;
+  box-sizing:border-box!important;
+}
+.half-cats{
+  width:100%!important;
+  overflow-x:auto!important;
+  overflow-y:hidden!important;
+  -webkit-overflow-scrolling:touch;
+}
+.half-flavor-card{
+  min-width:0!important;
+  max-width:100%!important;
+  overflow:hidden!important;
+  word-break:break-word;
+}
+.half-flavor-card b,
+.half-flavor-card small,
+.half-flavor-card .half-price,
+.half-selected-card b{
+  overflow-wrap:anywhere;
+  word-break:break-word;
+}
+.product-sticky-buy{
+  margin-left:0!important;
+  margin-right:0!important;
+  width:100%!important;
+  padding-left:0!important;
+  padding-right:0!important;
+}
+@media(max-width:600px){
+  #productOverlay .modal-card,
+  #productOverlay .product-card,
+  #productOverlay .modal,
+  #productOverlay .overlay-card{
+    width:calc(100vw - 12px)!important;
+    max-width:calc(100vw - 12px)!important;
+    margin-left:auto!important;
+    margin-right:auto!important;
+  }
+  .pizza-mode-row{grid-template-columns:1fr 1fr!important;gap:6px!important}
+  .pizza-mode-btn{padding:11px 6px!important;font-size:11px!important}
+  .half-selected{grid-template-columns:1fr!important}
+  .half-flavor-list{grid-template-columns:1fr!important}
+  .half-cat{padding:7px 9px!important;font-size:10px!important}
+  .quick-card-actions{grid-template-columns:minmax(0,1fr) auto!important}
+  .half-quick-btn{padding:9px 8px!important;font-size:11px!important}
+}
+@media(max-width:380px){
+  .pizza-mode-row{grid-template-columns:1fr!important}
+  .quick-card-actions{grid-template-columns:1fr!important}
+  .half-quick-btn{width:100%!important}
+}
+
 </style>
 
 <style id="remove-bottom-cart-bar">
@@ -374,6 +498,30 @@ body{background:#050505!important;color:#fff!important;padding-bottom:142px!impo
 .menu-section{scroll-margin-top:270px!important}
 @media(max-width:760px){.menu-section{scroll-margin-top:235px!important}}
 @media(max-width:620px){.menu-section{scroll-margin-top:220px!important}}
+</style>
+
+<style id="ls-cardapio-amplo-teste">
+/* TESTE: cardápio com área útil mais ampla, sem alterar regras do pedido */
+@media (min-width: 901px){
+  .wrap{max-width:1360px!important;padding-left:18px!important;padding-right:18px!important}
+}
+@media (max-width: 900px){
+  .wrap{padding-left:8px!important;padding-right:8px!important}
+  .menu-section{margin-left:0!important;margin-right:0!important;padding-left:12px!important;padding-right:12px!important}
+}
+@media (max-width: 620px){
+  .wrap{padding-left:4px!important;padding-right:4px!important}
+  .menu-section{margin-left:0!important;margin-right:0!important;padding:12px 9px!important;border-radius:14px!important}
+  .grid{gap:10px!important}
+  .item{padding:15px 13px!important;border-radius:14px!important}
+  .section-title{padding-left:3px!important;padding-right:3px!important}
+  .search-wrap{padding-left:7px!important;padding-right:7px!important}
+  .category-shell{margin-left:-4px!important;margin-right:-4px!important;padding-left:7px!important;padding-right:7px!important}
+}
+@media (max-width: 390px){
+  .wrap{padding-left:2px!important;padding-right:2px!important}
+  .menu-section{padding-left:7px!important;padding-right:7px!important}
+}
 </style>
 </head>
 <body>
@@ -1954,24 +2102,78 @@ function setupOrdering(){
       btn.outerHTML='<button class="order-btn" type="button" onclick="showToast(\'Escolha a borda ao adicionar uma pizza\')">Escolher na pizza</button>';
       return;
     }
-    btn.outerHTML='<button class="order-btn" type="button">Adicionar ao pedido</button>';
-    card.querySelector('.order-btn').addEventListener('click',()=>openProduct(productFromCard(card)));
+    if(PIZZA_SECTIONS.has(sec)){
+      btn.outerHTML='<div class="quick-card-actions"><button class="order-btn" type="button">Adicionar</button><button class="half-quick-btn" type="button">½ Meio a meio</button></div>';
+      card.querySelector('.order-btn').addEventListener('click',()=>openProduct(productFromCard(card),'whole'));
+      card.querySelector('.half-quick-btn').addEventListener('click',()=>openProduct(productFromCard(card),'half'));
+    }else{
+      btn.outerHTML='<button class="order-btn" type="button">Adicionar ao pedido</button>';
+      card.querySelector('.order-btn').addEventListener('click',()=>openProduct(productFromCard(card)));
+    }
   });
   updateCartBadge();
 }
-function openProduct(p){
+let pizzaMode='whole';
+let halfCategory='all';
+
+function pizzaSectionLabel(id){
+  return ({
+    'cat-tradicionais':'Tradicionais',
+    'cat-queijos':'Queijos',
+    'cat-carnes':'Carnes',
+    'cat-verduras-e-legumes':'Verduras',
+    'cat-frutos-do-mar':'Frutos do Mar',
+    'cat-pizzas-doces':'Doces'
+  })[id]||'Pizzas';
+}
+function openProduct(p,initialMode='whole'){
   currentProduct=p;
+  pizzaMode=initialMode==='half'?'half':'whole';
+  halfCategory='all';
   document.getElementById('productTitle').textContent=p.name;
   const f=document.getElementById('productForm');
   if(p.isPizza){
-    const options=allPizzaProducts().filter(x=>x.name!==p.name).map(x=>`<option value="${escapeHtml(x.name)}">${escapeHtml(x.name)}</option>`).join('');
     f.innerHTML=`
       <p class="desc">${escapeHtml(p.desc)}</p>
       <div class="form-grid">
-        <div class="field full"><label>Tamanho</label><div class="choice-row"><button class="choice active" data-size="broto" onclick="chooseSize(this)">Broto 25 cm<br><small>${money(p.broto)}</small></button><button class="choice" data-size="grande" onclick="chooseSize(this)">Grande 35 cm<br><small>${money(p.grande)}</small></button></div></div>
-        <div class="field full"><label>🍕 Pizza meio a meio — escolha o segundo sabor</label><select id="halfFlavor" onchange="refreshProductPrice()"><option value="">Pizza inteira — ${escapeHtml(p.name)}</option>${options}</select><div class="half-note">No meio a meio, o valor é calculado por 50% de cada sabor.</div></div>
+        <div class="field full">
+          <label>1. Escolha o tamanho</label>
+          <div class="choice-row">
+            <button class="choice active" type="button" data-size="broto" onclick="chooseSize(this)">Broto 25 cm<br><small>${money(p.broto)}</small></button>
+            <button class="choice" type="button" data-size="grande" onclick="chooseSize(this)">Grande 35 cm<br><small>${money(p.grande)}</small></button>
+          </div>
+        </div>
+
+        <div class="field full">
+          <label>2. Como você quer a pizza?</label>
+          <div class="pizza-mode-row">
+            <button id="modeWhole" class="pizza-mode-btn" type="button" onclick="setPizzaMode('whole')">🍕 INTEIRA</button>
+            <button id="modeHalf" class="pizza-mode-btn" type="button" onclick="setPizzaMode('half')">◐ MEIO A MEIO</button>
+          </div>
+
+          <input id="halfFlavor" type="hidden" value="">
+          <div id="halfBuilder" class="half-builder">
+            <div class="half-selected">
+              <div class="half-selected-card"><small>1ª metade</small><b>${escapeHtml(p.name)}</b></div>
+              <div id="halfSecondSummary" class="half-selected-card pending"><small>2ª metade</small><b>Escolha o segundo sabor</b></div>
+            </div>
+            <div class="half-search"><input id="halfSearch" type="search" placeholder="🔎 Buscar segundo sabor..." oninput="renderHalfFlavorChoices()"></div>
+            <div class="half-cats">
+              <button class="half-cat active" data-half-cat="all" type="button" onclick="setHalfCategory('all',this)">Todos</button>
+              <button class="half-cat" data-half-cat="cat-tradicionais" type="button" onclick="setHalfCategory('cat-tradicionais',this)">Tradicionais</button>
+              <button class="half-cat" data-half-cat="cat-queijos" type="button" onclick="setHalfCategory('cat-queijos',this)">Queijos</button>
+              <button class="half-cat" data-half-cat="cat-carnes" type="button" onclick="setHalfCategory('cat-carnes',this)">Carnes</button>
+              <button class="half-cat" data-half-cat="cat-frutos-do-mar" type="button" onclick="setHalfCategory('cat-frutos-do-mar',this)">Frutos do Mar</button>
+              <button class="half-cat" data-half-cat="cat-verduras-e-legumes" type="button" onclick="setHalfCategory('cat-verduras-e-legumes',this)">Verduras</button>
+              <button class="half-cat" data-half-cat="cat-pizzas-doces" type="button" onclick="setHalfCategory('cat-pizzas-doces',this)">Doces</button>
+            </div>
+            <div id="halfFlavorList" class="half-flavor-list"></div>
+            <div class="half-note">No meio a meio, o valor continua sendo 50% de cada sabor.</div>
+          </div>
+        </div>
+
         <div class="field full" id="crustField">
-          <label>Escolha a borda <small>(valor conforme o tamanho)</small></label>
+          <label>3. Escolha a borda <small>(valor conforme o tamanho)</small></label>
           <select id="crust" onchange="refreshProductPrice()">
             <option value="">Sem borda</option>
             <option value="Catupiry">Catupiry</option>
@@ -1982,17 +2184,93 @@ function openProduct(p){
           </select>
           <div class="half-note" id="crustRuleNote">A borda escolhida vale para a pizza inteira, inclusive nas pizzas meio a meio.</div>
         </div>
-        <div class="field full"><label>Observações</label><textarea id="itemObs" placeholder="Ex.: sem cebola, pouco orégano..."></textarea></div>
+
+        <div class="field full">
+          <label>4. Observações <small>(opcional)</small></label>
+          <textarea id="itemObs" placeholder="Ex.: sem cebola, pouco orégano..."></textarea>
+        </div>
       </div>
-      <div class="modal-price"><span>Valor</span><strong id="productPrice"></strong></div>
-      <div class="modal-actions"><button class="btn-muted" onclick="closeProduct()">Cancelar</button><button class="btn-main" onclick="addCurrentPizza()">Adicionar ao pedido</button></div>`;
+
+      <div class="pizza-summary">
+        <div class="pizza-summary-title">Sua pizza</div>
+        <div id="pizzaSummaryMain" class="pizza-summary-main"></div>
+      </div>
+
+      <div class="product-sticky-buy">
+        <div class="modal-price"><span>Total</span><strong id="productPrice"></strong></div>
+        <div class="modal-actions">
+          <button class="btn-muted" type="button" onclick="closeProduct()">Cancelar</button>
+          <button class="btn-main" type="button" onclick="addCurrentPizza()">ADICIONAR AO PEDIDO</button>
+        </div>
+      </div>`;
+    setPizzaMode(pizzaMode);
     refreshProductPrice();
   } else {
     f.innerHTML=`<p class="desc">${escapeHtml(p.desc)}</p><div class="form-grid"><div class="field full"><label>Quantidade</label><input id="simpleQty" type="number" min="1" value="1"></div><div class="field full"><label>Observações</label><textarea id="itemObs" placeholder="Observações do item"></textarea></div></div><div class="modal-price"><span>Valor unitário</span><strong>${money(p.price)}</strong></div><div class="modal-actions"><button class="btn-muted" onclick="closeProduct()">Cancelar</button><button class="btn-main" onclick="addSimpleProduct()">Adicionar ao pedido</button></div>`;
   }
   document.getElementById('productOverlay').classList.add('open');
 }
-function chooseSize(btn){document.querySelectorAll('[data-size]').forEach(b=>b.classList.remove('active'));btn.classList.add('active');refreshProductPrice();}
+
+function setPizzaMode(mode){
+  pizzaMode=mode==='half'?'half':'whole';
+  const whole=document.getElementById('modeWhole');
+  const half=document.getElementById('modeHalf');
+  const builder=document.getElementById('halfBuilder');
+  if(whole)whole.classList.toggle('active',pizzaMode==='whole');
+  if(half)half.classList.toggle('active',pizzaMode==='half');
+  if(builder)builder.classList.toggle('open',pizzaMode==='half');
+  if(pizzaMode==='whole'){
+    const h=document.getElementById('halfFlavor');
+    if(h)h.value='';
+  }else{
+    renderHalfFlavorChoices();
+  }
+  refreshProductPrice();
+}
+
+function setHalfCategory(cat,btn){
+  halfCategory=cat||'all';
+  document.querySelectorAll('.half-cat').forEach(b=>b.classList.remove('active'));
+  if(btn)btn.classList.add('active');
+  renderHalfFlavorChoices();
+}
+
+function renderHalfFlavorChoices(){
+  const list=document.getElementById('halfFlavorList');
+  if(!list||!currentProduct)return;
+  const q=normalizeSearchText(document.getElementById('halfSearch')?.value||'');
+  const selected=document.getElementById('halfFlavor')?.value||'';
+  const size=selectedSize();
+  const products=allPizzaProducts()
+    .filter(x=>x.name!==currentProduct.name)
+    .filter(x=>halfCategory==='all'||x.section===halfCategory)
+    .filter(x=>!q||normalizeSearchText(`${x.name} ${x.desc}`).includes(q));
+
+  if(!products.length){
+    list.innerHTML='<div class="half-note">Nenhum sabor encontrado.</div>';
+    return;
+  }
+  list.innerHTML=products.map(x=>{
+    const halfPrice=Number(x[size]||0)*0.5;
+    return `<button class="half-flavor-card ${selected===x.name?'selected':''}" type="button" onclick='chooseHalfFlavor(${JSON.stringify(x.name)})'>
+      <span><b>${escapeHtml(x.name)}</b><small>${escapeHtml(pizzaSectionLabel(x.section))}</small></span>
+      <span class="half-price">½ sabor: ${money(halfPrice)}</span>
+    </button>`;
+  }).join('');
+}
+
+function chooseHalfFlavor(name){
+  const h=document.getElementById('halfFlavor');
+  if(h)h.value=name;
+  const box=document.getElementById('halfSecondSummary');
+  if(box){
+    box.classList.remove('pending');
+    box.innerHTML=`<small>2ª metade</small><b>${escapeHtml(name)}</b>`;
+  }
+  renderHalfFlavorChoices();
+  refreshProductPrice();
+}
+function chooseSize(btn){document.querySelectorAll('[data-size]').forEach(b=>b.classList.remove('active'));btn.classList.add('active');renderHalfFlavorChoices();refreshProductPrice();}
 function selectedSize(){return document.querySelector('[data-size].active')?.dataset.size||'broto';}
 const crustPrices={
   broto:{'Catupiry':8,'Cheddar':8,'Pistache':10,'Avelã':10,'Chocolate ao leite':8},
@@ -2044,9 +2322,26 @@ function calcPizza(){
   const crustPrice=crust&&!included.includes(crust)?Number(crustPrices[size]?.[crust]||0):0;
   return {base,total:base+crustPrice,half,crust,size,crustPrice};
 }
-function refreshProductPrice(){updateCrustOptionPrices();const el=document.getElementById('productPrice'); if(el) el.textContent=money(calcPizza().total);}
+function refreshProductPrice(){
+  updateCrustOptionPrices();
+  const c=calcPizza();
+  const el=document.getElementById('productPrice');
+  if(el)el.textContent=money(c.total);
+  const sm=document.getElementById('pizzaSummaryMain');
+  if(sm&&currentProduct){
+    const sizeLabel=c.size==='broto'?'Broto 25 cm':'Grande 35 cm';
+    const flavor=c.half?`½ ${escapeHtml(currentProduct.name)} + ½ ${escapeHtml(c.half)}`:escapeHtml(currentProduct.name);
+    const crust=c.crust?`<br>Borda: ${escapeHtml(c.crust)}`:'<br>Sem borda';
+    sm.innerHTML=`${flavor}<br><span style="color:#c9bba8">${sizeLabel}</span>${crust}`;
+  }
+}
 function addCurrentPizza(){
   const c=calcPizza(), obs=document.getElementById('itemObs')?.value.trim()||'';
+  if(pizzaMode==='half'&&!c.half){
+    showToast('Escolha o segundo sabor da pizza meio a meio');
+    document.getElementById('halfSearch')?.focus();
+    return;
+  }
   const label=c.half?`1/2 ${currentProduct.name} + 1/2 ${c.half}`:currentProduct.name;
   const second=c.half?findPizza(c.half):null; const sweet1=currentProduct.section==='cat-pizzas-doces'; const sweet2=second?second.section==='cat-pizzas-doces':sweet1; const sweetRatio=c.half?((sweet1?0.5:0)+(sweet2?0.5:0)):(sweet1?1:0); cart.push({id:Date.now()+Math.random(),name:label,kind:'pizza',size:c.size==='broto'?'Broto 25 cm':'Grande 35 cm',crust:c.crust,obs,unit:c.total,qty:1,section:currentProduct.section,sweetRatio});
   saveCart();closeProduct();showToast('Pizza adicionada ao pedido');
