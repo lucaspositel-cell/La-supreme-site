@@ -207,10 +207,56 @@ button{cursor:pointer}.arm{border:0;border-radius:10px;padding:10px 12px;backgro
 .quick-print-grid button.primary{background:var(--gold);color:#24180b;border-color:var(--gold)}
 @media(max-width:420px){.quick-print-grid{grid-template-columns:1fr}}
 
+
+/* ===== CAIXA — CENTRAL FINANCEIRA ===== */
+.cash-btn{border:1px solid var(--gold);border-radius:11px;padding:11px 14px;background:#211a17;color:var(--gold);font-weight:900}
+.cash-overlay{position:fixed;inset:0;z-index:70;background:#090706ed;display:none;overflow:auto;padding:8px}
+.cash-overlay.open{display:block}
+.cash-shell{width:min(1120px,100%);margin:auto;background:#120f0d;border:1px solid var(--line);border-radius:18px;overflow:hidden}
+.cash-head{position:sticky;top:0;z-index:5;background:#120f0df5;border-bottom:1px solid var(--line);padding:12px 14px;display:flex;align-items:center;gap:10px;flex-wrap:wrap}
+.cash-head h2{margin:0;font:700 22px Georgia}.cash-live{padding:5px 8px;border-radius:999px;background:#163624;color:#70e8a3;font-size:11px;font-weight:900}
+.cash-close{margin-left:auto;border:0;border-radius:10px;padding:9px 11px;background:#3b302a;color:#fff;font-weight:900}
+.cash-body{padding:12px}
+.cash-metrics{display:grid;grid-template-columns:repeat(4,minmax(0,1fr));gap:9px}
+.cash-metric{background:linear-gradient(180deg,#2b211d,#211a17);border:1px solid var(--line);border-radius:14px;padding:12px;min-width:0}
+.cash-metric span{display:block;color:var(--muted);font-size:10px;font-weight:900;text-transform:uppercase;letter-spacing:.4px}
+.cash-metric b{display:block;color:var(--gold);font-size:22px;margin-top:5px;overflow-wrap:anywhere}
+.cash-metric small{display:block;color:var(--muted);font-size:10px;margin-top:3px}
+.cash-toolbar{display:flex;gap:7px;align-items:center;flex-wrap:wrap;margin:12px 0}
+.cash-toolbar input{flex:1;min-width:190px;border:1px solid var(--line);background:#171210;color:#fff;border-radius:10px;padding:10px}
+.cash-filter{border:1px solid var(--line);background:#211a17;color:#fff;border-radius:999px;padding:8px 10px;font-weight:900;font-size:11px}
+.cash-filter.active{background:var(--gold);color:#24180b;border-color:var(--gold)}
+.cash-print{border:0;background:var(--gold);color:#24180b;border-radius:10px;padding:10px 12px;font-weight:900}
+.cash-summary{display:grid;grid-template-columns:repeat(4,minmax(0,1fr));gap:8px;margin-bottom:12px}
+.cash-mini{background:#171210;border:1px solid var(--line);border-radius:11px;padding:10px}
+.cash-mini span{font-size:10px;color:var(--muted);font-weight:900;text-transform:uppercase}.cash-mini b{display:block;margin-top:4px}
+.cash-list{display:grid;gap:7px}
+.cash-row{display:grid;grid-template-columns:105px minmax(0,1.3fr) 110px 110px 110px;gap:8px;align-items:center;background:#211a17;border:1px solid var(--line);border-radius:12px;padding:10px}
+.cash-row:hover{border-color:#6a5144}
+.cash-order{font-weight:900}.cash-customer{min-width:0}.cash-customer b,.cash-customer small{display:block;white-space:nowrap;overflow:hidden;text-overflow:ellipsis}.cash-customer small{color:var(--muted);margin-top:2px}
+.cash-method{font-weight:900}.cash-value{text-align:right;color:var(--gold);font-weight:900;font-size:16px}.cash-time{text-align:right;color:var(--muted);font-size:12px}
+.cash-empty{text-align:center;color:var(--muted);padding:35px}
+.cash-note{margin-top:12px;color:var(--muted);font-size:11px;text-align:center}
+@media(max-width:760px){
+ .cash-overlay{padding:3px}.cash-shell{border-radius:11px}
+ .cash-head{padding:9px}.cash-head h2{font-size:18px}
+ .cash-body{padding:7px}.cash-metrics{grid-template-columns:repeat(2,minmax(0,1fr));gap:6px}
+ .cash-metric{padding:9px}.cash-metric b{font-size:18px}
+ .cash-summary{grid-template-columns:repeat(2,minmax(0,1fr))}
+ .cash-row{grid-template-columns:82px minmax(0,1fr) 85px;gap:5px;padding:9px}
+ .cash-method{font-size:11px}.cash-time{display:none}.cash-value{font-size:14px}
+ .cash-customer small{font-size:10px}
+ .cash-toolbar input{width:100%;flex-basis:100%}
+}
+@media(max-width:380px){
+ .cash-metrics{grid-template-columns:1fr 1fr}.cash-metric b{font-size:16px}
+ .cash-row{grid-template-columns:72px minmax(0,1fr) 76px}
+}
+
 </style>
 </head>
 <body>
-<header><div class="head"><h1>LA <span class="brand">SUPREME</span> — Pedidos</h1><div class="spacer"></div><button class="quick-new" onclick="openQuickOrder()">➕ NOVO PEDIDO</button><button class="arm" onclick="armAudio()">🔔 Ativar alertas</button></div></header>
+<header><div class="head"><h1>LA <span class="brand">SUPREME</span> — Pedidos</h1><div class="spacer"></div><button class="cash-btn" onclick="openCash()">💰 CAIXA</button><button class="quick-new" onclick="openQuickOrder()">➕ NOVO PEDIDO</button><button class="arm" onclick="armAudio()">🔔 Ativar alertas</button></div></header>
 <main class="wrap">
 <div class="notice" id="notice">Painel preparado. Falta inserir as chaves do banco online no código.</div>
 <div class="dashboard" id="dashboard">
@@ -228,6 +274,43 @@ button{cursor:pointer}.arm{border:0;border-radius:10px;padding:10px 12px;backgro
 </div>
 <div id="orders" class="grid"></div>
 </main>
+
+
+<div id="cashOverlay" class="cash-overlay">
+ <div class="cash-shell">
+  <div class="cash-head">
+   <h2>💰 Caixa La Supreme</h2><span class="cash-live">● CAIXA DO DIA</span>
+   <span id="cashDate" class="muted"></span>
+   <button class="cash-close" onclick="closeCash()">✕ Fechar</button>
+  </div>
+  <div class="cash-body">
+   <div class="cash-metrics">
+    <div class="cash-metric"><span>Vendas do dia</span><b id="cashSales">R$ 0,00</b><small id="cashOrdersCount">0 pedidos concluídos</small></div>
+    <div class="cash-metric"><span>Dinheiro</span><b id="cashMoney">R$ 0,00</b><small>recebimentos</small></div>
+    <div class="cash-metric"><span>Pix</span><b id="cashPix">R$ 0,00</b><small>recebimentos</small></div>
+    <div class="cash-metric"><span>Cartões</span><b id="cashCard">R$ 0,00</b><small>recebimentos</small></div>
+   </div>
+   <div class="cash-toolbar">
+    <input id="cashSearch" placeholder="Buscar pedido, cliente ou telefone..." oninput="renderCashRows()">
+    <button class="cash-filter active" data-cash="all" onclick="setCashFilter('all')">Todos</button>
+    <button class="cash-filter" data-cash="dinheiro" onclick="setCashFilter('dinheiro')">Dinheiro</button>
+    <button class="cash-filter" data-cash="pix" onclick="setCashFilter('pix')">Pix</button>
+    <button class="cash-filter" data-cash="cartao" onclick="setCashFilter('cartao')">Cartão</button>
+    <button class="cash-filter" data-cash="delivery" onclick="setCashFilter('delivery')">Delivery</button>
+    <button class="cash-filter" data-cash="retirada" onclick="setCashFilter('retirada')">Balcão/Retirada</button>
+    <button class="cash-print" onclick="printCashReport()">🖨️ Fechamento</button>
+   </div>
+   <div class="cash-summary">
+    <div class="cash-mini"><span>Delivery</span><b id="cashDelivery">R$ 0,00</b></div>
+    <div class="cash-mini"><span>Balcão / Retirada</span><b id="cashPickup">R$ 0,00</b></div>
+    <div class="cash-mini"><span>Descontos</span><b id="cashDiscount">R$ 0,00</b></div>
+    <div class="cash-mini"><span>Taxas de entrega</span><b id="cashFees">R$ 0,00</b></div>
+   </div>
+   <div id="cashList" class="cash-list"></div>
+   <div class="cash-note">Valores calculados a partir dos pedidos concluídos de hoje. Sangria, suprimento e conferência física serão a próxima etapa.</div>
+  </div>
+ </div>
+</div>
 
 <div id="quickOverlay" class="quick-overlay">
   <div class="quick-shell">
@@ -560,6 +643,93 @@ function doQuickPrint(html){
 }
 function printQuickKitchen(){ if(quickSavedOrder) doQuickPrint(quickPrintHtml('LA SUPREME - COZINHA',quickSavedOrder,false)); }
 function printQuickDelivery(){ if(quickSavedOrder) doQuickPrint(quickPrintHtml('LA SUPREME - DELIVERY',quickSavedOrder,true)); }
+
+
+let cashRows=[],cashFilter='all';
+function cashMoney(v){return Number(v||0).toLocaleString('pt-BR',{style:'currency',currency:'BRL'})}
+function cashMethod(o){
+ const p=String(o.payment||'').toLowerCase();
+ if(p.includes('dinheiro'))return 'dinheiro';
+ if(p.includes('pix'))return 'pix';
+ if(p.includes('cart'))return 'cartao';
+ return p||'outro';
+}
+function cashIsToday(o){
+ const raw=o.concluded_at||o.created_at;if(!raw)return false;
+ const d=new Date(raw),n=new Date();
+ return d.getFullYear()===n.getFullYear()&&d.getMonth()===n.getMonth()&&d.getDate()===n.getDate();
+}
+async function openCash(){
+ document.getElementById('cashOverlay').classList.add('open');
+ document.getElementById('cashDate').textContent=new Date().toLocaleDateString('pt-BR',{weekday:'long',day:'2-digit',month:'2-digit'});
+ await loadCash();
+}
+function closeCash(){document.getElementById('cashOverlay').classList.remove('open')}
+async function loadCash(){
+ const list=document.getElementById('cashList');list.innerHTML='<div class="cash-empty">Carregando caixa...</div>';
+ try{
+   const rows=await api('orders?select=*&status=eq.concluido&order=created_at.desc&limit=500');
+   cashRows=(rows||[]).filter(cashIsToday);
+   updateCashMetrics();renderCashRows();
+ }catch(e){list.innerHTML='<div class="cash-empty">Erro ao carregar caixa: '+esc(e.message)+'</div>'}
+}
+function sumCash(rows,key){return rows.reduce((n,o)=>n+Number(key?o[key]:o.total||0),0)}
+function updateCashMetrics(){
+ const total=sumCash(cashRows),money=sumCash(cashRows.filter(o=>cashMethod(o)==='dinheiro'));
+ const pix=sumCash(cashRows.filter(o=>cashMethod(o)==='pix')),card=sumCash(cashRows.filter(o=>cashMethod(o)==='cartao'));
+ const del=cashRows.filter(o=>String(o.fulfillment||'').toLowerCase()==='delivery');
+ const pick=cashRows.filter(o=>String(o.fulfillment||'').toLowerCase()!=='delivery');
+ document.getElementById('cashSales').textContent=cashMoney(total);
+ document.getElementById('cashOrdersCount').textContent=`${cashRows.length} pedido${cashRows.length===1?'':'s'} concluído${cashRows.length===1?'':'s'}`;
+ document.getElementById('cashMoney').textContent=cashMoney(money);
+ document.getElementById('cashPix').textContent=cashMoney(pix);
+ document.getElementById('cashCard').textContent=cashMoney(card);
+ document.getElementById('cashDelivery').textContent=cashMoney(sumCash(del));
+ document.getElementById('cashPickup').textContent=cashMoney(sumCash(pick));
+ document.getElementById('cashDiscount').textContent=cashMoney(sumCash(cashRows,'discount'));
+ document.getElementById('cashFees').textContent=cashMoney(sumCash(cashRows,'delivery_fee'));
+}
+function setCashFilter(v){
+ cashFilter=v;document.querySelectorAll('[data-cash]').forEach(b=>b.classList.toggle('active',b.dataset.cash===v));renderCashRows();
+}
+function renderCashRows(){
+ const q=String(document.getElementById('cashSearch')?.value||'').toLowerCase().trim();
+ let rows=cashRows.filter(o=>{
+  if(cashFilter==='delivery'&&String(o.fulfillment||'').toLowerCase()!=='delivery')return false;
+  if(cashFilter==='retirada'&&String(o.fulfillment||'').toLowerCase()==='delivery')return false;
+  if(['dinheiro','pix','cartao'].includes(cashFilter)&&cashMethod(o)!==cashFilter)return false;
+  if(q&&!`${o.order_no||''} ${o.customer_name||''} ${o.customer_phone||''}`.toLowerCase().includes(q))return false;
+  return true;
+ });
+ const el=document.getElementById('cashList');
+ if(!rows.length){el.innerHTML='<div class="cash-empty">Nenhuma movimentação neste filtro.</div>';return}
+ el.innerHTML=rows.map(o=>{
+  const dt=new Date(o.concluded_at||o.created_at);
+  const dest=String(o.fulfillment||'').toLowerCase()==='delivery'?'Delivery':'Retirada';
+  const method=cashMethod(o)==='cartao'?'Cartão':cashMethod(o)==='pix'?'Pix':cashMethod(o)==='dinheiro'?'Dinheiro':(o.payment||'Outro');
+  return `<div class="cash-row">
+   <div class="cash-order">#${esc(o.order_no||'—')}</div>
+   <div class="cash-customer"><b>${esc(o.customer_name||'Cliente')}</b><small>${dest}${o.customer_phone?' • '+esc(o.customer_phone):''}</small></div>
+   <div class="cash-method">${esc(method)}</div>
+   <div class="cash-time">${dt.toLocaleTimeString('pt-BR',{hour:'2-digit',minute:'2-digit'})}</div>
+   <div class="cash-value">${cashMoney(o.total)}</div>
+  </div>`;
+ }).join('');
+}
+function printCashReport(){
+ const total=sumCash(cashRows),money=sumCash(cashRows.filter(o=>cashMethod(o)==='dinheiro'));
+ const pix=sumCash(cashRows.filter(o=>cashMethod(o)==='pix')),card=sumCash(cashRows.filter(o=>cashMethod(o)==='cartao'));
+ const del=cashRows.filter(o=>String(o.fulfillment||'').toLowerCase()==='delivery');
+ const html=`<div style="font-family:Arial;padding:18px;color:#000">
+ <h2>LA SUPREME — FECHAMENTO DO CAIXA</h2><div>${new Date().toLocaleString('pt-BR')}</div><hr>
+ <p><b>Vendas do dia:</b> ${cashMoney(total)} (${cashRows.length} pedidos)</p>
+ <p><b>Dinheiro:</b> ${cashMoney(money)}</p><p><b>Pix:</b> ${cashMoney(pix)}</p><p><b>Cartões:</b> ${cashMoney(card)}</p>
+ <p><b>Delivery:</b> ${cashMoney(sumCash(del))}</p><p><b>Balcão/Retirada:</b> ${cashMoney(total-sumCash(del))}</p>
+ <p><b>Descontos:</b> ${cashMoney(sumCash(cashRows,'discount'))}</p><p><b>Taxas de entrega:</b> ${cashMoney(sumCash(cashRows,'delivery_fee'))}</p><hr>
+ <p><b>TOTAL:</b> ${cashMoney(total)}</p></div>`;
+ const w=window.open('','_blank','width=600,height=800');if(!w){alert('Libere pop-ups para imprimir.');return}
+ w.document.write(`<html><head><title>Fechamento do Caixa</title></head><body>${html}<script>window.onload=()=>window.print()<\/script></body></html>`);w.document.close();
+}
 
 function configured(){return SUPABASE_URL.startsWith('https://')&&!SUPABASE_URL.includes('COLE_AQUI')&&!SUPABASE_ANON_KEY.includes('COLE_AQUI')}
 function setFilter(v){
