@@ -325,10 +325,120 @@ button{cursor:pointer}.arm{border:0;border-radius:10px;padding:10px 12px;backgro
  .order{font-size:18px!important}.customer{font-size:16px!important}
 }
 
+
+/* ===== RELATÓRIOS GERENCIAIS ===== */
+.report-btn{border:1px solid var(--line);border-radius:11px;padding:11px 14px;background:#211a17;color:#fff;font-weight:900}
+.report-overlay{position:fixed;inset:0;z-index:80;background:#090706ed;display:none;overflow:auto;padding:6px}
+.report-overlay.open{display:block}
+.report-shell{width:min(1180px,100%);margin:auto;background:#120f0d;border:1px solid var(--line);border-radius:18px;overflow:hidden}
+.report-head{position:sticky;top:0;z-index:5;background:#120f0df5;border-bottom:1px solid var(--line);padding:12px 14px;display:flex;align-items:center;gap:9px;flex-wrap:wrap}
+.report-head h2{margin:0;font:700 22px Georgia}.report-close{margin-left:auto;border:0;border-radius:10px;padding:9px 11px;background:#3b302a;color:#fff;font-weight:900}
+.report-body{padding:12px}
+.report-periods{display:flex;gap:6px;flex-wrap:wrap;margin-bottom:9px}
+.report-period{border:1px solid var(--line);background:#211a17;color:#fff;border-radius:999px;padding:8px 10px;font-weight:900;font-size:11px}
+.report-period.active{background:var(--gold);color:#24180b;border-color:var(--gold)}
+.report-custom{display:grid;grid-template-columns:1fr 1fr auto;gap:7px;margin:8px 0 12px}
+.report-custom input{width:100%;box-sizing:border-box;background:#171210;border:1px solid var(--line);color:#fff;border-radius:10px;padding:9px}
+.report-custom button,.report-actions button{border:0;background:var(--gold);color:#24180b;border-radius:10px;padding:9px 11px;font-weight:900}
+.report-actions{display:flex;gap:7px;flex-wrap:wrap;margin-left:auto}
+.report-actions .secondary{background:#2b211d;color:#fff;border:1px solid var(--line)}
+.report-kpis{display:grid;grid-template-columns:repeat(6,minmax(0,1fr));gap:8px;margin-bottom:11px}
+.report-kpi{background:linear-gradient(180deg,#2b211d,#211a17);border:1px solid var(--line);border-radius:13px;padding:11px;min-width:0}
+.report-kpi span{display:block;color:var(--muted);font-size:9px;text-transform:uppercase;font-weight:900;letter-spacing:.35px}
+.report-kpi b{display:block;color:var(--gold);font-size:19px;margin-top:5px;overflow-wrap:anywhere}
+.report-kpi small{display:block;color:var(--muted);font-size:10px;margin-top:3px}
+.report-grid{display:grid;grid-template-columns:1fr 1fr;gap:9px}
+.report-card{background:#171210;border:1px solid var(--line);border-radius:13px;padding:11px;min-width:0}
+.report-card.wide{grid-column:1/-1}
+.report-card h3{margin:0 0 8px;font-size:14px}
+.report-row{display:grid;grid-template-columns:minmax(0,1fr) auto;gap:7px;align-items:center;border-top:1px solid #342922;padding:7px 0;font-size:12px}
+.report-row:first-of-type{border-top:0}
+.report-row b{color:#fff}.report-row strong{color:var(--gold)}
+.report-bar{height:7px;background:#2b211d;border-radius:999px;overflow:hidden;margin-top:4px}
+.report-bar i{display:block;height:100%;background:var(--gold);border-radius:999px}
+.report-list-note{color:var(--muted);font-size:10px;margin-top:5px}
+.report-table{width:100%;border-collapse:collapse;font-size:11px}
+.report-table th,.report-table td{border-bottom:1px solid #342922;padding:7px 6px;text-align:left}
+.report-table th{color:var(--muted);text-transform:uppercase;font-size:9px}
+.report-table td:last-child,.report-table th:last-child{text-align:right}
+.report-empty{text-align:center;color:var(--muted);padding:28px}
+@media(max-width:900px){
+ .report-kpis{grid-template-columns:repeat(3,minmax(0,1fr))}
+ .report-grid{grid-template-columns:1fr}
+ .report-card.wide{grid-column:auto}
+}
+@media(max-width:600px){
+ .report-overlay{padding:2px}.report-shell{border-radius:10px}.report-body{padding:7px}
+ .report-head{padding:9px}.report-head h2{font-size:18px}
+ .report-kpis{grid-template-columns:repeat(2,minmax(0,1fr));gap:6px}
+ .report-kpi{padding:9px}.report-kpi b{font-size:16px}
+ .report-custom{grid-template-columns:1fr 1fr}.report-custom button{grid-column:1/-1}
+ .report-actions{width:100%;margin-left:0}.report-actions button{flex:1}
+}
+
+
+/* ===== INFOGRÁFICO COMPARATIVO ===== */
+.info-section{margin:0 0 11px}
+.info-title{display:flex;align-items:end;justify-content:space-between;gap:8px;flex-wrap:wrap;margin:3px 0 8px}
+.info-title h3{margin:0;font-size:15px}.info-title small{color:var(--muted)}
+.info-compare{display:grid;grid-template-columns:repeat(4,minmax(0,1fr));gap:8px;margin-bottom:9px}
+.info-card{background:linear-gradient(180deg,#2c231e,#1c1714);border:1px solid var(--line);border-radius:13px;padding:11px;min-width:0}
+.info-card span{display:block;color:var(--muted);font-size:9px;text-transform:uppercase;font-weight:900}
+.info-card b{display:block;font-size:18px;color:#fff;margin-top:5px}
+.info-delta{display:inline-flex!important;margin-top:5px;padding:4px 7px;border-radius:999px;font-size:10px!important;font-weight:900}
+.info-delta.up{background:#173b27;color:#8aefae}.info-delta.down{background:#452020;color:#ffabab}.info-delta.flat{background:#332b25;color:#ddd}
+.info-visuals{display:grid;grid-template-columns:1.4fr 1fr;gap:9px}
+.info-chart{background:#171210;border:1px solid var(--line);border-radius:13px;padding:11px;min-width:0}
+.info-chart h4{margin:0 0 7px;font-size:12px}
+.info-bars{display:flex;align-items:flex-end;gap:6px;height:170px;padding:8px 2px 0}
+.info-bar-col{flex:1;min-width:0;text-align:center;height:100%;display:flex;flex-direction:column;justify-content:flex-end}
+.info-bar-value{font-size:9px;color:var(--muted);margin-bottom:4px;white-space:nowrap;overflow:hidden;text-overflow:ellipsis}
+.info-bar{width:100%;min-height:3px;background:linear-gradient(180deg,var(--gold),#7d5626);border-radius:7px 7px 2px 2px}
+.info-bar-label{font-size:9px;color:var(--muted);margin-top:5px}
+.info-donut-wrap{display:flex;align-items:center;justify-content:center;gap:15px;min-height:170px;flex-wrap:wrap}
+.info-donut{width:128px;height:128px;border-radius:50%;position:relative;background:conic-gradient(var(--gold) 0 var(--delivery-pct),#6b4e36 var(--delivery-pct) 100%)}
+.info-donut:after{content:"";position:absolute;inset:24px;border-radius:50%;background:#171210}
+.info-donut-center{position:absolute;inset:0;z-index:2;display:flex;align-items:center;justify-content:center;flex-direction:column;font-weight:900}
+.info-donut-center b{font-size:18px}.info-donut-center small{font-size:9px;color:var(--muted)}
+.info-legend{font-size:11px}.info-legend div{margin:7px 0}.info-dot{display:inline-block;width:9px;height:9px;border-radius:50%;margin-right:6px;background:var(--gold)}.info-dot.alt{background:#6b4e36}
+@media(max-width:800px){.info-compare{grid-template-columns:repeat(2,minmax(0,1fr))}.info-visuals{grid-template-columns:1fr}}
+@media(max-width:430px){.info-compare{grid-template-columns:1fr 1fr}.info-card b{font-size:15px}.info-bars{height:145px}}
+
+
+/* ===== GRÁFICO DE FATURAMENTO MAIS LEGÍVEL ===== */
+.info-chart.daily-chart{overflow:hidden}
+.info-chart-scroll{overflow-x:auto;overflow-y:hidden;padding:2px 0 8px;scrollbar-width:thin}
+.info-bars{height:220px!important;align-items:flex-end!important;gap:8px!important;min-width:max-content!important;padding:18px 8px 0!important}
+.info-bar-col{flex:0 0 56px!important;width:56px!important;min-width:56px!important;height:100%!important}
+.info-bar-value{
+  display:block!important;
+  font-size:10px!important;
+  line-height:1.15!important;
+  color:#f5d39b!important;
+  font-weight:900!important;
+  overflow:visible!important;
+  text-overflow:clip!important;
+  white-space:normal!important;
+  min-height:25px!important;
+  margin-bottom:5px!important
+}
+.info-bar{min-height:4px!important}
+.info-bar-label{font-size:10px!important;color:#ddd!important;font-weight:800!important;white-space:nowrap}
+.chart-summary{display:grid;grid-template-columns:repeat(3,minmax(0,1fr));gap:7px;margin:7px 0 2px}
+.chart-summary div{background:#211a17;border:1px solid var(--line);border-radius:10px;padding:8px}
+.chart-summary span{display:block;color:var(--muted);font-size:8px;text-transform:uppercase;font-weight:900}
+.chart-summary b{display:block;color:#fff;font-size:12px;margin-top:3px}
+.chart-hint{color:var(--muted);font-size:9px;margin-top:5px}
+@media(max-width:600px){
+ .info-bar-col{flex-basis:62px!important;width:62px!important;min-width:62px!important}
+ .info-bars{height:205px!important}
+ .chart-summary{grid-template-columns:1fr}
+}
+
 </style>
 </head>
 <body>
-<header><div class="head"><h1>LA <span class="brand">SUPREME</span> — Pedidos</h1><div class="spacer"></div><button class="cash-btn" onclick="openCash()">💰 CAIXA</button><button class="quick-new" onclick="openQuickOrder()">➕ NOVO PEDIDO</button><button class="arm" onclick="armAudio()">🔔 Ativar alertas</button></div></header>
+<header><div class="head"><h1>LA <span class="brand">SUPREME</span> — Pedidos</h1><div class="spacer"></div><button class="report-btn" onclick="openReports()">📊 RELATÓRIOS</button><button class="cash-btn" onclick="openCash()">💰 CAIXA</button><button class="quick-new" onclick="openQuickOrder()">➕ NOVO PEDIDO</button><button class="arm" onclick="armAudio()">🔔 Ativar alertas</button></div></header>
 <main class="wrap">
 <div class="notice" id="notice">Painel preparado. Falta inserir as chaves do banco online no código.</div>
 <div class="dashboard" id="dashboard">
@@ -354,6 +464,111 @@ button{cursor:pointer}.arm{border:0;border-radius:10px;padding:10px 12px;backgro
 <div id="orders" class="grid"></div>
 </main>
 
+
+<div id="reportOverlay" class="report-overlay">
+ <div class="report-shell">
+  <div class="report-head">
+   <h2>📊 Relatórios La Supreme</h2>
+   <span id="reportRangeLabel" class="muted"></span>
+   <div class="report-actions">
+    <button class="secondary" onclick="exportReportCSV()">⬇️ CSV</button>
+    <button onclick="printReports()">🖨️ Imprimir</button>
+   </div>
+   <button class="report-close" onclick="closeReports()">✕ Fechar</button>
+  </div>
+  <div class="report-body">
+   <div class="report-periods">
+    <button class="report-period active" data-rperiod="today" onclick="setReportPeriod('today')">Hoje</button>
+    <button class="report-period" data-rperiod="7d" onclick="setReportPeriod('7d')">7 dias</button>
+    <button class="report-period" data-rperiod="30d" onclick="setReportPeriod('30d')">30 dias</button>
+    <button class="report-period" data-rperiod="month" onclick="setReportPeriod('month')">Este mês</button>
+    <button class="report-period" data-rperiod="custom" onclick="setReportPeriod('custom')">Personalizado</button>
+   </div>
+   <div id="reportCustom" class="report-custom" style="display:none">
+    <input type="date" id="reportFrom">
+    <input type="date" id="reportTo">
+    <button onclick="loadReports()">Aplicar período</button>
+   </div>
+
+   <div class="report-kpis">
+    <div class="report-kpi"><span>Faturamento</span><b id="rRevenue">R$ 0,00</b><small>pedidos concluídos</small></div>
+    <div class="report-kpi"><span>Pedidos</span><b id="rOrders">0</b><small>concluídos</small></div>
+    <div class="report-kpi"><span>Ticket médio</span><b id="rTicket">R$ 0,00</b><small>por pedido</small></div>
+    <div class="report-kpi"><span>Pizzas</span><b id="rPizzas">0</b><small>vendidas</small></div>
+    <div class="report-kpi"><span>Descontos</span><b id="rDiscounts">R$ 0,00</b><small>cupons/descontos</small></div>
+    <div class="report-kpi"><span>Cancelamentos</span><b id="rCanceled">0</b><small id="rCancelValue">R$ 0,00</small></div>
+   </div>
+
+   <section class="info-section">
+ <div class="info-title">
+  <h3>📈 Infográfico de desempenho</h3>
+  <small>Comparação automática com o período anterior</small>
+ </div>
+ <div class="info-compare">
+  <div class="info-card"><span>Faturamento</span><b id="iRevenue">R$ 0,00</b><span id="iRevenueDelta" class="info-delta flat">0%</span></div>
+  <div class="info-card"><span>Pedidos</span><b id="iOrders">0</b><span id="iOrdersDelta" class="info-delta flat">0%</span></div>
+  <div class="info-card"><span>Ticket médio</span><b id="iTicket">R$ 0,00</b><span id="iTicketDelta" class="info-delta flat">0%</span></div>
+  <div class="info-card"><span>Pizzas vendidas</span><b id="iPizzas">0</b><span id="iPizzasDelta" class="info-delta flat">0%</span></div>
+ </div>
+ <div class="info-visuals">
+  <div class="info-chart daily-chart">
+   <h4>Faturamento por dia</h4>
+   <div class="chart-summary">
+    <div><span>Maior dia</span><b id="iBestDay">—</b></div>
+    <div><span>Média por dia</span><b id="iAvgDay">R$ 0,00</b></div>
+    <div><span>Total do período</span><b id="iPeriodTotal">R$ 0,00</b></div>
+   </div>
+   <div class="chart-hint">Arraste para o lado para ver todos os dias. O valor aparece acima de cada barra.</div>
+   <div class="info-chart-scroll"><div id="iDailyBars" class="info-bars"></div></div>
+  </div>
+  <div class="info-chart">
+   <h4>Delivery × Retirada</h4>
+   <div class="info-donut-wrap">
+    <div id="iDonut" class="info-donut" style="--delivery-pct:50%">
+      <div class="info-donut-center"><b id="iDeliveryPct">50%</b><small>delivery</small></div>
+    </div>
+    <div class="info-legend">
+      <div><span class="info-dot"></span>Delivery: <b id="iDeliveryValue">R$ 0,00</b></div>
+      <div><span class="info-dot alt"></span>Retirada: <b id="iPickupValue">R$ 0,00</b></div>
+    </div>
+   </div>
+  </div>
+ </div>
+</section>
+
+<div class="report-grid">
+    <div class="report-card">
+     <h3>💳 Formas de pagamento</h3>
+     <div id="rPayments"></div>
+    </div>
+    <div class="report-card">
+     <h3>🛵 Canais de venda</h3>
+     <div id="rChannels"></div>
+    </div>
+    <div class="report-card">
+     <h3>🍕 Mais vendidos</h3>
+     <div id="rProducts"></div>
+    </div>
+    <div class="report-card">
+     <h3>📍 Regiões / destinos</h3>
+     <div id="rRegions"></div>
+    </div>
+    <div class="report-card">
+     <h3>🕒 Horários de pico</h3>
+     <div id="rHours"></div>
+    </div>
+    <div class="report-card">
+     <h3>💰 Resumo financeiro</h3>
+     <div id="rFinance"></div>
+    </div>
+    <div class="report-card wide">
+     <h3>🧾 Pedidos no período</h3>
+     <div id="rOrdersTable"></div>
+    </div>
+   </div>
+  </div>
+ </div>
+</div>
 
 <div id="cashOverlay" class="cash-overlay">
  <div class="cash-shell">
@@ -761,6 +976,224 @@ function doQuickPrint(html){
 }
 function printQuickKitchen(){ if(quickSavedOrder) doQuickPrint(quickPrintHtml('LA SUPREME - COZINHA',quickSavedOrder,false)); }
 function printQuickDelivery(){ if(quickSavedOrder) doQuickPrint(quickPrintHtml('LA SUPREME - DELIVERY',quickSavedOrder,true)); }
+
+
+
+let reportPeriod='today',reportAllRows=[],reportRows=[],reportCanceled=[];
+function rMoney(v){return Number(v||0).toLocaleString('pt-BR',{style:'currency',currency:'BRL'})}
+function reportDateOnly(d){const x=new Date(d);return new Date(x.getFullYear(),x.getMonth(),x.getDate())}
+function reportBounds(){
+ const now=new Date(),today=reportDateOnly(now),end=new Date(today);end.setDate(end.getDate()+1);
+ let start=new Date(today);
+ if(reportPeriod==='7d')start.setDate(start.getDate()-6);
+ else if(reportPeriod==='30d')start.setDate(start.getDate()-29);
+ else if(reportPeriod==='month')start=new Date(now.getFullYear(),now.getMonth(),1);
+ else if(reportPeriod==='custom'){
+   const f=document.getElementById('reportFrom')?.value,t=document.getElementById('reportTo')?.value;
+   if(f)start=new Date(f+'T00:00:00');
+   if(t){const x=new Date(t+'T00:00:00');end=new Date(x);end.setDate(end.getDate()+1)}
+ }
+ return {start,end};
+}
+function openReports(){document.getElementById('reportOverlay').classList.add('open');loadReports()}
+function closeReports(){document.getElementById('reportOverlay').classList.remove('open')}
+function setReportPeriod(v){
+ reportPeriod=v;
+ document.querySelectorAll('[data-rperiod]').forEach(b=>b.classList.toggle('active',b.dataset.rperiod===v));
+ document.getElementById('reportCustom').style.display=v==='custom'?'grid':'none';
+ if(v!=='custom')loadReports();
+}
+function reportTimestamp(o){return new Date(o.concluded_at||o.created_at)}
+function reportInRange(o,b){const d=reportTimestamp(o);return d>=b.start&&d<b.end}
+function reportPayKey(o){
+ const p=String(o.payment||'').toLowerCase();
+ if(p.includes('pix'))return 'Pix';
+ if(p.includes('dinheiro'))return 'Dinheiro';
+ if(p.includes('cart'))return 'Cartão';
+ return o.payment||'Outro';
+}
+function reportRegion(o){
+ if(String(o.fulfillment||'').toLowerCase()!=='delivery')return 'Retirada / Balcão';
+ const a=String(o.address||'').toLowerCase();
+ if(a.includes('pereiras'))return 'Pereiras';
+ if(a.includes('laranjal'))return 'Laranjal Paulista';
+ if(a.includes('maristela'))return 'Maristela';
+ return 'Outros delivery';
+}
+function reportIsPizza(x){
+ if(typeof isPizzaItem==='function')return isPizzaItem(x);
+ const n=String(x?.name||'').toLowerCase(),sz=String(x?.size||'').toLowerCase();
+ return !/(calzone|crostini|roll|bebida|coca|fanta|vinho|cerveja)/.test(n)&&/(broto|grande)/.test(sz);
+}
+function reportAgg(rows,keyFn,valueFn=()=>1){
+ const m=new Map();
+ rows.forEach(o=>{const k=keyFn(o);m.set(k,(m.get(k)||0)+Number(valueFn(o)||0))});
+ return [...m.entries()].sort((a,b)=>b[1]-a[1]);
+}
+function reportBars(elId,data,moneyVals=false,limit=10){
+ const el=document.getElementById(elId);if(!el)return;
+ const rows=data.slice(0,limit),max=Math.max(1,...rows.map(x=>x[1]));
+ el.innerHTML=rows.length?rows.map(([k,v])=>`<div class="report-row"><div><b>${esc(String(k))}</b><div class="report-bar"><i style="width:${Math.max(2,(v/max)*100)}%"></i></div></div><strong>${moneyVals?rMoney(v):v}</strong></div>`).join(''):'<div class="report-empty">Sem dados no período.</div>';
+}
+async function loadReports(){
+ if(!configured())return;
+ const b=reportBounds();
+ document.getElementById('reportRangeLabel').textContent=`${b.start.toLocaleDateString('pt-BR')} → ${new Date(b.end.getTime()-1).toLocaleDateString('pt-BR')}`;
+ try{
+   // Busca ampla; o filtro exato do período é aplicado localmente.
+   const rows=await api('orders?select=*&order=created_at.desc&limit=5000');
+   reportAllRows=rows||[];
+   reportRows=reportAllRows.filter(o=>String(o.status||'').toLowerCase()==='concluido'&&reportInRange(o,b));
+   reportCanceled=reportAllRows.filter(o=>String(o.status||'').toLowerCase()==='cancelado'&&reportInRange(o,b));
+   renderReports();
+ }catch(e){alert('Erro ao carregar relatórios: '+e.message)}
+}
+
+function reportPreviousBounds(){
+ const b=reportBounds(),dur=b.end-b.start;
+ return {start:new Date(b.start.getTime()-dur),end:new Date(b.start.getTime())};
+}
+function reportStats(rows){
+ const revenue=rows.reduce((n,o)=>n+Number(o.total||0),0);
+ let pizzas=0;
+ rows.forEach(o=>(Array.isArray(o.items)?o.items:[]).forEach(x=>{if(reportIsPizza(x))pizzas+=Math.max(1,Number(x.qty??x.quantidade??1)||1)}));
+ return {revenue,orders:rows.length,ticket:rows.length?revenue/rows.length:0,pizzas};
+}
+function deltaPct(cur,prev){
+ if(prev===0)return cur===0?0:100;
+ return ((cur-prev)/Math.abs(prev))*100;
+}
+function setDelta(id,cur,prev){
+ const el=document.getElementById(id);if(!el)return;
+ const d=deltaPct(cur,prev),abs=Math.abs(d);
+ el.className='info-delta '+(d>0.05?'up':d<-0.05?'down':'flat');
+ el.textContent=(d>0.05?'▲ ':d<-0.05?'▼ ':'• ')+abs.toFixed(1).replace('.',',')+'%';
+ el.title=`Período anterior: ${typeof prev==='number'?prev:''}`;
+}
+function renderInfographic(){
+ const prevB=reportPreviousBounds();
+ const previous=reportAllRows.filter(o=>String(o.status||'').toLowerCase()==='concluido'&&reportInRange(o,prevB));
+ const cur=reportStats(reportRows),prev=reportStats(previous);
+ document.getElementById('iRevenue').textContent=rMoney(cur.revenue);
+ document.getElementById('iOrders').textContent=cur.orders;
+ document.getElementById('iTicket').textContent=rMoney(cur.ticket);
+ document.getElementById('iPizzas').textContent=cur.pizzas;
+ setDelta('iRevenueDelta',cur.revenue,prev.revenue);
+ setDelta('iOrdersDelta',cur.orders,prev.orders);
+ setDelta('iTicketDelta',cur.ticket,prev.ticket);
+ setDelta('iPizzasDelta',cur.pizzas,prev.pizzas);
+
+ // barras diárias
+ const b=reportBounds(),days=[];
+ let d=new Date(b.start);
+ while(d<b.end && days.length<31){
+   const next=new Date(d);next.setDate(next.getDate()+1);
+   const val=reportRows.filter(o=>{const x=reportTimestamp(o);return x>=d&&x<next}).reduce((n,o)=>n+Number(o.total||0),0);
+   days.push({date:new Date(d),value:val});
+   d=next;
+ }
+ const max=Math.max(1,...days.map(x=>x.value));
+ const bars=document.getElementById('iDailyBars');
+ const moneyShort=v=>{
+   const n=Number(v||0);
+   if(n>=1000)return 'R$ '+(n/1000).toFixed(n>=10000?0:1).replace('.',',')+' mil';
+   return 'R$ '+n.toFixed(0);
+ };
+ bars.innerHTML=days.length?days.map(x=>{
+   const h=Math.max(x.value?8:3,(x.value/max)*145);
+   const label=x.date.toLocaleDateString('pt-BR',{day:'2-digit',month:'2-digit'});
+   return `<div class="info-bar-col" title="${label}: ${rMoney(x.value)}">
+     <div class="info-bar-value">${moneyShort(x.value)}</div>
+     <div class="info-bar" style="height:${h}px"></div>
+     <div class="info-bar-label">${label}</div>
+   </div>`;
+ }).join(''):'<div class="report-empty">Sem dados.</div>';
+
+ const periodTotal=days.reduce((n,x)=>n+x.value,0);
+ const activeDays=days.filter(x=>x.value>0);
+ const best=activeDays.length?[...activeDays].sort((a,b)=>b.value-a.value)[0]:null;
+ const avg=days.length?periodTotal/days.length:0;
+ const bestEl=document.getElementById('iBestDay');
+ const avgEl=document.getElementById('iAvgDay');
+ const totalEl=document.getElementById('iPeriodTotal');
+ if(bestEl)bestEl.textContent=best?`${best.date.toLocaleDateString('pt-BR',{day:'2-digit',month:'2-digit'})} • ${rMoney(best.value)}`:'—';
+ if(avgEl)avgEl.textContent=rMoney(avg);
+ if(totalEl)totalEl.textContent=rMoney(periodTotal);
+
+ // Em períodos longos, começa mostrando os dias mais recentes.
+ const scroll=bars?.parentElement;
+ if(scroll && days.length>10) requestAnimationFrame(()=>{scroll.scrollLeft=scroll.scrollWidth;});
+
+ const del=reportRows.filter(o=>String(o.fulfillment||'').toLowerCase()==='delivery').reduce((n,o)=>n+Number(o.total||0),0);
+ const pick=cur.revenue-del,pct=cur.revenue?Math.round(del/cur.revenue*100):0;
+ document.getElementById('iDonut').style.setProperty('--delivery-pct',pct+'%');
+ document.getElementById('iDeliveryPct').textContent=pct+'%';
+ document.getElementById('iDeliveryValue').textContent=rMoney(del);
+ document.getElementById('iPickupValue').textContent=rMoney(pick);
+}
+
+function renderReports(){
+ const revenue=reportRows.reduce((n,o)=>n+Number(o.total||0),0);
+ const discounts=reportRows.reduce((n,o)=>n+Number(o.discount||0),0);
+ const fees=reportRows.reduce((n,o)=>n+Number(o.delivery_fee||0),0);
+ const canceledValue=reportCanceled.reduce((n,o)=>n+Number(o.total||0),0);
+ let pizzas=0;
+ const productMap=new Map();
+ reportRows.forEach(o=>(Array.isArray(o.items)?o.items:[]).forEach(x=>{
+   const q=Math.max(1,Number(x.qty??x.quantidade??1)||1);
+   if(reportIsPizza(x))pizzas+=q;
+   const name=String(x.name??x.produto_nome??x.sabor??'Item');
+   productMap.set(name,(productMap.get(name)||0)+q);
+ }));
+ document.getElementById('rRevenue').textContent=rMoney(revenue);
+ document.getElementById('rOrders').textContent=reportRows.length;
+ document.getElementById('rTicket').textContent=rMoney(reportRows.length?revenue/reportRows.length:0);
+ document.getElementById('rPizzas').textContent=pizzas;
+ document.getElementById('rDiscounts').textContent=rMoney(discounts);
+ document.getElementById('rCanceled').textContent=reportCanceled.length;
+ document.getElementById('rCancelValue').textContent=rMoney(canceledValue);
+ renderInfographic();
+
+ reportBars('rPayments',reportAgg(reportRows,reportPayKey,o=>Number(o.total||0)),true,8);
+ reportBars('rChannels',reportAgg(reportRows,o=>String(o.fulfillment||'').toLowerCase()==='delivery'?'Delivery':'Balcão / Retirada',o=>Number(o.total||0)),true,5);
+ reportBars('rProducts',[...productMap.entries()].sort((a,b)=>b[1]-a[1]),false,10);
+ reportBars('rRegions',reportAgg(reportRows,reportRegion,o=>Number(o.total||0)),true,8);
+ reportBars('rHours',reportAgg(reportRows,o=>String(reportTimestamp(o).getHours()).padStart(2,'0')+':00'),false,24);
+
+ const delivery=reportRows.filter(o=>String(o.fulfillment||'').toLowerCase()==='delivery');
+ const subtotal=reportRows.reduce((n,o)=>n+Number(o.subtotal||0),0);
+ document.getElementById('rFinance').innerHTML=[
+   ['Subtotal dos pedidos',rMoney(subtotal)],
+   ['Descontos concedidos','− '+rMoney(discounts)],
+   ['Taxas de entrega','+ '+rMoney(fees)],
+   ['Faturamento final',rMoney(revenue)],
+   ['Delivery',rMoney(delivery.reduce((n,o)=>n+Number(o.total||0),0))],
+   ['Balcão / Retirada',rMoney(reportRows.filter(o=>String(o.fulfillment||'').toLowerCase()!=='delivery').reduce((n,o)=>n+Number(o.total||0),0))]
+ ].map(([a,b])=>`<div class="report-row"><b>${a}</b><strong>${b}</strong></div>`).join('');
+
+ const top=[...reportRows].sort((a,b)=>reportTimestamp(b)-reportTimestamp(a)).slice(0,100);
+ document.getElementById('rOrdersTable').innerHTML=top.length?`<div style="overflow:auto"><table class="report-table"><thead><tr><th>Pedido</th><th>Data</th><th>Cliente</th><th>Canal</th><th>Pagamento</th><th>Total</th></tr></thead><tbody>${top.map(o=>`<tr><td>#${esc(o.order_no||'—')}</td><td>${reportTimestamp(o).toLocaleString('pt-BR',{day:'2-digit',month:'2-digit',hour:'2-digit',minute:'2-digit'})}</td><td>${esc(o.customer_name||'Cliente')}</td><td>${String(o.fulfillment||'').toLowerCase()==='delivery'?'Delivery':'Retirada'}</td><td>${esc(reportPayKey(o))}</td><td>${rMoney(o.total)}</td></tr>`).join('')}</tbody></table></div>`:'<div class="report-empty">Sem pedidos concluídos no período.</div>';
+}
+function exportReportCSV(){
+ if(!reportRows.length){alert('Não há dados para exportar.');return}
+ const header=['pedido','data','cliente','telefone','canal','regiao','pagamento','subtotal','desconto','taxa_entrega','total'];
+ const lines=[header.join(';')];
+ reportRows.forEach(o=>{
+   const vals=[o.order_no||'',reportTimestamp(o).toLocaleString('pt-BR'),o.customer_name||'',o.customer_phone||'',String(o.fulfillment||'').toLowerCase()==='delivery'?'Delivery':'Retirada',reportRegion(o),reportPayKey(o),Number(o.subtotal||0).toFixed(2),Number(o.discount||0).toFixed(2),Number(o.delivery_fee||0).toFixed(2),Number(o.total||0).toFixed(2)];
+   lines.push(vals.map(v=>`"${String(v).replace(/"/g,'""')}"`).join(';'));
+ });
+ const blob=new Blob(['\ufeff'+lines.join('\n')],{type:'text/csv;charset=utf-8'});
+ const a=document.createElement('a');a.href=URL.createObjectURL(blob);a.download=`relatorio-la-supreme-${new Date().toISOString().slice(0,10)}.csv`;a.click();URL.revokeObjectURL(a.href);
+}
+function printReports(){
+ const revenue=reportRows.reduce((n,o)=>n+Number(o.total||0),0),discounts=reportRows.reduce((n,o)=>n+Number(o.discount||0),0),fees=reportRows.reduce((n,o)=>n+Number(o.delivery_fee||0),0);
+ const pays=reportAgg(reportRows,reportPayKey,o=>Number(o.total||0));
+ const products=new Map();reportRows.forEach(o=>(o.items||[]).forEach(x=>{const n=String(x.name||'Item'),q=Number(x.qty||1);products.set(n,(products.get(n)||0)+q)}));
+ const top=[...products.entries()].sort((a,b)=>b[1]-a[1]).slice(0,10);
+ const html=`<div style="font-family:Arial;color:#000;padding:18px"><h2>LA SUPREME — RELATÓRIO DE VENDAS</h2><p>${document.getElementById('reportRangeLabel').textContent}</p><hr><p><b>Faturamento:</b> ${rMoney(revenue)}</p><p><b>Pedidos:</b> ${reportRows.length}</p><p><b>Ticket médio:</b> ${rMoney(reportRows.length?revenue/reportRows.length:0)}</p><p><b>Descontos:</b> ${rMoney(discounts)}</p><p><b>Taxas de entrega:</b> ${rMoney(fees)}</p><p><b>Cancelamentos:</b> ${reportCanceled.length}</p><hr><h3>Formas de pagamento</h3>${pays.map(([k,v])=>`<p>${k}: <b>${rMoney(v)}</b></p>`).join('')}<h3>Mais vendidos</h3>${top.map(([k,v],i)=>`<p>${i+1}. ${k}: <b>${v}</b></p>`).join('')}</div>`;
+ const w=window.open('','_blank','width=700,height=900');if(!w){alert('Libere pop-ups para imprimir.');return}
+ w.document.write(`<html><head><title>Relatório La Supreme</title></head><body>${html}<script>window.onload=()=>window.print()<\/script></body></html>`);w.document.close();
+}
 
 
 let cashRows=[],cashFilter='all',cashSession=null,cashMovements=[],cashDialogMode=null;
