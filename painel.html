@@ -684,7 +684,10 @@ button{cursor:pointer}.arm{border:0;border-radius:10px;padding:10px 12px;backgro
         <div id="qFeeLine" class="muted" style="margin-top:10px"></div>
 <div id="qChangeBox" class="quick-change-box"></div>
         <div id="qTotal" class="quick-total">R$ 0,00</div>
-        <button id="qSubmitBtn" class="quick-submit" onclick="submitQuickOrder()">✓ CONFIRMAR E ENVIAR PARA A FILA</button>
+        <div style="margin:8px 0;padding:9px 10px;border:1px solid #3b302a;border-radius:10px;background:#171210;color:#bfae9e;font-size:10px;font-weight:800">
+  🔄 INTEGRADO: este pedido entra na mesma base do Painel, Delivery, PDV, Caixa e Relatórios.
+</div>
+<button id="qSubmitBtn" class="quick-submit" onclick="submitQuickOrder()">✓ CONFIRMAR E ENVIAR PARA A FILA</button>
 <div id="qAfterConfirm" class="quick-after-confirm">
   <div class="quick-step">Pedido confirmado</div>
   <div id="qConfirmedInfo" class="muted" style="margin-bottom:8px"></div>
@@ -944,10 +947,19 @@ async function submitQuickOrder(){
    const saved=await api('orders',{method:'POST',body:JSON.stringify(row)});
    const no=saved?.[0]?.order_no||row.order_no;
    quickSavedOrder={...row,order_no:no};
-   document.getElementById('qConfirmedInfo').textContent=`Pedido ${no} enviado para a fila.`;
+   document.getElementById('qConfirmedInfo').textContent=`Pedido ${no} salvo no sistema integrado e enviado para a fila.`;
    document.getElementById('qAfterConfirm').classList.add('show');
    document.getElementById('qSubmitBtn').style.display='none';
-   setFilter('novo');loadOrders();
+
+   // Painel, PDV, Delivery, Caixa e Relatórios leem a MESMA tabela public.orders.
+   // Após lançar manualmente, abre automaticamente a visão correspondente.
+   operationalMode = quickType==='delivery' ? 'delivery' : (quickType==='pickup' || quickType==='counter' ? 'pickup' : 'all');
+   ['All','Delivery','Pickup'].forEach(x=>document.getElementById('mode'+x)?.classList.remove('active'));
+   document.getElementById(operationalMode==='delivery'?'modeDelivery':operationalMode==='pickup'?'modePickup':'modeAll')?.classList.add('active');
+
+   filter='novo';
+   document.querySelectorAll('.pill[data-filter]').forEach(b=>b.classList.toggle('active',b.dataset.filter==='novo'));
+   await loadOrders();
  }catch(e){
    alert('Não foi possível lançar o pedido: '+e.message);
  }
@@ -1625,7 +1637,7 @@ async function loadOrders(){
     const productionRows=allRows.filter(o=>{
       const method=String(o.payment||'').trim().toLowerCase();
       const st=String(o.payment_status||'').trim().toLowerCase();
-      return !(String(o.status||'').toLowerCase()==='novo' && method==='pix' && !['approved','paid','processed','accredited'].includes(st));
+      return !(String(o.status||'').toLowerCase()==='novo' && method==='pix' && !['approved','paid','processed','accredited','manual'].includes(st));
     });
     latestProductionRows=productionRows;
     queueMeta=buildQueueMeta(productionRows);
