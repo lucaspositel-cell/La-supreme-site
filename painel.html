@@ -253,6 +253,78 @@ button{cursor:pointer}.arm{border:0;border-radius:10px;padding:10px 12px;backgro
  .cash-row{grid-template-columns:72px minmax(0,1fr) 76px}
 }
 
+
+/* ===== CAIXA COMPLETO: sessão, sangria, suprimento e fechamento ===== */
+.cash-session-bar{display:flex;align-items:center;gap:8px;flex-wrap:wrap;background:#171210;border:1px solid var(--line);border-radius:13px;padding:10px;margin-bottom:10px}
+.cash-session-status{font-weight:900;padding:6px 9px;border-radius:999px;background:#3b211c;color:#ffb6a5}
+.cash-session-status.open{background:#153523;color:#79e9a8}
+.cash-session-info{color:var(--muted);font-size:11px}
+.cash-actions{display:flex;gap:7px;flex-wrap:wrap;margin-left:auto}
+.cash-action{border:1px solid var(--line);background:#241d19;color:#fff;border-radius:10px;padding:9px 11px;font-weight:900}
+.cash-action.green{background:#173b27;border-color:#2c6745;color:#9ff0bc}
+.cash-action.red{background:#3c1d1d;border-color:#6b3030;color:#ffb1b1}
+.cash-action.gold{background:var(--gold);border-color:var(--gold);color:#25190b}
+.cash-balance-grid{display:grid;grid-template-columns:repeat(4,minmax(0,1fr));gap:8px;margin:10px 0}
+.cash-balance{background:#171210;border:1px solid var(--line);border-radius:11px;padding:10px}
+.cash-balance span{display:block;color:var(--muted);font-size:10px;text-transform:uppercase;font-weight:900}
+.cash-balance b{display:block;margin-top:4px;font-size:17px}
+.cash-balance.expected b{color:var(--gold)}
+.cash-movements{margin:10px 0;background:#171210;border:1px solid var(--line);border-radius:12px;padding:10px}
+.cash-movements h3{margin:0 0 7px;font-size:14px}
+.cash-movement-row{display:grid;grid-template-columns:90px minmax(0,1fr) 100px 70px;gap:7px;align-items:center;border-top:1px solid #322821;padding:7px 0;font-size:12px}
+.cash-movement-row:first-of-type{border-top:0}
+.cash-movement-row .in{color:#7be7a4;font-weight:900}.cash-movement-row .out{color:#ff9f9f;font-weight:900}
+.cash-dialog{position:fixed;inset:0;z-index:90;background:#090706dc;display:none;align-items:center;justify-content:center;padding:10px}
+.cash-dialog.open{display:flex}
+.cash-dialog-box{width:min(460px,100%);background:#171210;border:1px solid var(--line);border-radius:15px;padding:14px}
+.cash-dialog-box h3{margin:0 0 10px}
+.cash-dialog-box label{display:block;color:var(--muted);font-size:11px;font-weight:900;margin:8px 0 4px}
+.cash-dialog-box input,.cash-dialog-box textarea{width:100%;box-sizing:border-box;border:1px solid var(--line);background:#0f0d0c;color:#fff;border-radius:10px;padding:10px}
+.cash-dialog-actions{display:grid;grid-template-columns:1fr 1fr;gap:7px;margin-top:10px}
+.cash-dialog-actions button{padding:11px;border-radius:10px;border:1px solid var(--line);font-weight:900}
+.cash-diff-preview{margin-top:9px;border:1px solid var(--line);border-radius:10px;padding:10px}
+.cash-diff-preview strong{color:var(--gold)}
+@media(max-width:760px){
+ .cash-session-bar{align-items:flex-start}.cash-actions{width:100%;margin-left:0}.cash-action{flex:1}
+ .cash-balance-grid{grid-template-columns:repeat(2,minmax(0,1fr))}
+ .cash-movement-row{grid-template-columns:75px minmax(0,1fr) 85px}.cash-movement-row .mvtime{display:none}
+}
+
+
+/* ===== PDV OPERACIONAL V2 ===== */
+.pdv-toptools{display:flex;gap:7px;align-items:center;flex-wrap:wrap;margin:10px 0}
+.pdv-search{flex:1;min-width:220px;background:#171210;border:1px solid var(--line);color:#fff;border-radius:11px;padding:11px 12px}
+.pdv-mode{border:1px solid var(--line);background:#211a17;color:#fff;border-radius:10px;padding:10px 11px;font-weight:900}
+.pdv-mode.active{background:var(--gold);color:#25190b;border-color:var(--gold)}
+.statusbar .pill{position:relative}
+.pill-count{display:inline-flex;align-items:center;justify-content:center;min-width:20px;height:20px;margin-left:5px;padding:0 5px;border-radius:999px;background:#3a2d27;color:#fff;font-size:10px}
+.pill.active .pill-count{background:#24180b;color:#fff}
+.card{position:relative}
+.card.operational-ready{border-color:#4f8a68}
+.card .cardhead{align-items:flex-start}
+.order{font-size:20px!important}
+.customer{font-size:18px!important;margin-top:9px}
+.item b{font-size:15px}
+.pay-badge{display:inline-flex;margin-top:6px;padding:5px 8px;border-radius:999px;font-size:10px;font-weight:900}
+.pay-badge.paid{background:#173b27;color:#8aefae}
+.pay-badge.pending{background:#4a3015;color:#ffd08a}
+.pay-badge.normal{background:#302721;color:#eee}
+.quick-contact{display:flex;gap:6px;flex-wrap:wrap;margin-top:8px}
+.quick-contact button{border:1px solid var(--line);background:#211a17;color:#fff;border-radius:9px;padding:7px 9px;font-weight:800;font-size:11px}
+.card-priority{position:absolute;right:8px;top:8px;width:8px;height:8px;border-radius:50%;background:#5e514a}
+.card.urgent .card-priority{background:#e0a432;box-shadow:0 0 0 4px #e0a43222}
+.card.late .card-priority{background:#d9534f;box-shadow:0 0 0 4px #d9534f22}
+.kitchen-mode header .cash-btn,.kitchen-mode header .quick-new,.kitchen-mode header .arm,.kitchen-mode #dashboard{display:none!important}
+.kitchen-mode .wrap{max-width:1500px}
+.kitchen-mode .grid{grid-template-columns:repeat(auto-fit,minmax(340px,1fr))}
+.kitchen-mode .pdv-toptools{position:sticky;top:0;z-index:15;background:#100d0bf2;padding:7px 0}
+@media(max-width:600px){
+ .pdv-toptools{gap:5px}.pdv-search{flex-basis:100%;min-width:0}
+ .pdv-mode{flex:1;padding:9px 6px;font-size:11px}
+ .statusbar{overflow-x:auto;flex-wrap:nowrap;padding-bottom:4px}.statusbar .pill{flex:0 0 auto}
+ .order{font-size:18px!important}.customer{font-size:16px!important}
+}
+
 </style>
 </head>
 <body>
@@ -265,12 +337,19 @@ button{cursor:pointer}.arm{border:0;border-radius:10px;padding:10px 12px;backgro
   <div class="metric"><span>Em preparo</span><b id="mPrep">0</b></div>
   <div class="metric"><span>Maior espera</span><b id="mWait">00:00</b></div>
 </div>
+<div class="pdv-toptools">
+  <input id="pdvSearch" class="pdv-search" placeholder="Buscar pedido, cliente, telefone ou endereço..." oninput="renderOperationalView()">
+  <button id="modeAll" class="pdv-mode active" onclick="setOperationalMode('all')">Todos</button>
+  <button id="modeDelivery" class="pdv-mode" onclick="setOperationalMode('delivery')">🛵 Delivery</button>
+  <button id="modePickup" class="pdv-mode" onclick="setOperationalMode('pickup')">🏪 Retirada</button>
+  <button id="modeKitchen" class="pdv-mode" onclick="toggleKitchenMode()">🍕 Cozinha</button>
+</div>
 <div class="statusbar">
-<button class="pill" data-filter="novo" onclick="setFilter('novo')">Novos</button>
-<button class="pill" data-filter="preparo" onclick="setFilter('preparo')">Em preparo</button>
-<button class="pill" data-filter="entrega" onclick="setFilter('entrega')">Saiu p/ entrega</button>
-<button class="pill" data-filter="concluido" onclick="setFilter('concluido')">Concluídos</button>
-<button class="pill" data-filter="todos" onclick="setFilter('todos')">Todos</button>
+<button class="pill" data-filter="novo" onclick="setFilter('novo')">Novos<span class="pill-count" id="count-novo">0</span></button>
+<button class="pill" data-filter="preparo" onclick="setFilter('preparo')">Em preparo<span class="pill-count" id="count-preparo">0</span></button>
+<button class="pill" data-filter="entrega" onclick="setFilter('entrega')">Saiu p/ entrega<span class="pill-count" id="count-entrega">0</span></button>
+<button class="pill" data-filter="concluido" onclick="setFilter('concluido')">Concluídos<span class="pill-count" id="count-concluido">0</span></button>
+<button class="pill" data-filter="todos" onclick="setFilter('todos')">Todos<span class="pill-count" id="count-todos">0</span></button>
 </div>
 <div id="orders" class="grid"></div>
 </main>
@@ -279,17 +358,37 @@ button{cursor:pointer}.arm{border:0;border-radius:10px;padding:10px 12px;backgro
 <div id="cashOverlay" class="cash-overlay">
  <div class="cash-shell">
   <div class="cash-head">
-   <h2>💰 Caixa La Supreme</h2><span class="cash-live">● CAIXA DO DIA</span>
+   <h2>💰 Caixa La Supreme</h2>
+   <span id="cashHeadStatus" class="cash-live">● CARREGANDO</span>
    <span id="cashDate" class="muted"></span>
-   <button class="cash-close" onclick="closeCash()">✕ Fechar</button>
+   <button class="cash-close" onclick="closeCash()">✕ Fechar tela</button>
   </div>
   <div class="cash-body">
+   <div class="cash-session-bar">
+    <span id="cashSessionStatus" class="cash-session-status">CAIXA FECHADO</span>
+    <div id="cashSessionInfo" class="cash-session-info">Abra um caixa para iniciar o controle financeiro.</div>
+    <div class="cash-actions">
+      <button id="cashOpenBtn" class="cash-action green" onclick="openCashDialog('open')">🔓 Abrir caixa</button>
+      <button id="cashSupplyBtn" class="cash-action" onclick="openCashDialog('supply')" disabled>＋ Suprimento</button>
+      <button id="cashWithdrawalBtn" class="cash-action red" onclick="openCashDialog('withdrawal')" disabled>− Sangria</button>
+      <button id="cashCloseBtn" class="cash-action gold" onclick="openCashDialog('close')" disabled>🔒 Fechar caixa</button>
+    </div>
+   </div>
+
    <div class="cash-metrics">
-    <div class="cash-metric"><span>Vendas do dia</span><b id="cashSales">R$ 0,00</b><small id="cashOrdersCount">0 pedidos concluídos</small></div>
-    <div class="cash-metric"><span>Dinheiro</span><b id="cashMoney">R$ 0,00</b><small>recebimentos</small></div>
+    <div class="cash-metric"><span>Vendas da sessão</span><b id="cashSales">R$ 0,00</b><small id="cashOrdersCount">0 pedidos concluídos</small></div>
+    <div class="cash-metric"><span>Dinheiro em vendas</span><b id="cashMoney">R$ 0,00</b><small>recebimentos em dinheiro</small></div>
     <div class="cash-metric"><span>Pix</span><b id="cashPix">R$ 0,00</b><small>recebimentos</small></div>
     <div class="cash-metric"><span>Cartões</span><b id="cashCard">R$ 0,00</b><small>recebimentos</small></div>
    </div>
+
+   <div class="cash-balance-grid">
+    <div class="cash-balance"><span>Fundo inicial</span><b id="cashOpening">R$ 0,00</b></div>
+    <div class="cash-balance"><span>Suprimentos</span><b id="cashSupplies">R$ 0,00</b></div>
+    <div class="cash-balance"><span>Sangrias</span><b id="cashWithdrawals">R$ 0,00</b></div>
+    <div class="cash-balance expected"><span>Dinheiro esperado</span><b id="cashExpected">R$ 0,00</b></div>
+   </div>
+
    <div class="cash-toolbar">
     <input id="cashSearch" placeholder="Buscar pedido, cliente ou telefone..." oninput="renderCashRows()">
     <button class="cash-filter active" data-cash="all" onclick="setCashFilter('all')">Todos</button>
@@ -298,17 +397,36 @@ button{cursor:pointer}.arm{border:0;border-radius:10px;padding:10px 12px;backgro
     <button class="cash-filter" data-cash="cartao" onclick="setCashFilter('cartao')">Cartão</button>
     <button class="cash-filter" data-cash="delivery" onclick="setCashFilter('delivery')">Delivery</button>
     <button class="cash-filter" data-cash="retirada" onclick="setCashFilter('retirada')">Balcão/Retirada</button>
-    <button class="cash-print" onclick="printCashReport()">🖨️ Fechamento</button>
+    <button class="cash-print" onclick="printCashReport()">🖨️ Relatório</button>
    </div>
+
    <div class="cash-summary">
     <div class="cash-mini"><span>Delivery</span><b id="cashDelivery">R$ 0,00</b></div>
     <div class="cash-mini"><span>Balcão / Retirada</span><b id="cashPickup">R$ 0,00</b></div>
     <div class="cash-mini"><span>Descontos</span><b id="cashDiscount">R$ 0,00</b></div>
     <div class="cash-mini"><span>Taxas de entrega</span><b id="cashFees">R$ 0,00</b></div>
    </div>
+
+   <div class="cash-movements">
+    <h3>Movimentações de caixa</h3>
+    <div id="cashMovements"><div class="muted">Nenhuma movimentação.</div></div>
+   </div>
+
+   <h3 style="margin:12px 0 7px">Vendas concluídas</h3>
    <div id="cashList" class="cash-list"></div>
-   <div class="cash-note">Valores calculados a partir dos pedidos concluídos de hoje. Sangria, suprimento e conferência física serão a próxima etapa.</div>
+   <div class="cash-note">O valor esperado considera: fundo inicial + vendas em dinheiro + suprimentos − sangrias.</div>
   </div>
+ </div>
+</div>
+
+<div id="cashDialog" class="cash-dialog">
+ <div class="cash-dialog-box">
+   <h3 id="cashDialogTitle">Caixa</h3>
+   <div id="cashDialogBody"></div>
+   <div class="cash-dialog-actions">
+     <button style="background:#2a211d;color:#fff" onclick="closeCashDialog()">Cancelar</button>
+     <button id="cashDialogConfirm" style="background:var(--gold);color:#24180b" onclick="confirmCashDialog()">Confirmar</button>
+   </div>
  </div>
 </div>
 
@@ -645,8 +763,13 @@ function printQuickKitchen(){ if(quickSavedOrder) doQuickPrint(quickPrintHtml('L
 function printQuickDelivery(){ if(quickSavedOrder) doQuickPrint(quickPrintHtml('LA SUPREME - DELIVERY',quickSavedOrder,true)); }
 
 
-let cashRows=[],cashFilter='all';
+let cashRows=[],cashFilter='all',cashSession=null,cashMovements=[],cashDialogMode=null;
+
 function cashMoney(v){return Number(v||0).toLocaleString('pt-BR',{style:'currency',currency:'BRL'})}
+function cashNumber(v){
+ const t=String(v??'').trim().replace(/\s/g,'').replace(/\./g,'').replace(',','.');
+ const n=Number(t); return Number.isFinite(n)?n:0;
+}
 function cashMethod(o){
  const p=String(o.payment||'').toLowerCase();
  if(p.includes('dinheiro'))return 'dinheiro';
@@ -654,10 +777,13 @@ function cashMethod(o){
  if(p.includes('cart'))return 'cartao';
  return p||'outro';
 }
-function cashIsToday(o){
+function cashDateTime(v){return v?new Date(v).toLocaleString('pt-BR',{day:'2-digit',month:'2-digit',hour:'2-digit',minute:'2-digit'}):'—'}
+function cashSessionEnd(){return cashSession?.closed_at?new Date(cashSession.closed_at):new Date()}
+function cashOrderInSession(o){
+ if(!cashSession)return false;
  const raw=o.concluded_at||o.created_at;if(!raw)return false;
- const d=new Date(raw),n=new Date();
- return d.getFullYear()===n.getFullYear()&&d.getMonth()===n.getMonth()&&d.getDate()===n.getDate();
+ const d=new Date(raw),a=new Date(cashSession.opened_at),b=cashSessionEnd();
+ return d>=a&&d<=b;
 }
 async function openCash(){
  document.getElementById('cashOverlay').classList.add('open');
@@ -665,15 +791,50 @@ async function openCash(){
  await loadCash();
 }
 function closeCash(){document.getElementById('cashOverlay').classList.remove('open')}
+
+async function fetchCashSession(){
+ const openRows=await api('cash_sessions?select=*&status=eq.open&order=opened_at.desc&limit=1');
+ if(openRows?.length){cashSession=openRows[0];return}
+ const last=await api('cash_sessions?select=*&order=opened_at.desc&limit=1');
+ cashSession=last?.[0]||null;
+}
 async function loadCash(){
  const list=document.getElementById('cashList');list.innerHTML='<div class="cash-empty">Carregando caixa...</div>';
  try{
-   const rows=await api('orders?select=*&status=eq.concluido&order=created_at.desc&limit=500');
-   cashRows=(rows||[]).filter(cashIsToday);
-   updateCashMetrics();renderCashRows();
- }catch(e){list.innerHTML='<div class="cash-empty">Erro ao carregar caixa: '+esc(e.message)+'</div>'}
+   await fetchCashSession();
+   cashMovements=[];
+   if(cashSession?.id){
+     cashMovements=await api(`cash_movements?select=*&session_id=eq.${encodeURIComponent(cashSession.id)}&order=created_at.asc`);
+   }
+   const rows=await api('orders?select=*&status=eq.concluido&order=created_at.desc&limit=1000');
+   cashRows=cashSession?(rows||[]).filter(cashOrderInSession):[];
+   updateCashUI();updateCashMetrics();renderCashMovements();renderCashRows();
+ }catch(e){
+   list.innerHTML='<div class="cash-empty">Erro ao carregar caixa: '+esc(e.message)+'<br><small>Execute primeiro o SQL do Caixa no Supabase.</small></div>';
+   updateCashUI(true);
+ }
+}
+function updateCashUI(error=false){
+ const isOpen=cashSession?.status==='open'&&!error;
+ const status=document.getElementById('cashSessionStatus'),head=document.getElementById('cashHeadStatus');
+ status.textContent=isOpen?'CAIXA ABERTO':'CAIXA FECHADO';status.classList.toggle('open',isOpen);
+ head.textContent=isOpen?'● CAIXA ABERTO':'● CAIXA FECHADO';
+ head.style.background=isOpen?'#163624':'#3b211c';head.style.color=isOpen?'#70e8a3':'#ffb6a5';
+ document.getElementById('cashOpenBtn').disabled=isOpen;
+ document.getElementById('cashSupplyBtn').disabled=!isOpen;
+ document.getElementById('cashWithdrawalBtn').disabled=!isOpen;
+ document.getElementById('cashCloseBtn').disabled=!isOpen;
+ document.getElementById('cashSessionInfo').textContent=cashSession
+   ? `${isOpen?'Aberto':'Último caixa'} em ${cashDateTime(cashSession.opened_at)}${cashSession.closed_at?' • fechado '+cashDateTime(cashSession.closed_at):''}`
+   : 'Nenhuma sessão de caixa registrada.';
 }
 function sumCash(rows,key){return rows.reduce((n,o)=>n+Number(key?o[key]:o.total||0),0)}
+function cashMovementTotal(type){return cashMovements.filter(m=>m.type===type).reduce((n,m)=>n+Number(m.amount||0),0)}
+function cashExpected(){
+ const opening=Number(cashSession?.opening_amount||0);
+ const moneySales=sumCash(cashRows.filter(o=>cashMethod(o)==='dinheiro'));
+ return opening+moneySales+cashMovementTotal('supply')-cashMovementTotal('withdrawal');
+}
 function updateCashMetrics(){
  const total=sumCash(cashRows),money=sumCash(cashRows.filter(o=>cashMethod(o)==='dinheiro'));
  const pix=sumCash(cashRows.filter(o=>cashMethod(o)==='pix')),card=sumCash(cashRows.filter(o=>cashMethod(o)==='cartao'));
@@ -688,9 +849,26 @@ function updateCashMetrics(){
  document.getElementById('cashPickup').textContent=cashMoney(sumCash(pick));
  document.getElementById('cashDiscount').textContent=cashMoney(sumCash(cashRows,'discount'));
  document.getElementById('cashFees').textContent=cashMoney(sumCash(cashRows,'delivery_fee'));
+ document.getElementById('cashOpening').textContent=cashMoney(cashSession?.opening_amount||0);
+ document.getElementById('cashSupplies').textContent=cashMoney(cashMovementTotal('supply'));
+ document.getElementById('cashWithdrawals').textContent=cashMoney(cashMovementTotal('withdrawal'));
+ document.getElementById('cashExpected').textContent=cashMoney(cashExpected());
 }
 function setCashFilter(v){
  cashFilter=v;document.querySelectorAll('[data-cash]').forEach(b=>b.classList.toggle('active',b.dataset.cash===v));renderCashRows();
+}
+function renderCashMovements(){
+ const el=document.getElementById('cashMovements');
+ if(!cashMovements.length){el.innerHTML='<div class="muted">Nenhuma sangria ou suprimento nesta sessão.</div>';return}
+ el.innerHTML=cashMovements.map(m=>{
+   const incoming=m.type==='supply';
+   return `<div class="cash-movement-row">
+    <div class="${incoming?'in':'out'}">${incoming?'SUPRIMENTO':'SANGRIA'}</div>
+    <div>${esc(m.note||'Sem observação')}</div>
+    <div class="${incoming?'in':'out'}">${incoming?'+':'−'} ${cashMoney(m.amount)}</div>
+    <div class="mvtime">${new Date(m.created_at).toLocaleTimeString('pt-BR',{hour:'2-digit',minute:'2-digit'})}</div>
+   </div>`;
+ }).join('');
 }
 function renderCashRows(){
  const q=String(document.getElementById('cashSearch')?.value||'').toLowerCase().trim();
@@ -702,7 +880,7 @@ function renderCashRows(){
   return true;
  });
  const el=document.getElementById('cashList');
- if(!rows.length){el.innerHTML='<div class="cash-empty">Nenhuma movimentação neste filtro.</div>';return}
+ if(!rows.length){el.innerHTML='<div class="cash-empty">Nenhuma venda concluída nesta sessão/filtro.</div>';return}
  el.innerHTML=rows.map(o=>{
   const dt=new Date(o.concluded_at||o.created_at);
   const dest=String(o.fulfillment||'').toLowerCase()==='delivery'?'Delivery':'Retirada';
@@ -716,17 +894,89 @@ function renderCashRows(){
   </div>`;
  }).join('');
 }
+function openCashDialog(mode){
+ cashDialogMode=mode;
+ const title=document.getElementById('cashDialogTitle'),body=document.getElementById('cashDialogBody'),btn=document.getElementById('cashDialogConfirm');
+ if(mode==='open'){
+  title.textContent='🔓 Abrir caixa';btn.textContent='Abrir caixa';
+  body.innerHTML=`<label>Fundo inicial em dinheiro</label><input id="cdAmount" inputmode="decimal" value="0,00" placeholder="0,00">
+  <label>Responsável (opcional)</label><input id="cdOperator" placeholder="Nome">
+  <label>Observação (opcional)</label><textarea id="cdNote" rows="2" placeholder="Ex.: abertura do turno"></textarea>`;
+ }else if(mode==='supply'||mode==='withdrawal'){
+  title.textContent=mode==='supply'?'＋ Suprimento':'− Sangria';btn.textContent=mode==='supply'?'Adicionar suprimento':'Registrar sangria';
+  body.innerHTML=`<label>Valor</label><input id="cdAmount" inputmode="decimal" placeholder="0,00">
+  <label>Motivo / observação</label><textarea id="cdNote" rows="2" placeholder="${mode==='supply'?'Ex.: reforço de troco':'Ex.: retirada para cofre'}"></textarea>`;
+ }else if(mode==='close'){
+  title.textContent='🔒 Fechar caixa';btn.textContent='Confirmar fechamento';
+  body.innerHTML=`<div class="cash-diff-preview">Dinheiro esperado: <strong>${cashMoney(cashExpected())}</strong></div>
+  <label>Dinheiro contado no caixa</label><input id="cdCounted" inputmode="decimal" placeholder="0,00" oninput="updateClosePreview()">
+  <div id="cdDiff" class="cash-diff-preview">Diferença: <strong>—</strong></div>
+  <label>Observação do fechamento (opcional)</label><textarea id="cdNote" rows="2" placeholder="Explique qualquer diferença, se necessário"></textarea>`;
+ }
+ document.getElementById('cashDialog').classList.add('open');
+ setTimeout(()=>document.querySelector('#cashDialog input')?.focus(),80);
+}
+function closeCashDialog(){document.getElementById('cashDialog').classList.remove('open');cashDialogMode=null}
+function updateClosePreview(){
+ const counted=cashNumber(document.getElementById('cdCounted')?.value),diff=counted-cashExpected();
+ const el=document.getElementById('cdDiff'); if(el)el.innerHTML=`Diferença: <strong>${cashMoney(diff)}</strong>`;
+}
+async function confirmCashDialog(){
+ const btn=document.getElementById('cashDialogConfirm');btn.disabled=true;
+ try{
+  if(cashDialogMode==='open'){
+    const amount=cashNumber(document.getElementById('cdAmount')?.value);
+    if(amount<0)throw new Error('O fundo inicial não pode ser negativo.');
+    const openRows=await api('cash_sessions?select=id&status=eq.open&limit=1');
+    if(openRows?.length)throw new Error('Já existe um caixa aberto.');
+    await api('cash_sessions',{method:'POST',body:JSON.stringify({
+      opening_amount:amount,opened_by:document.getElementById('cdOperator')?.value.trim()||null,
+      opening_note:document.getElementById('cdNote')?.value.trim()||null,status:'open'
+    })});
+  }else if(cashDialogMode==='supply'||cashDialogMode==='withdrawal'){
+    if(!cashSession||cashSession.status!=='open')throw new Error('Abra o caixa primeiro.');
+    const amount=cashNumber(document.getElementById('cdAmount')?.value);
+    if(amount<=0)throw new Error('Informe um valor maior que zero.');
+    await api('cash_movements',{method:'POST',body:JSON.stringify({
+      session_id:cashSession.id,type:cashDialogMode,amount,
+      note:document.getElementById('cdNote')?.value.trim()||null
+    })});
+  }else if(cashDialogMode==='close'){
+    if(!cashSession||cashSession.status!=='open')throw new Error('Não há caixa aberto.');
+    const counted=cashNumber(document.getElementById('cdCounted')?.value);
+    if(counted<0)throw new Error('Informe o dinheiro contado.');
+    const expected=cashExpected(),difference=counted-expected;
+    await api(`cash_sessions?id=eq.${encodeURIComponent(cashSession.id)}`,{method:'PATCH',body:JSON.stringify({
+      status:'closed',closed_at:new Date().toISOString(),expected_amount:expected,
+      counted_amount:counted,difference_amount:difference,
+      closing_note:document.getElementById('cdNote')?.value.trim()||null
+    })});
+  }
+  closeCashDialog();await loadCash();
+ }catch(e){alert(e.message||e)}
+ finally{btn.disabled=false}
+}
 function printCashReport(){
+ if(!cashSession){alert('Nenhuma sessão de caixa para imprimir.');return}
  const total=sumCash(cashRows),money=sumCash(cashRows.filter(o=>cashMethod(o)==='dinheiro'));
  const pix=sumCash(cashRows.filter(o=>cashMethod(o)==='pix')),card=sumCash(cashRows.filter(o=>cashMethod(o)==='cartao'));
  const del=cashRows.filter(o=>String(o.fulfillment||'').toLowerCase()==='delivery');
+ const supplies=cashMovementTotal('supply'),withdrawals=cashMovementTotal('withdrawal');
+ const expected=cashSession.status==='closed'?Number(cashSession.expected_amount||0):cashExpected();
+ const counted=cashSession.status==='closed'?cashSession.counted_amount:null,diff=cashSession.status==='closed'?cashSession.difference_amount:null;
  const html=`<div style="font-family:Arial;padding:18px;color:#000">
- <h2>LA SUPREME — FECHAMENTO DO CAIXA</h2><div>${new Date().toLocaleString('pt-BR')}</div><hr>
- <p><b>Vendas do dia:</b> ${cashMoney(total)} (${cashRows.length} pedidos)</p>
+ <h2>LA SUPREME — FECHAMENTO DO CAIXA</h2>
+ <p><b>Abertura:</b> ${cashDateTime(cashSession.opened_at)}</p>
+ <p><b>Fechamento:</b> ${cashSession.closed_at?cashDateTime(cashSession.closed_at):'CAIXA AINDA ABERTO'}</p><hr>
+ <p><b>Vendas:</b> ${cashMoney(total)} (${cashRows.length} pedidos)</p>
  <p><b>Dinheiro:</b> ${cashMoney(money)}</p><p><b>Pix:</b> ${cashMoney(pix)}</p><p><b>Cartões:</b> ${cashMoney(card)}</p>
  <p><b>Delivery:</b> ${cashMoney(sumCash(del))}</p><p><b>Balcão/Retirada:</b> ${cashMoney(total-sumCash(del))}</p>
  <p><b>Descontos:</b> ${cashMoney(sumCash(cashRows,'discount'))}</p><p><b>Taxas de entrega:</b> ${cashMoney(sumCash(cashRows,'delivery_fee'))}</p><hr>
- <p><b>TOTAL:</b> ${cashMoney(total)}</p></div>`;
+ <p><b>Fundo inicial:</b> ${cashMoney(cashSession.opening_amount)}</p>
+ <p><b>Suprimentos:</b> ${cashMoney(supplies)}</p><p><b>Sangrias:</b> ${cashMoney(withdrawals)}</p>
+ <p><b>Dinheiro esperado:</b> ${cashMoney(expected)}</p>
+ ${counted!==null?`<p><b>Dinheiro contado:</b> ${cashMoney(counted)}</p><p><b>Diferença:</b> ${cashMoney(diff)}</p>`:''}
+ <hr><h3>TOTAL DE VENDAS: ${cashMoney(total)}</h3></div>`;
  const w=window.open('','_blank','width=600,height=800');if(!w){alert('Libere pop-ups para imprimir.');return}
  w.document.write(`<html><head><title>Fechamento do Caixa</title></head><body>${html}<script>window.onload=()=>window.print()<\/script></body></html>`);w.document.close();
 }
@@ -865,6 +1115,66 @@ function updateQueueCountdowns(){
   updateDashboard(latestProductionRows);
 }
 setInterval(updateQueueCountdowns,1000);
+let latestAllOrders=[];
+let operationalMode='all';
+let kitchenMode=false;
+
+function updateStatusCounts(rows){
+ const counts={novo:0,preparo:0,entrega:0,concluido:0,todos:(rows||[]).length};
+ (rows||[]).forEach(o=>{const st=String(o.status||'').toLowerCase();if(st in counts)counts[st]++});
+ Object.entries(counts).forEach(([k,v])=>{const e=document.getElementById('count-'+k);if(e)e.textContent=v});
+}
+function setOperationalMode(v){
+ operationalMode=v;
+ ['All','Delivery','Pickup'].forEach(x=>document.getElementById('mode'+x)?.classList.remove('active'));
+ document.getElementById(v==='delivery'?'modeDelivery':v==='pickup'?'modePickup':'modeAll')?.classList.add('active');
+ renderOperationalView();
+}
+function toggleKitchenMode(){
+ kitchenMode=!kitchenMode;
+ document.body.classList.toggle('kitchen-mode',kitchenMode);
+ document.getElementById('modeKitchen')?.classList.toggle('active',kitchenMode);
+ if(kitchenMode && filter==='concluido')setFilter('novo'); else renderOperationalView();
+}
+function operationalFilteredRows(){
+ const search=String(document.getElementById('pdvSearch')?.value||'').trim().toLowerCase();
+ let rows=latestAllOrders;
+ if(filter!=='todos')rows=rows.filter(o=>String(o.status||'').toLowerCase()===filter);
+ if(filter==='novo'){
+   rows=rows.filter(o=>{
+    const method=String(o.payment||'').trim().toLowerCase(),st=String(o.payment_status||'').trim().toLowerCase();
+    return !(method==='pix'&&!['approved','paid','processed','accredited','manual'].includes(st));
+   });
+ }
+ if(operationalMode==='delivery')rows=rows.filter(o=>String(o.fulfillment||'').toLowerCase()==='delivery');
+ if(operationalMode==='pickup')rows=rows.filter(o=>String(o.fulfillment||'').toLowerCase()!=='delivery');
+ if(kitchenMode)rows=rows.filter(o=>['novo','preparo'].includes(String(o.status||'').toLowerCase()));
+ if(search)rows=rows.filter(o=>`${o.order_no||''} ${o.customer_name||''} ${o.customer_phone||''} ${o.address||''}`.toLowerCase().includes(search));
+ return rows;
+}
+function renderOperationalView(){render(operationalFilteredRows());updateQueueCountdowns()}
+function paymentBadge(o){
+ const method=String(o.payment||'').trim(),low=method.toLowerCase(),st=String(o.payment_status||'').toLowerCase();
+ if(low==='pix'){
+  const paid=['approved','paid','processed','accredited','manual'].includes(st);
+  return `<span class="pay-badge ${paid?'paid':'pending'}">${paid?'✓ PIX PAGO':'⏳ PIX PENDENTE'}</span>`;
+ }
+ return `<span class="pay-badge normal">${esc(method||'Pagamento não informado')}</span>`;
+}
+function whatsappOrder(o){
+ const phone=String(o.customer_phone||'').replace(/\D/g,'');
+ if(!phone){alert('Este pedido não possui telefone.');return}
+ const full=phone.startsWith('55')?phone:'55'+phone;
+ const pickup=String(o.fulfillment||'').toLowerCase()!=='delivery';
+ const msg=pickup?'Olá! Seu pedido da La Supreme está pronto para retirada. 🍕':'Olá! Seu pedido da La Supreme saiu para entrega. 🛵🍕';
+ window.open(`https://wa.me/${full}?text=${encodeURIComponent(msg)}`,'_blank');
+}
+async function markManualPixPaid(id){
+ if(!confirm('Confirmar que este Pix foi recebido?'))return;
+ try{await api(`orders?id=eq.${encodeURIComponent(id)}`,{method:'PATCH',body:JSON.stringify({payment_status:'paid'})});loadOrders()}
+ catch(e){alert('Não foi possível confirmar o Pix: '+e.message)}
+}
+
 async function loadOrders(){
   if(!configured()){
     document.getElementById('notice').textContent='Falta configurar SUPABASE_URL e SUPABASE_ANON_KEY.';
@@ -875,6 +1185,8 @@ async function loadOrders(){
   let q='orders?select=*&order=created_at.desc&limit=60';
   try{
     let allRows=await api(q);
+    latestAllOrders=allRows;
+    updateStatusCounts(allRows);
 
     // Pix ainda não confirmado não entra na fila de produção.
     const productionRows=allRows.filter(o=>{
@@ -887,15 +1199,10 @@ async function loadOrders(){
     syncQueueCountdownTargets(queueMeta);
     updateDashboard(productionRows);
 
-    let rows=filter==='todos' ? allRows : allRows.filter(o=>String(o.status||'').toLowerCase()===filter);
-    if(filter==='novo') rows=productionRows.filter(o=>String(o.status||'').toLowerCase()==='novo');
-
-    if(!firstLoad && filter==='novo'){
-      rows.forEach(o=>{if(!lastSeen.has(o.id)){beep();}});
-    }
-    rows.forEach(o=>lastSeen.add(o.id)); firstLoad=false;
-    render(rows);
-    updateQueueCountdowns();
+    let alertRows=productionRows.filter(o=>String(o.status||'').toLowerCase()==='novo');
+    if(!firstLoad){alertRows.forEach(o=>{if(!lastSeen.has(o.id)){beep();}});}
+    alertRows.forEach(o=>lastSeen.add(o.id)); firstLoad=false;
+    renderOperationalView();
   }catch(e){
     document.getElementById('notice').textContent='Erro ao carregar pedidos: '+e.message;
   }
@@ -913,7 +1220,7 @@ function render(rows){
     const items=Array.isArray(o.items)?o.items:[];
     const q=queueMeta.get(String(o.id));
     const dest=orderDestination(o);
-    return `<article class="card ${o.status==='novo'?'new':''}">
+    return `<article class="card ${o.status==='novo'?'new':''} ${o.status==='entrega'?'operational-ready':''}"><span class="card-priority"></span>
       <div class="cardhead">
         <div>
           <div class="order">${esc(o.order_no)}</div>
@@ -926,7 +1233,12 @@ function render(rows){
       </div>
       ${q?`<div class="queueinfo">⏱️ COZINHA: <span data-queue-countdown="${esc(o.id)}">${queueCountdownText((q.targetAt||Date.now())-Date.now())}</span><div class="muted">${q.pizzas} pizza${q.pizzas===1?'':'s'} × 10 min${q.transport?' • entrega +15 min':''}</div></div>`:''}
       <div class="customer">${esc(o.customer_name)}</div>
-      <div class="muted">${o.customer_phone?esc(o.customer_phone)+'<br>':''}${o.fulfillment==='delivery'?'🛵 '+esc(o.address):'🏪 Retirada'}<br>${paymentLine(o)}</div>
+      <div class="muted">${o.customer_phone?esc(o.customer_phone)+'<br>':''}${o.fulfillment==='delivery'?'🛵 '+esc(o.address):'🏪 Retirada'}</div>
+      ${paymentBadge(o)}
+      <div class="quick-contact">
+        ${o.customer_phone?`<button onclick='whatsappOrder(${JSON.stringify(o).replace(/'/g,"&#39;")})'>💬 WhatsApp</button>`:''}
+        ${(String(o.payment||'').toLowerCase()==='pix'&&!['approved','paid','processed','accredited','manual'].includes(String(o.payment_status||'').toLowerCase()))?`<button onclick="markManualPixPaid('${esc(o.id)}')">✓ Confirmar Pix</button>`:''}
+      </div>
       <div class="items">${items.map(x=>`<div class="item"><b>${x.qty||1}× ${esc(x.name)}</b>${x.size?'<br><span class="muted">'+esc(x.size)+'</span>':''}${x.crust?'<br><span class="muted">Borda: '+esc(x.crust)+'</span>':''}${x.obs?'<div class="obsalert">⚠️ '+esc(x.obs)+'</div>':''}</div>`).join('')}</div>
       ${o.general_obs?`<div class="generalalert">⚠️ OBS. GERAL: ${esc(o.general_obs)}</div>`:''}
       ${Number(o.discount||0)>0?`<div class="muted" style="margin-top:10px">Subtotal: ${money(o.subtotal)}<br>Desconto${o.coupon_code?` (${esc(o.coupon_code)})`:''}: − ${money(o.discount)}${Number(o.delivery_fee||0)>0?`<br>Taxa de entrega: ${money(o.delivery_fee)}`:''}</div>`:''}
