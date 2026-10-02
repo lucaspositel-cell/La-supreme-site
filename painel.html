@@ -465,6 +465,31 @@ button{cursor:pointer}.arm{border:0;border-radius:10px;padding:10px 12px;backgro
 </main>
 
 
+<div id="quickPixOverlay" class="quick-overlay" style="z-index:140">
+ <div class="quick-shell" style="max-width:520px;margin:auto">
+  <div class="quick-head">
+   <div>
+    <h2 style="margin:0">PIX — Pedido <span id="quickPixOrderNo">—</span></h2>
+    <div class="muted">Mercado Pago • pagamento integrado</div>
+   </div>
+   <button onclick="closeQuickPix()">✕</button>
+  </div>
+  <div style="padding:16px;text-align:center">
+   <div style="font-size:12px;color:var(--muted)">TOTAL DO PIX</div>
+   <div id="quickPixAmount" style="font-size:30px;font-weight:1000;color:var(--gold);margin:5px 0 12px">R$ 0,00</div>
+   <img id="quickPixQrImage" alt="QR Code Pix" style="display:none;width:min(300px,82vw);height:auto;margin:0 auto 12px;background:#fff;padding:9px;border-radius:14px">
+   <div id="quickPixStatus" style="margin:8px 0;padding:10px;border-radius:10px;background:#2b211d;font-weight:900">Gerando Pix...</div>
+   <label style="display:block;text-align:left;font-size:10px;font-weight:900;margin-top:10px">PIX COPIA E COLA</label>
+   <textarea id="quickPixCode" readonly style="width:100%;box-sizing:border-box;min-height:92px;margin-top:5px;background:#171210;border:1px solid var(--line);color:#fff;border-radius:10px;padding:10px"></textarea>
+   <div style="display:grid;grid-template-columns:1fr 1fr;gap:7px;margin-top:9px">
+    <button class="quick-submit" style="margin:0" onclick="copyQuickPixCode()">📋 COPIAR PIX</button>
+    <a id="quickPixTicketUrl" target="_blank" rel="noopener" style="display:none;text-decoration:none" class="quick-submit">ABRIR PAGAMENTO</a>
+   </div>
+   <div style="margin-top:10px;color:var(--muted);font-size:10px">Quando o Mercado Pago confirmar o pagamento, o pedido entra automaticamente na fila do PDV/Delivery.</div>
+  </div>
+ </div>
+</div>
+
 <div id="reportOverlay" class="report-overlay">
  <div class="report-shell">
   <div class="report-head">
@@ -485,10 +510,17 @@ button{cursor:pointer}.arm{border:0;border-radius:10px;padding:10px 12px;backgro
     <button class="report-period" data-rperiod="custom" onclick="setReportPeriod('custom')">Personalizado</button>
    </div>
    <div id="reportCustom" class="report-custom" style="display:none">
-    <input type="date" id="reportFrom">
-    <input type="date" id="reportTo">
-    <button onclick="loadReports()">Aplicar período</button>
+    <label style="min-width:0">
+      <span style="display:block;color:var(--muted);font-size:9px;font-weight:900;margin:0 0 4px">DATA INICIAL</span>
+      <input type="date" id="reportFrom" inputmode="numeric">
+    </label>
+    <label style="min-width:0">
+      <span style="display:block;color:var(--muted);font-size:9px;font-weight:900;margin:0 0 4px">DATA FINAL</span>
+      <input type="date" id="reportTo" inputmode="numeric">
+    </label>
+    <button type="button" onclick="applyCustomReport()">Aplicar período</button>
    </div>
+   <div id="reportCustomMsg" style="display:none;margin:-4px 0 10px;padding:8px 10px;border:1px solid var(--line);border-radius:10px;color:#f2c879;font-size:10px;font-weight:800"></div>
 
    <div class="report-kpis">
     <div class="report-kpi"><span>Faturamento</span><b id="rRevenue">R$ 0,00</b><small>pedidos concluídos</small></div>
@@ -677,7 +709,7 @@ button{cursor:pointer}.arm{border:0;border-radius:10px;padding:10px 12px;backgro
         <div class="quick-step">3. Pedido</div>
         <div id="qCart"><div class="muted">Nenhum item adicionado.</div></div>
         <div class="quick-fields">
-          <div><label>Pagamento</label><select id="qPayment" onchange="updateQuickChange()"><option>Dinheiro</option><option>Pix</option><option>Cartão</option></select></div>
+          <div><label>Pagamento</label><select id="qPayment" onchange="updateQuickPaymentUI()"><option>Dinheiro</option><option>Pix</option><option>Cartão</option></select></div><div id="qPixEmailWrap" style="display:none"><label>E-mail para gerar o Pix</label><input id="qPixEmail" type="email" inputmode="email" autocomplete="email" placeholder="cliente@exemplo.com"><div class="muted" style="font-size:9px;margin-top:3px">Necessário para gerar o QR Code do Mercado Pago.</div></div>
           <div><label>Troco para</label><input id="qChange" inputmode="decimal" placeholder="Ex.: 100,00" oninput="updateQuickChange()"></div>
           <div class="full"><label>Observação geral</label><textarea id="qGeneralObs" rows="2" placeholder="Ex.: chamar no portão..."></textarea></div>
         </div>
@@ -711,8 +743,8 @@ button{cursor:pointer}.arm{border:0;border-radius:10px;padding:10px 12px;backgro
 
 <div id="iosPrintArea" aria-hidden="true"><pre id="iosPrintText"></pre></div>
 <script>
-const SUPABASE_URL='https://stacwvpsfjvyvbjwagtd.supabase.co';
-const SUPABASE_ANON_KEY='sb_publishable_uM7vsWn839Zmj1lTk3yKyg_b5Vj501Z';
+const SUPABASE_URL = 'https://stacwvpsfjvyvbjwagtd.supabase.co';
+const SUPABASE_ANON_KEY = 'sb_publishable_uM7vsWn839Zmj1lTk3yKyg_b5Vj501Z';
 let filter='novo', lastSeen=new Set(), audioArmed=false, firstLoad=true;
 
 const money=v=>'R$ '+Number(v||0).toFixed(2).replace('.',',');
@@ -922,6 +954,14 @@ function updateQuickChange(){
    box.textContent=diff>=0?`Troco: ${money(diff)}`:`Faltam ${money(Math.abs(diff))}`;
  }else{box.style.display='none';box.textContent='';}
 }
+
+function updateQuickPaymentUI(){
+ updateQuickChange();
+ const payment=document.getElementById('qPayment')?.value||'';
+ const wrap=document.getElementById('qPixEmailWrap');
+ if(wrap) wrap.style.display=payment==='Pix'?'block':'none';
+}
+
 function finishQuickOrder(){ resetQuickOrder(); openQuickOrder(); }
 
 async function submitQuickOrder(){
@@ -932,6 +972,12 @@ async function submitQuickOrder(){
  const address=document.getElementById('qAddress').value.trim();
  if(quickType==='delivery'&&!address){alert('Informe o endereço de entrega.');return}
  const subtotal=quickSubtotal(),fee=quickFee(),payment=document.getElementById('qPayment').value;
+ const pixEmail=(document.getElementById('qPixEmail')?.value||'').trim().toLowerCase();
+ if(payment==='Pix' && (!pixEmail || !pixEmail.includes('@'))){
+   alert('Informe um e-mail válido para gerar o Pix Mercado Pago.');
+   document.getElementById('qPixEmail')?.focus();
+   return;
+ }
  const change=document.getElementById('qChange').value.trim(),general=document.getElementById('qGeneralObs').value.trim();
  const source=quickType==='counter'?'BALCÃO':quickType==='pickup'?'WHATSAPP / RETIRADA':'WHATSAPP / DELIVERY';
  const generalObs=[`ORIGEM: ${source}`,change&&payment==='Dinheiro'?`TROCO PARA: R$ ${change}`:'',general].filter(Boolean).join(' | ');
@@ -939,20 +985,32 @@ async function submitQuickOrder(){
    order_no:quickOrderNo(),created_at:new Date().toISOString(),customer_name:name,customer_phone:phone,
    fulfillment:quickType==='delivery'?'delivery':'pickup',
    address:quickType==='delivery'?`${city} — ${address}`:'',
-   payment,payment_status:payment==='Pix'?'manual':'',general_obs:generalObs,
+   payment,payment_status:payment==='Pix'?'pending':'',general_obs:generalObs,
    subtotal,delivery_fee:fee,coupon_code:'',discount:0,total:subtotal+fee,status:'novo',printed:false,
    items:quickCart.map(x=>({qty:x.qty,name:x.name,size:x.size,crust:x.crust,obs:x.obs,unit:x.unit}))
  };
+ const btn=document.getElementById('qSubmitBtn');
+ const oldText=btn?.textContent||'✓ CONFIRMAR E ENVIAR PARA A FILA';
  try{
+   if(btn){btn.disabled=true;btn.textContent=payment==='Pix'?'Gerando Pix...':'Salvando pedido...';}
    const saved=await api('orders',{method:'POST',body:JSON.stringify(row)});
-   const no=saved?.[0]?.order_no||row.order_no;
-   quickSavedOrder={...row,order_no:no};
-   document.getElementById('qConfirmedInfo').textContent=`Pedido ${no} salvo no sistema integrado e enviado para a fila.`;
-   document.getElementById('qAfterConfirm').classList.add('show');
-   document.getElementById('qSubmitBtn').style.display='none';
+   const savedRow=Array.isArray(saved)?saved[0]:saved;
+   const dbId=savedRow?.id||'';
+   const no=savedRow?.order_no||row.order_no;
+   quickSavedOrder={...row,id:dbId,order_no:no};
 
-   // Painel, PDV, Delivery, Caixa e Relatórios leem a MESMA tabela public.orders.
-   // Após lançar manualmente, abre automaticamente a visão correspondente.
+   if(payment==='Pix'){
+     if(!dbId) throw new Error('Pedido salvo sem ID para gerar o Pix.');
+     const pix=await createQuickPixForOrder(dbId,pixEmail);
+     showQuickPix({...quickSavedOrder,id:dbId},pix);
+     document.getElementById('qConfirmedInfo').textContent=`Pedido ${no} registrado. Aguardando pagamento do Pix.`;
+   }else{
+     document.getElementById('qConfirmedInfo').textContent=`Pedido ${no} salvo no sistema integrado e enviado para a fila.`;
+   }
+
+   document.getElementById('qAfterConfirm').classList.add('show');
+   if(btn)btn.style.display='none';
+
    operationalMode = quickType==='delivery' ? 'delivery' : (quickType==='pickup' || quickType==='counter' ? 'pickup' : 'all');
    ['All','Delivery','Pickup'].forEach(x=>document.getElementById('mode'+x)?.classList.remove('active'));
    document.getElementById(operationalMode==='delivery'?'modeDelivery':operationalMode==='pickup'?'modePickup':'modeAll')?.classList.add('active');
@@ -961,8 +1019,77 @@ async function submitQuickOrder(){
    document.querySelectorAll('.pill[data-filter]').forEach(b=>b.classList.toggle('active',b.dataset.filter==='novo'));
    await loadOrders();
  }catch(e){
+   console.error(e);
    alert('Não foi possível lançar o pedido: '+e.message);
+ }finally{
+   if(btn && btn.style.display!=='none'){btn.disabled=false;btn.textContent=oldText;}
  }
+}
+
+let quickPixOrderId='',quickPixPollTimer=null;
+
+async function createQuickPixForOrder(orderId,email){
+ const r=await fetch(`${SUPABASE_URL}/functions/v1/mercadopago-pix`,{
+   method:'POST',
+   headers:{
+     'apikey':SUPABASE_ANON_KEY,
+     'Authorization':`Bearer ${SUPABASE_ANON_KEY}`,
+     'Content-Type':'application/json'
+   },
+   body:JSON.stringify({order_id:orderId,email})
+ });
+ const data=await r.json().catch(()=>({}));
+ if(!r.ok || !data?.success) throw new Error(data?.error||`Falha ao gerar Pix (${r.status})`);
+ return data;
+}
+function showQuickPix(order,pix){
+ quickPixOrderId=String(order.id||'');
+ document.getElementById('quickPixOrderNo').textContent=order.order_no||'—';
+ document.getElementById('quickPixAmount').textContent=money(Number(pix.amount||order.total||order.subtotal||0));
+ document.getElementById('quickPixCode').value=pix.qr_code||'';
+ const img=document.getElementById('quickPixQrImage');
+ const b64=String(pix.qr_code_base64||'');
+ if(b64){img.src=b64.startsWith('data:')?b64:`data:image/png;base64,${b64}`;img.style.display='block'}
+ else{img.removeAttribute('src');img.style.display='none'}
+ const ticket=document.getElementById('quickPixTicketUrl');
+ if(pix.ticket_url){ticket.href=pix.ticket_url;ticket.style.display='block'}else ticket.style.display='none';
+ const st=document.getElementById('quickPixStatus');
+ st.textContent='⏳ Aguardando pagamento...';
+ st.style.background='#3b3021';
+ document.getElementById('quickPixOverlay').classList.add('open');
+ startQuickPixPolling();
+}
+function closeQuickPix(){
+ document.getElementById('quickPixOverlay')?.classList.remove('open');
+ if(quickPixPollTimer){clearTimeout(quickPixPollTimer);quickPixPollTimer=null}
+}
+async function copyQuickPixCode(){
+ const el=document.getElementById('quickPixCode'),code=el?.value||'';
+ if(!code)return;
+ try{await navigator.clipboard.writeText(code)}
+ catch(e){el.focus();el.select();document.execCommand('copy')}
+ const st=document.getElementById('quickPixStatus');
+ if(st && !/pago/i.test(st.textContent))st.textContent='📋 Código Pix copiado — aguardando pagamento...';
+}
+function quickPixPaid(v){return ['approved','paid','processed','accredited'].includes(String(v||'').toLowerCase())}
+async function checkQuickPixStatus(){
+ if(!quickPixOrderId)return;
+ try{
+   const rows=await api(`orders?id=eq.${encodeURIComponent(quickPixOrderId)}&select=id,payment_status,status&limit=1`);
+   const row=rows?.[0];
+   if(row && quickPixPaid(row.payment_status)){
+     const st=document.getElementById('quickPixStatus');
+     if(st){st.textContent='✅ PIX PAGO — pedido liberado para a fila';st.style.background='#173b27'}
+     if(quickPixPollTimer){clearTimeout(quickPixPollTimer);quickPixPollTimer=null}
+     await loadOrders();
+     return;
+   }
+ }catch(e){console.warn('Falha ao consultar Pix:',e)}
+ quickPixPollTimer=setTimeout(checkQuickPixStatus,3000);
+}
+function startQuickPixPolling(){
+ if(quickPixPollTimer)clearTimeout(quickPixPollTimer);
+ quickPixPollTimer=setTimeout(checkQuickPixStatus,1800);
 }
 
 
@@ -994,26 +1121,98 @@ function printQuickDelivery(){ if(quickSavedOrder) doQuickPrint(quickPrintHtml('
 let reportPeriod='today',reportAllRows=[],reportRows=[],reportCanceled=[];
 function rMoney(v){return Number(v||0).toLocaleString('pt-BR',{style:'currency',currency:'BRL'})}
 function reportDateOnly(d){const x=new Date(d);return new Date(x.getFullYear(),x.getMonth(),x.getDate())}
+function reportLocalDate(value){
+ if(!value || !/^\d{4}-\d{2}-\d{2}$/.test(String(value))) return null;
+ const parts=String(value).split('-').map(Number);
+ const d=new Date(parts[0],parts[1]-1,parts[2],0,0,0,0);
+ return Number.isNaN(d.getTime())?null:d;
+}
+function reportInputDate(d){
+ const x=new Date(d);
+ const y=x.getFullYear(),m=String(x.getMonth()+1).padStart(2,'0'),day=String(x.getDate()).padStart(2,'0');
+ return `${y}-${m}-${day}`;
+}
 function reportBounds(){
- const now=new Date(),today=reportDateOnly(now),end=new Date(today);end.setDate(end.getDate()+1);
- let start=new Date(today);
- if(reportPeriod==='7d')start.setDate(start.getDate()-6);
- else if(reportPeriod==='30d')start.setDate(start.getDate()-29);
- else if(reportPeriod==='month')start=new Date(now.getFullYear(),now.getMonth(),1);
+ const now=new Date();
+ const today=reportDateOnly(now);
+ let rangeStart=new Date(today);
+ let rangeEnd=new Date(today);
+ rangeEnd.setDate(rangeEnd.getDate()+1);
+
+ if(reportPeriod==='7d') rangeStart.setDate(rangeStart.getDate()-6);
+ else if(reportPeriod==='30d') rangeStart.setDate(rangeStart.getDate()-29);
+ else if(reportPeriod==='month') rangeStart=new Date(now.getFullYear(),now.getMonth(),1);
  else if(reportPeriod==='custom'){
-   const f=document.getElementById('reportFrom')?.value,t=document.getElementById('reportTo')?.value;
-   if(f)start=new Date(f+'T00:00:00');
-   if(t){const x=new Date(t+'T00:00:00');end=new Date(x);end.setDate(end.getDate()+1)}
+   const fromValue=document.getElementById('reportFrom')?.value || '';
+   const toValue=document.getElementById('reportTo')?.value || '';
+   const fromDate=reportLocalDate(fromValue);
+   const toDate=reportLocalDate(toValue);
+   if(fromDate) rangeStart=fromDate;
+   if(toDate){
+     rangeEnd=new Date(toDate);
+     rangeEnd.setDate(rangeEnd.getDate()+1);
+   }
  }
- return {start,end};
+ return {start:rangeStart,end:rangeEnd};
 }
 function openReports(){document.getElementById('reportOverlay').classList.add('open');loadReports()}
 function closeReports(){document.getElementById('reportOverlay').classList.remove('open')}
 function setReportPeriod(v){
  reportPeriod=v;
- document.querySelectorAll('[data-rperiod]').forEach(b=>b.classList.toggle('active',b.dataset.rperiod===v));
- document.getElementById('reportCustom').style.display=v==='custom'?'grid':'none';
- if(v!=='custom')loadReports();
+ document.querySelectorAll('[data-rperiod]').forEach(function(btn){
+   btn.classList.toggle('active',btn.getAttribute('data-rperiod')===v);
+ });
+ const customBox=document.getElementById('reportCustom');
+ const msg=document.getElementById('reportCustomMsg');
+ if(customBox) customBox.style.display=v==='custom'?'grid':'none';
+ if(msg) msg.style.display='none';
+
+ if(v==='custom'){
+   // Preenche apenas quando os campos estão vazios. Não mexe na data escolhida pelo usuário.
+   const from=document.getElementById('reportFrom');
+   const to=document.getElementById('reportTo');
+   const now=new Date();
+   const thirty=new Date(now);
+   thirty.setDate(thirty.getDate()-29);
+   if(from && !from.value) from.value=reportInputDate(thirty);
+   if(to && !to.value) to.value=reportInputDate(now);
+   return;
+ }
+ loadReports();
+}
+function applyCustomReport(){
+ const msg=document.getElementById('reportCustomMsg');
+ try{
+   const fromValue=document.getElementById('reportFrom')?.value || '';
+   const toValue=document.getElementById('reportTo')?.value || '';
+   const fromDate=reportLocalDate(fromValue);
+   const toDate=reportLocalDate(toValue);
+
+   if(!fromDate || !toDate){
+     if(msg){msg.textContent='Selecione a data inicial e a data final.';msg.style.display='block';}
+     return;
+   }
+   if(fromDate>toDate){
+     if(msg){msg.textContent='A data inicial não pode ser maior que a data final.';msg.style.display='block';}
+     return;
+   }
+
+   const days=Math.floor((toDate-fromDate)/86400000)+1;
+   if(days>366){
+     if(msg){msg.textContent='Escolha um período de até 366 dias.';msg.style.display='block';}
+     return;
+   }
+
+   reportPeriod='custom';
+   if(msg){msg.style.display='none';msg.textContent='';}
+   loadReports();
+ }catch(err){
+   console.error('Erro no período personalizado:',err);
+   if(msg){
+     msg.textContent='Não foi possível aplicar o período. Tente selecionar as datas novamente.';
+     msg.style.display='block';
+   }
+ }
 }
 function reportTimestamp(o){return new Date(o.concluded_at||o.created_at)}
 function reportInRange(o,b){const d=reportTimestamp(o);return d>=b.start&&d<b.end}
