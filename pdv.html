@@ -369,28 +369,28 @@ async function deliverySalesBetween(startIso,endIso=''){
 async function loadCaixa(){
   cashbox.innerHTML='<h2>Caixa</h2><div class="small">Carregando...</div>';
   try{
-    const a=await api('caixa_sessoes?status=eq.aberto&select=*&order=aberto_em.desc&limit=1');
+    const a=await api('cash_sessions?status=eq.open&select=*&order=opened_at.desc&limit=1');
     if(!a.length){
       cashbox.innerHTML=`<h2>Caixa fechado</h2><div class="notice">Abra o caixa para iniciar o movimento do turno.</div><div class="field"><input id="cop" placeholder="Operador"></div><div class="field"><input id="cab" inputmode="decimal" value="0" placeholder="Valor inicial em dinheiro"></div><button class="ok" style="width:100%;margin-top:10px" onclick="abrirCaixa()">Abrir caixa</button>`;
       return;
     }
-    const c=a[0], inicio=encodeURIComponent(c.aberto_em);
+    const c=a[0], inicio=encodeURIComponent(c.opened_at);
     const vendasPdv=await api(`comandas?status=eq.fechada&fechada_em=gte.${inicio}&select=total,forma_pagamento,fechada_em`);
-    const vendasDelivery=await deliverySalesBetween(c.aberto_em);
+    const vendasDelivery=await deliverySalesBetween(c.opened_at);
     const vendas=[...(vendasPdv||[]).map(v=>({...v,forma_pagamento:paymentBucket(v.forma_pagamento)})),...vendasDelivery];
-    const movs=await api(`caixa_movimentos?caixa_id=eq.${c.id}&select=*&order=criado_em.desc`);
+    const movs=await api(`cash_movements?session_id=eq.${c.id}&select=*&order=created_at.desc`);
     const soma=pg=>vendas.filter(v=>v.forma_pagamento===pg).reduce((n,v)=>n+Number(v.total||0),0);
     const pix=soma('Pix'), din=soma('Dinheiro'), deb=soma('Cartão Débito'), cred=soma('Cartão Crédito')+soma('Cartão');
     const vendasTotal=vendas.reduce((n,v)=>n+Number(v.total||0),0);
-    const supr=movs.filter(m=>m.tipo==='suprimento').reduce((n,m)=>n+Number(m.valor||0),0);
-    const sang=movs.filter(m=>m.tipo==='sangria').reduce((n,m)=>n+Number(m.valor||0),0);
-    const esperado=Number(c.valor_abertura||0)+din+supr-sang;
-    cashbox.innerHTML=`<div class="row"><h2>Caixa aberto</h2><span class="grow"></span><button class="dark no-print" onclick="imprimirCaixa()">🖨️ Imprimir caixa</button><b class="gold">${esc(c.operador||'Operador')}</b></div>
-      <div class="small">Aberto em ${new Date(c.aberto_em).toLocaleString('pt-BR')}</div>
+    const supr=movs.filter(m=>m.type==='supply').reduce((n,m)=>n+Number(m.amount||0),0);
+    const sang=movs.filter(m=>m.type==='withdrawal').reduce((n,m)=>n+Number(m.amount||0),0);
+    const esperado=Number(c.opening_amount||0)+din+supr-sang;
+    cashbox.innerHTML=`<div class="row"><h2>Caixa aberto</h2><span class="grow"></span><button class="dark no-print" onclick="imprimirCaixa()">🖨️ Imprimir caixa</button><b class="gold">${esc(c.opened_by||'Operador')}</b></div>
+      <div class="small">Aberto em ${new Date(c.opened_at).toLocaleString('pt-BR')}</div>
       <div class="total">Vendas do turno: ${money(vendasTotal)}</div>
       <div class="small">PDV: ${money((vendasPdv||[]).reduce((n,v)=>n+Number(v.total||0),0))} · Delivery concluído: ${money(vendasDelivery.reduce((n,v)=>n+Number(v.total||0),0))}</div>
       <div class="card" style="margin-top:10px"><div class="row"><span class="grow">Dinheiro</span><b>${money(din)}</b></div><div class="row"><span class="grow">Pix</span><b>${money(pix)}</b></div><div class="row"><span class="grow">Débito</span><b>${money(deb)}</b></div><div class="row"><span class="grow">Crédito</span><b>${money(cred)}</b></div></div>
-      <div class="card" style="margin-top:10px"><div class="row"><span class="grow">Abertura</span><b>${money(c.valor_abertura)}</b></div><div class="row"><span class="grow">Suprimentos</span><b>${money(supr)}</b></div><div class="row"><span class="grow">Sangrias</span><b>-${money(sang)}</b></div><div class="row"><span class="grow"><b>Dinheiro esperado</b></span><b>${money(esperado)}</b></div></div>
+      <div class="card" style="margin-top:10px"><div class="row"><span class="grow">Abertura</span><b>${money(c.opening_amount)}</b></div><div class="row"><span class="grow">Suprimentos</span><b>${money(supr)}</b></div><div class="row"><span class="grow">Sangrias</span><b>-${money(sang)}</b></div><div class="row"><span class="grow"><b>Dinheiro esperado</b></span><b>${money(esperado)}</b></div></div>
       <div class="actions" style="margin-top:10px"><button class="yellow" onclick="movCaixa('suprimento',${c.id})">+ Suprimento</button><button class="red" onclick="movCaixa('sangria',${c.id})">− Sangria</button></div>
       <button class="ok" style="width:100%;margin-top:10px" onclick="fecharCaixa(${c.id},${esperado})">Fechar caixa</button>`;
   }catch(e){cashbox.innerHTML='<h2>Caixa</h2><div class="notice">Erro: '+esc(e.message)+'</div>'}
@@ -398,7 +398,7 @@ async function loadCaixa(){
 
 async function abrirCaixa(){
   const v=Number(String(cab.value).replace(',','.'))||0;
-  try{await api('caixa_sessoes',{method:'POST',body:JSON.stringify({operador:cop.value.trim()||'Operador',valor_abertura:v,status:'aberto'})});await loadCaixa()}catch(e){alert('Erro ao abrir caixa: '+e.message)}
+  try{await api('cash_sessions',{method:'POST',body:JSON.stringify({opened_by:cop.value.trim()||'Operador',opening_amount:v,status:'open'})});await loadCaixa()}catch(e){alert('Erro ao abrir caixa: '+e.message)}
 }
 
 async function movCaixa(tipo,id){
@@ -406,7 +406,7 @@ async function movCaixa(tipo,id){
   const v=prompt(nome+' — valor em R$'); if(v===null)return;
   const valor=Number(String(v).replace(',','.')); if(!(valor>0))return alert('Informe um valor válido.');
   const descricao=prompt('Descrição (opcional)')||null;
-  try{await api('caixa_movimentos',{method:'POST',body:JSON.stringify({caixa_id:id,tipo,valor,descricao})});await loadCaixa()}catch(e){alert('Erro: '+e.message)}
+  try{await api('cash_movements',{method:'POST',body:JSON.stringify({session_id:id,type:tipo==='sangria'?'withdrawal':'supply',amount:valor,note:descricao})});await loadCaixa()}catch(e){alert('Erro: '+e.message)}
 }
 
 async function fecharCaixa(id,esperado){
@@ -414,7 +414,7 @@ async function fecharCaixa(id,esperado){
   const informado=Number(String(v).replace(',','.')); if(!Number.isFinite(informado)||informado<0)return alert('Informe um valor válido.');
   const dif=informado-Number(esperado);
   if(!confirm('Esperado: '+money(esperado)+'\nInformado: '+money(informado)+'\nDiferença: '+money(dif)+'\n\nConfirmar fechamento?'))return;
-  try{await api(`caixa_sessoes?id=eq.${id}`,{method:'PATCH',body:JSON.stringify({status:'fechado',valor_fechamento_informado:informado,valor_fechamento_esperado:esperado,diferenca:dif,fechado_em:new Date().toISOString()})});alert('Caixa fechado. Diferença: '+money(dif));await loadCaixa()}catch(e){alert('Erro ao fechar caixa: '+e.message)}
+  try{await api(`cash_sessions?id=eq.${id}&status=eq.open`,{method:'PATCH',body:JSON.stringify({status:'closed',counted_amount:informado,expected_amount:esperado,difference_amount:dif,closed_at:new Date().toISOString()})});alert('Caixa fechado. Diferença: '+money(dif));await loadCaixa()}catch(e){alert('Erro ao fechar caixa: '+e.message)}
 }
 
 
@@ -476,7 +476,7 @@ async function loadRelatorios(){
         itens.push({comanda_id:v.id,produto_nome:nome,tamanho:tam,sabor_1:x.sabor_1||x.flavor_1||null,sabor_2:x.sabor_2||x.flavor_2||null,quantidade:qtd,total:totalItem});
       });
     });
-    const caixas=await api(`caixa_sessoes?aberto_em=gte.${ini}&aberto_em=lte.${fim}&select=*&order=aberto_em.desc&limit=50`);
+    const caixas=await api(`cash_sessions?opened_at=gte.${ini}&opened_at=lte.${fim}&select=*&order=opened_at.desc&limit=50`);
 
     const faturamento=vendas.reduce((n,v)=>n+Number(v.total||0),0);
     const descontos=vendas.reduce((n,v)=>n+Number(v.desconto||0),0);
@@ -500,7 +500,7 @@ async function loadRelatorios(){
     const sabores=Object.entries(sabMap).sort((a,b)=>b[1]-a[1]).slice(0,10);
     const sabHtml=sabores.length?sabores.map(([s,q],i)=>`<div class="item"><b>${i+1}. ${esc(s)}</b><div class="small">${q} ocorrência(s)</div></div>`).join(''):'<div class="small">Sem sabores.</div>';
 
-    const cxHtml=caixas.length?caixas.map(x=>`<div class="item"><b>${esc(x.operador||'Operador')} — ${String(x.status).toUpperCase()}</b><div class="small">Abertura: ${new Date(x.aberto_em).toLocaleString('pt-BR')}${x.fechado_em?' · Fechamento: '+new Date(x.fechado_em).toLocaleString('pt-BR'):''}</div><div class="small">Inicial ${money(x.valor_abertura)}${x.valor_fechamento_informado!=null?' · Informado '+money(x.valor_fechamento_informado)+' · Diferença '+money(x.diferenca):''}</div></div>`).join(''):'<div class="small">Sem caixas no período.</div>';
+    const cxHtml=caixas.length?caixas.map(x=>`<div class="item"><b>${esc(x.opened_by||'Operador')} — ${String(x.status).toUpperCase()}</b><div class="small">Abertura: ${new Date(x.opened_at).toLocaleString('pt-BR')}${x.closed_at?' · Fechamento: '+new Date(x.closed_at).toLocaleString('pt-BR'):''}</div><div class="small">Inicial ${money(x.opening_amount)}${x.counted_amount!=null?' · Informado '+money(x.counted_amount)+' · Diferença '+money(x.difference_amount):''}</div></div>`).join(''):'<div class="small">Sem caixas no período.</div>';
 
     const label=rg.start.toLocaleDateString('pt-BR')+(localDateStr(rg.start)!==localDateStr(rg.end)?' até '+rg.end.toLocaleDateString('pt-BR'):'');
     reports.innerHTML=`<h2>Relatórios</h2>${reportFilterBar()}
