@@ -1660,7 +1660,7 @@ function beep(){if(!audioArmed)return;try{const a=new (window.AudioContext||wind
 async function api(path,opts={}){
   const r=await fetch(`${SUPABASE_URL}/rest/v1/${path}`,{
     ...opts,
-    headers:{apikey:SUPABASE_ANON_KEY,Authorization:`Bearer ${SUPABASE_ANON_KEY}`,'Content-Type':'application/json',Prefer:'return=representation',...(opts.headers||{})}
+    headers:{apikey:SUPABASE_ANON_KEY,Authorization:`Bearer ${panelAccessToken}`,'Content-Type':'application/json',Prefer:'return=representation',...(opts.headers||{})}
   });
   if(!r.ok)throw new Error(await r.text());
   const t=await r.text();return t?JSON.parse(t):null;
@@ -2122,6 +2122,34 @@ function printOrder(o){
     markPrinted(o);
   },120);
 }
-setFilter(filter);setInterval(loadOrders,5000);
+// Sessão compartilhada com o PDV (mesma origem: domínio e protocolo).
+let panelAccessToken='';
+async function panelStart(){
+  const login=()=>{window.location.replace('pdv.html');};
+  let token=localStorage.getItem('lasupreme_pdv_token')||'';
+  let refresh=localStorage.getItem('lasupreme_pdv_refresh')||'';
+  const valid=async t=>{
+    if(!t)return false;
+    try{const r=await fetch(`${SUPABASE_URL}/auth/v1/user`,{headers:{apikey:SUPABASE_ANON_KEY,Authorization:`Bearer ${t}`}});return r.ok}catch{return false}
+  };
+  if(!(await valid(token)) && refresh){
+    try{
+      const r=await fetch(`${SUPABASE_URL}/auth/v1/token?grant_type=refresh_token`,{method:'POST',headers:{apikey:SUPABASE_ANON_KEY,'Content-Type':'application/json'},body:JSON.stringify({refresh_token:refresh})});
+      if(r.ok){const d=await r.json();token=d.access_token||'';refresh=d.refresh_token||'';localStorage.setItem('lasupreme_pdv_token',token);localStorage.setItem('lasupreme_pdv_refresh',refresh);if(d.user?.email)localStorage.setItem('lasupreme_pdv_email',d.user.email)}
+    }catch(e){console.warn('Falha ao renovar sessão',e)}
+  }
+  if(!(await valid(token))){login();return}
+  panelAccessToken=token;
+  // Exige perfil ativo. A autorização final deve continuar sendo aplicada no banco via RLS.
+  try{
+    const r=await fetch(`${SUPABASE_URL}/rest/v1/rpc/lasupreme_staff_role`,{method:'POST',headers:{apikey:SUPABASE_ANON_KEY,Authorization:`Bearer ${token}`,'Content-Type':'application/json'},body:'{}'});
+    if(!r.ok)throw Error('Não foi possível validar o perfil de acesso');
+    const role=await r.json();
+    if(!['administrador','gerente','operador'].includes(role))throw Error('Usuário sem perfil ativo');
+  }catch(e){document.getElementById('notice').textContent='Acesso ao painel bloqueado: '+e.message;return}
+  setFilter(filter);
+  setInterval(loadOrders,5000);
+}
+panelStart();
 </script>
 </body></html>
