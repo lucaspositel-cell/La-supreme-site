@@ -523,7 +523,7 @@ body{background:#050505!important;color:#fff!important;padding-bottom:142px!impo
   .menu-section{padding-left:7px!important;padding-right:7px!important}
 }
 </style>
-</head>
+<style>.kids-grid{display:grid;grid-template-columns:repeat(auto-fit,minmax(240px,1fr));gap:16px}.kids-card{padding:22px;border:1px solid #9e773d;border-radius:16px;background:#21180f}.kids-card h3{color:#edc27e}.kids-card p{line-height:1.6}.kids-card strong{display:block;font-size:28px;margin:18px 0;color:#edc27e}.kids-card button{padding:12px 18px;border:0;border-radius:8px;background:#edc27e;color:#21180f;font-weight:700;cursor:pointer}.kids-card button:disabled{opacity:.5;cursor:default}#cat-combos-kids{scroll-margin-top:140px}</style></head>
 <body>
 <nav class="site-nav app-topbar">
 <div class="app-topbar-inner">
@@ -560,7 +560,7 @@ body{background:#050505!important;color:#fff!important;padding-bottom:142px!impo
 <div><span>♛</span><p><b>Receita artesanal</b><small>Qualidade La Supreme</small></p></div>
 </div>
 </header>
-<main class="wrap" id="cardapio">
+<main class="wrap" id="cardapio"><section id="cat-combos-kids" class="menu-section"><h2>🎉 Dia das Crianças</h2><p>Somente 12/10/2026 • Sem refrigerante e sem brinde • Promoções não cumulativas.</p><p id="kidsAvailability"></p><div class="kids-grid"><article class="kids-card"><h3>Combo Família Supreme</h3><p>Pizza Mista grande 35 cm + Banana Nevada broto 25 cm</p><strong>R$ 79,90</strong><button type="button" onclick="addKidsCombo('kids2026-familia')">Adicionar combo</button></article><article class="kids-card"><h3>Combo Tradicional Supreme</h3><p>Pizza Portuguesa grande 35 cm + Brigadeiro broto 25 cm</p><strong>R$ 72,00</strong><button type="button" onclick="addKidsCombo('kids2026-tradicional')">Adicionar combo</button></article><article class="kids-card"><h3>Combo Queijos Supreme</h3><p>Pizza 4 Queijos grande 35 cm + Crostini Supreme (8 unidades)</p><strong>R$ 76,80</strong><button type="button" onclick="addKidsCombo('kids2026-queijos')">Adicionar combo</button></article></div></section>
 <div class="search-wrap">
 <input class="search" id="search" oninput="filterMenu()" placeholder="🔎 Buscar sabor ou ingrediente..." type="search"/>
 </div>
@@ -2031,6 +2031,18 @@ body{background:#050505!important;color:#fff!important;padding-bottom:142px!impo
 </div>
 </div>
 <script>
+// Promoção aprovada: 12/10/2026, horário de São Paulo.
+const KIDS_COMBOS = [{"id": "kids2026-familia", "name": "Combo Família Supreme", "desc": "Pizza Mista grande 35 cm + Banana Nevada broto 25 cm", "price": 79.9, "pizzas": 2}, {"id": "kids2026-tradicional", "name": "Combo Tradicional Supreme", "desc": "Pizza Portuguesa grande 35 cm + Brigadeiro broto 25 cm", "price": 72, "pizzas": 2}, {"id": "kids2026-queijos", "name": "Combo Queijos Supreme", "desc": "Pizza 4 Queijos grande 35 cm + Crostini Supreme (8 unidades)", "price": 76.8, "pizzas": 1}];
+function kidsDate(now=new Date()) { return new Intl.DateTimeFormat('sv-SE',{timeZone:'America/Sao_Paulo',year:'numeric',month:'2-digit',day:'2-digit'}).format(now); }
+function kidsActive(now=new Date()) { return kidsDate(now)==='2026-10-12'; }
+function kidsCombo(item) { return KIDS_COMBOS.find(c=>c.id===item?.combo_id || c.name===item?.name || c.name===item?.produto_nome); }
+function kidsHasCombo(items) { return items.some(x=>!!kidsCombo(x)); }
+function kidsValidate(items) {
+ if(kidsHasCombo(items) && !kidsActive()) { alert('Os combos do Dia das Crianças são válidos somente em 12/10/2026. Remova os combos para continuar.'); return false; }
+ return true;
+}
+function kidsPizzaUnits(x) { const c=kidsCombo(x); return c ? c.pizzas : 1; }
+
 function normalizeSearchText(value){
   return (value || '')
     .toString()
@@ -2466,12 +2478,12 @@ function setCouponMessage(msg,type=''){
   el.className='coupon-msg'+(type?' '+type:'');
 }
 function sweetPizzaSubtotal(){return cart.reduce((sum,item)=>sum+(Number(item.unit||0)*Number(item.qty||1)*Math.max(0,Math.min(1,Number(item.sweetRatio!=null?item.sweetRatio:(item.section==='cat-pizzas-doces'?1:0))))),0);}
-function couponBase(coupon){return String(coupon?.applies_to||'all').toLowerCase()==='sweet_pizzas'?sweetPizzaSubtotal():subtotal();}
+function couponBase(coupon){if(String(coupon?.code||'').toUpperCase()==='KIDS15')return sweetPizzaSubtotal();return String(coupon?.applies_to||'all').toLowerCase()==='sweet_pizzas'?sweetPizzaSubtotal():subtotal();}
 function couponDiscountFor(coupon,delivery){
-  if(!coupon)return 0;
+  if(!coupon||kidsHasCombo(cart))return 0;
   const sub=couponBase(coupon);
   const type=String(coupon.discount_type||'').toLowerCase();
-  const value=Math.max(0,Number(coupon.discount_value||0));
+  const value=String(coupon.code||'').toUpperCase()==='KIDS15'?15:Math.max(0,Number(coupon.discount_value||0));
   if(type==='percent') return Math.min(sub, sub*(value/100));
   if(type==='fixed') return Math.min(sub,value);
   if(type==='free_delivery') return (window._fulfillment||'delivery')==='delivery'?Math.max(0,Number(delivery?.fee||0)):0;
@@ -2479,6 +2491,8 @@ function couponDiscountFor(coupon,delivery){
 }
 function couponStillValid(coupon){
   if(!coupon)return {ok:false,msg:'Cupom não aplicado.'};
+  if(kidsHasCombo(cart))return {ok:false,msg:'Promoções não cumulativas: pedidos com combos não aceitam cupons.'};
+  if(String(coupon.code||'').toUpperCase()==='KIDS15' && !kidsActive())return {ok:false,msg:'KIDS15 válido somente em 12/10/2026.'};
   if(coupon.active===false)return {ok:false,msg:'Este cupom está inativo.'};
   const min=Math.max(0,Number(coupon.min_order||0)); const applies=String(coupon.applies_to||'all').toLowerCase(); const eligible=couponBase(coupon); if(applies==='sweet_pizzas' && eligible<=0)return {ok:false,msg:'Este cupom é válido somente para pizzas doces.'}; if(eligible+0.0001<min)return {ok:false,msg:`Pedido mínimo elegível para este cupom: ${money(min)}.`};
   if(coupon.expires_at){
@@ -2584,6 +2598,7 @@ function nextOrderNumber(){
   return `LS${stamp}${rand}`;
 }
 function buildOrderData(){
+  if(!kidsValidate(cart))return null;
   const name=document.getElementById('custName')?.value.trim()||'';
   const phone=document.getElementById('custPhone')?.value.trim()||'';
   if(!name){alert('Informe seu nome para finalizar o pedido.');return null;}
@@ -2982,6 +2997,7 @@ function supabaseConfigured(){
 }
 
 async function saveOrderOnline(order){
+  if(!kidsValidate(order.items))throw new Error("Promoção encerrada.");
   if(!supabaseConfigured()) return {ok:false, reason:'not_configured'};
   const payload={
     order_no: order.orderNo,
@@ -3075,7 +3091,7 @@ function lsQueuePizzaCount(o){
   const items=Array.isArray(o.items)?o.items:[];
   return items.reduce((n,x)=>{
     const qty=Math.max(1,Number(x?.qty ?? x?.quantidade ?? 1)||1);
-    return n+(lsQueueIsPizzaItem(x)?qty:0);
+    return n+(kidsCombo(x)||lsQueueIsPizzaItem(x)?kidsPizzaUnits(x)*qty:0);
   },0);
 }
 function lsQueueTransport15(o){
@@ -3512,5 +3528,17 @@ function selectDrinkGroup(type){
   requestAnimationFrame(()=>scrollToMenuSection('cat-bebidas'));
 }
 </script>
-</body>
+<script>
+function addKidsCombo(id) {
+ const c=KIDS_COMBOS.find(x=>x.id===id); if(!c||!kidsActive())return alert('Promoção válida somente em 12/10/2026.');
+ cart.push({id:Date.now()+Math.random(),combo_id:c.id,kind:'combo',name:c.name,size:c.desc,section:'cat-combos-kids',sweetRatio:0,unit:c.price,qty:1});
+ if(_appliedCoupon){_appliedCoupon=null;setCouponMessage('Cupom removido: promoções não cumulativas.','err');}
+ saveCart();updateDeliveryTotal();showToast('Combo adicionado ao pedido');
+}
+function refreshKidsAvailability(){
+ const active=kidsActive();document.querySelectorAll('.kids-card button').forEach(b=>b.disabled=!active);
+ document.getElementById('kidsAvailability').textContent=active?'Combos disponíveis hoje!':'Promoção encerrada ou ainda não disponível.';
+}
+refreshKidsAvailability();setInterval(refreshKidsAvailability,30000);
+</script></body>
 </html>
