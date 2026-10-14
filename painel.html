@@ -438,7 +438,7 @@ button{cursor:pointer}.arm{border:0;border-radius:10px;padding:10px 12px;backgro
 </style>
 </head>
 <body>
-<header><div class="head"><h1>LA <span class="brand">SUPREME</span> — Pedidos</h1><div class="spacer"></div><button class="report-btn" onclick="openReports()">📊 RELATÓRIOS</button><button class="cash-btn" onclick="openCash()">💰 CAIXA</button><button class="quick-new" onclick="openQuickOrder()">➕ NOVO PEDIDO</button><button class="arm" onclick="armAudio()">🔔 Ativar alertas</button></div></header>
+<header><div class="head"><h1>LA <span class="brand">SUPREME</span> — Pedidos</h1><div class="spacer"></div><button class="report-btn" data-finance-only="1" onclick="openReports()">📊 RELATÓRIOS</button><button class="cash-btn" data-finance-only="1" onclick="openCash()">💰 CAIXA</button><button class="quick-new" onclick="openQuickOrder()">➕ NOVO PEDIDO</button><button class="arm" onclick="armAudio()">🔔 Ativar alertas</button></div></header>
 <main class="wrap">
 <div class="notice" id="notice">Painel preparado. Falta inserir as chaves do banco online no código.</div>
 <div class="dashboard" id="dashboard">
@@ -1178,7 +1178,7 @@ function reportBounds(){
  }
  return {start:rangeStart,end:rangeEnd};
 }
-function openReports(){document.getElementById('reportOverlay').classList.add('open');loadReports()}
+function openReports(){if(!panelFinanceAllowed())return panelDenyFinance();document.getElementById('reportOverlay').classList.add('open');loadReports()}
 function closeReports(){document.getElementById('reportOverlay').classList.remove('open')}
 function setReportPeriod(v){
  reportPeriod=v;
@@ -1453,6 +1453,7 @@ function cashOrderInSession(o){
  return d>=a&&d<=b;
 }
 async function openCash(){
+ if(!panelFinanceAllowed())return panelDenyFinance();
  document.getElementById('cashOverlay').classList.add('open');
  document.getElementById('cashDate').textContent=new Date().toLocaleDateString('pt-BR',{weekday:'long',day:'2-digit',month:'2-digit'});
  await loadCash();
@@ -1562,6 +1563,7 @@ function renderCashRows(){
  }).join('');
 }
 function openCashDialog(mode){
+ if(!panelFinanceAllowed())return panelDenyFinance();
  cashDialogMode=mode;
  const title=document.getElementById('cashDialogTitle'),body=document.getElementById('cashDialogBody'),btn=document.getElementById('cashDialogConfirm');
  if(mode==='open'){
@@ -1589,6 +1591,7 @@ function updateClosePreview(){
  const el=document.getElementById('cdDiff'); if(el)el.innerHTML=`Diferença: <strong>${cashMoney(diff)}</strong>`;
 }
 async function confirmCashDialog(){
+ if(!panelFinanceAllowed())return panelDenyFinance();
  const btn=document.getElementById('cashDialogConfirm');btn.disabled=true;
  try{
   if(cashDialogMode==='open'){
@@ -2124,6 +2127,15 @@ function printOrder(o){
 }
 // Sessão compartilhada com o PDV (mesma origem: domínio e protocolo).
 let panelAccessToken='';
+let panelStaffRole=null;
+function panelFinanceAllowed(){return panelStaffRole==='administrador'||panelStaffRole==='gerente'}
+function panelDenyFinance(){alert('Acesso restrito ao gerente e administrador.');return false}
+function panelApplyRole(){
+ const permitted=panelFinanceAllowed();
+ document.querySelectorAll('[data-finance-only]').forEach(el=>{el.hidden=!permitted;el.style.display=permitted?'':'none'});
+ if(!permitted){document.getElementById('cashOverlay')?.classList.remove('open');document.getElementById('reportOverlay')?.classList.remove('open')}
+}
+
 async function panelStart(){
   const login=()=>{window.location.replace('pdv.html');};
   let token=localStorage.getItem('lasupreme_pdv_token')||'';
@@ -2146,6 +2158,7 @@ async function panelStart(){
     if(!r.ok)throw Error('Não foi possível validar o perfil de acesso');
     const role=await r.json();
     if(!['administrador','gerente','operador'].includes(role))throw Error('Usuário sem perfil ativo');
+    panelStaffRole=role;panelApplyRole();
   }catch(e){document.getElementById('notice').textContent='Acesso ao painel bloqueado: '+e.message;return}
   setFilter(filter);
   setInterval(loadOrders,5000);
