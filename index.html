@@ -1905,6 +1905,13 @@ body{background:#050505!important;color:#fff!important;padding-bottom:142px!impo
 <div class="footer">
     La Supreme Pizzaria • Sabor que vira tradição! • WhatsApp (15) 99739-8019 • Instagram @lasupreme_pizza
   </div>
+<section id="cat-combos-supreme" class="menu-section" style="padding:22px 16px;max-width:1150px;margin:22px auto;border:1px solid #b38a49;border-radius:18px;background:linear-gradient(135deg,#241a15,#39271b);color:#fff">
+<h2 style="text-align:center;color:#f5cf82;margin:0 0 8px">Combos La Supreme</h2>
+<p style="text-align:center;margin:0 0 20px;color:#f1e6d4">Duas pizzas por um preço especial. Sem bebida ou brinde.</p>
+<div style="display:grid;grid-template-columns:repeat(auto-fit,minmax(245px,1fr));gap:16px">
+<article style="border:1px solid #977647;border-radius:14px;padding:18px;background:#1c1715"><h3 style="color:#f5cf82;margin:0 0 10px">Combo Tradicional</h3><p>Frango com Catupiry grande (35 cm) + Banana Nevada broto (25 cm)</p><p style="font-size:1.55rem;font-weight:800;color:#f5cf82">R$ 99,90</p><button type="button" onclick="addSupremeCombo('supreme-tradicional')" style="padding:12px 18px;border:0;border-radius:9px;background:#e8b65b;color:#20160d;font-weight:800;cursor:pointer;width:100%">Adicionar ao pedido</button></article>
+<article style="border:1px solid #977647;border-radius:14px;padding:18px;background:#1c1715"><h3 style="color:#f5cf82;margin:0 0 10px">Combo Família</h3><p>Calabresa grande (35 cm) + Brigadeiro broto (25 cm)</p><p style="font-size:1.55rem;font-weight:800;color:#f5cf82">R$ 99,90</p><button type="button" onclick="addSupremeCombo('supreme-familia')" style="padding:12px 18px;border:0;border-radius:9px;background:#e8b65b;color:#20160d;font-weight:800;cursor:pointer;width:100%">Adicionar ao pedido</button></article>
+</div></section>
 </main>
 <nav aria-label="Navegação rápida" class="mobile-app-nav">
 <a class="active" data-mobile-nav="inicio" href="#inicio"><span class="mn-icon">⌂</span><span>Início</span></a>
@@ -2059,9 +2066,9 @@ const KIDS_COMBOS = [{"id": "kids2026-familia", "name": "Combo Família Supreme"
 function kidsDate(now=new Date()) { return new Intl.DateTimeFormat('sv-SE',{timeZone:'America/Sao_Paulo',year:'numeric',month:'2-digit',day:'2-digit'}).format(now); }
 function kidsActive(now=new Date()) { return false; } // Campanha encerrada
 function kidsCombo(item) { return KIDS_COMBOS.find(c=>c.id===item?.combo_id || c.name===item?.name || c.name===item?.produto_nome); }
-function kidsHasCombo(items) { return items.some(x=>!!kidsCombo(x)); }
+function kidsHasCombo(items) { return items.some(x=>!!kidsCombo(x) || ['supreme-tradicional','supreme-familia'].includes(x?.combo_id)); }
 function kidsValidate(items) {
- if(kidsHasCombo(items) && !kidsActive()) { alert('Os combos do Dia das Crianças são válidos somente em 12/10/2026. Remova os combos para continuar.'); return false; }
+ if(items.some(x=>!!kidsCombo(x)) && !kidsActive()) { alert('Os combos do Dia das Crianças são válidos somente em 12/10/2026. Remova os combos para continuar.'); return false; }
  return true;
 }
 function kidsPizzaUnits(x) { const c=kidsCombo(x); return c ? c.pizzas : 1; }
@@ -3563,5 +3570,22 @@ function refreshKidsAvailability(){
  if(document.getElementById('kidsAvailability'))document.getElementById('kidsAvailability').textContent=active?'Combos disponíveis hoje!':'Promoção encerrada ou ainda não disponível.';
 }
 refreshKidsAvailability();setInterval(refreshKidsAvailability,30000);
-</script></body>
+</script><script>
+// Combos permanentes La Supreme: identificadores separados da campanha encerrada de 12/10.
+const SUPREME_COMBOS = [
+ {id:'supreme-tradicional',name:'Combo Tradicional',desc:'Frango com Catupiry 35 cm + Banana Nevada 25 cm',price:99.90},
+ {id:'supreme-familia',name:'Combo Família',desc:'Calabresa 35 cm + Brigadeiro 25 cm',price:99.90}
+];
+function addSupremeCombo(id){
+ const c=SUPREME_COMBOS.find(x=>x.id===id);
+ if(!c)return;
+ if(typeof cart==='undefined'||!Array.isArray(cart)){alert('Carrinho indisponível. Atualize a página.');return;}
+ cart.push({id:Date.now()+Math.random(),combo_id:c.id,kind:'combo',name:c.name,size:c.desc,section:'cat-combos-supreme',sweetRatio:0,unit:c.price,qty:1});
+ if(typeof _appliedCoupon!=='undefined'&&_appliedCoupon){_appliedCoupon=null;if(typeof setCouponMessage==='function')setCouponMessage('Cupom removido: combos não são cumulativos com cupons.','err');}
+ if(typeof saveCart==='function')saveCart();
+ if(typeof updateDeliveryTotal==='function')updateDeliveryTotal();
+ if(typeof showToast==='function')showToast('Combo adicionado ao pedido');
+}
+</script>
+</body>
 </html>
