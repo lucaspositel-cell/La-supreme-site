@@ -583,7 +583,24 @@ body{background:#050505!important;color:#fff!important;padding-bottom:142px!impo
 <div><span>♛</span><p><b>Receita artesanal</b><small>Qualidade La Supreme</small></p></div>
 </div>
 </header>
+<style>
+.supreme-combo-shortcut{display:flex;align-items:center;justify-content:center;gap:12px;flex-wrap:wrap;text-decoration:none!important;color:#24110c!important;background:linear-gradient(105deg,#ffce38,#ff7c33 55%,#ffcf49);padding:17px 14px;margin:15px 0 12px;border-radius:17px;font-size:1rem;font-weight:900;box-shadow:0 6px 20px #0005;text-align:center;animation:combo-glow 2.5s ease-in-out infinite alternate}
+.supreme-combo-shortcut strong{font-size:clamp(1.15rem,3.8vw,1.7rem);white-space:nowrap}.supreme-combo-shortcut span{background:#3e1915;color:#fff;padding:9px 15px;border-radius:25px}
+#cat-combos-supreme{margin:10px auto 24px!important;display:block!important;visibility:visible!important;opacity:1!important;scroll-margin-top:115px}
+@keyframes combo-glow{to{box-shadow:0 6px 27px #ffb52a85}}
+@media(max-width:600px){.supreme-combo-shortcut{gap:7px;padding:13px 8px;font-size:.83rem}.supreme-combo-shortcut strong{width:100%;font-size:1.5rem}#cat-combos-supreme{margin:8px 0 18px!important}}
+@media(prefers-reduced-motion:reduce){.supreme-combo-shortcut{animation:none}}
+</style>
 <main class="wrap" id="cardapio">
+<a href="#cat-combos-supreme" class="supreme-combo-shortcut">🔥 OFERTA EM DESTAQUE <strong>2 PIZZAS POR R$ 99,90</strong><span>VER COMBOS ↓</span></a>
+<section id="cat-combos-supreme" class="menu-section" aria-label="Combos La Supreme">
+<div style="text-align:center"><span class="combo-label">OFERTAS ESPECIAIS</span></div>
+<h2 class="combo-title">🍕 COMBOS LA SUPREME 🍕</h2>
+<p class="combo-intro">Duas pizzas deliciosas por um preço especial! Sem refrigerante ou brinde.</p>
+<div class="combo-grid">
+<article class="combo-card"><span class="combo-label">2 pizzas no combo</span><h3>Combo Tradicional</h3><p class="combo-description"><strong>Frango com Catupiry</strong> — grande 35 cm<br>+ <strong>Banana Nevada</strong> — broto 25 cm</p><p class="combo-price">R$ 99,90</p><button type="button" class="combo-add" onclick="addSupremeCombo('supreme-tradicional')">Adicionar ao pedido</button></article>
+<article class="combo-card family"><span class="combo-label">2 pizzas no combo</span><h3>Combo Família</h3><p class="combo-description"><strong>Calabresa</strong> — grande 35 cm<br>+ <strong>Brigadeiro</strong> — broto 25 cm</p><p class="combo-price">R$ 99,90</p><button type="button" class="combo-add" onclick="addSupremeCombo('supreme-familia')">Adicionar ao pedido</button></article>
+</div></section>
 <div class="search-wrap">
 <input class="search" id="search" oninput="filterMenu()" placeholder="🔎 Buscar sabor ou ingrediente..." type="search"/>
 </div>
@@ -1905,13 +1922,26 @@ body{background:#050505!important;color:#fff!important;padding-bottom:142px!impo
 <div class="footer">
     La Supreme Pizzaria • Sabor que vira tradição! • WhatsApp (15) 99739-8019 • Instagram @lasupreme_pizza
   </div>
-<section id="cat-combos-supreme" class="menu-section" style="padding:22px 16px;max-width:1150px;margin:22px auto;border:1px solid #b38a49;border-radius:18px;background:linear-gradient(135deg,#241a15,#39271b);color:#fff">
-<h2 style="text-align:center;color:#f5cf82;margin:0 0 8px">Combos La Supreme</h2>
-<p style="text-align:center;margin:0 0 20px;color:#f1e6d4">Duas pizzas por um preço especial. Sem bebida ou brinde.</p>
-<div style="display:grid;grid-template-columns:repeat(auto-fit,minmax(245px,1fr));gap:16px">
-<article style="border:1px solid #977647;border-radius:14px;padding:18px;background:#1c1715"><h3 style="color:#f5cf82;margin:0 0 10px">Combo Tradicional</h3><p>Frango com Catupiry grande (35 cm) + Banana Nevada broto (25 cm)</p><p style="font-size:1.55rem;font-weight:800;color:#f5cf82">R$ 99,90</p><button type="button" onclick="addSupremeCombo('supreme-tradicional')" style="padding:12px 18px;border:0;border-radius:9px;background:#e8b65b;color:#20160d;font-weight:800;cursor:pointer;width:100%">Adicionar ao pedido</button></article>
-<article style="border:1px solid #977647;border-radius:14px;padding:18px;background:#1c1715"><h3 style="color:#f5cf82;margin:0 0 10px">Combo Família</h3><p>Calabresa grande (35 cm) + Brigadeiro broto (25 cm)</p><p style="font-size:1.55rem;font-weight:800;color:#f5cf82">R$ 99,90</p><button type="button" onclick="addSupremeCombo('supreme-familia')" style="padding:12px 18px;border:0;border-radius:9px;background:#e8b65b;color:#20160d;font-weight:800;cursor:pointer;width:100%">Adicionar ao pedido</button></article>
-</div></section>
+<style>
+#cat-combos-supreme{max-width:1160px;margin:28px auto;padding:26px 18px 30px;border:2px solid #f5b83d;border-radius:24px;background:radial-gradient(ellipse at 10% 0%,#73302c 0%,transparent 48%),linear-gradient(130deg,#24120e,#49231c 60%,#241710);box-shadow:0 10px 35px rgba(0,0,0,.35);color:#fff;scroll-margin-top:90px}
+#cat-combos-supreme .combo-title{text-align:center;color:#ffe6a4;font-weight:900;font-size:clamp(1.65rem,4vw,2.6rem);margin:8px 0 6px;text-shadow:0 2px 8px #160c0a}
+#cat-combos-supreme .combo-intro{text-align:center;color:#fff0da;margin:0 0 22px;font-size:1.03rem}
+#cat-combos-supreme .combo-grid{display:grid;grid-template-columns:repeat(auto-fit,minmax(min(100%,310px),1fr));gap:20px}
+#cat-combos-supreme .combo-card{position:relative;overflow:hidden;border:2px solid #ffc454;border-radius:20px;padding:24px 20px 20px;background:linear-gradient(145deg,#853c25,#3a1714 65%);box-shadow:0 8px 24px rgba(0,0,0,.35)}
+#cat-combos-supreme .combo-card.family{background:linear-gradient(145deg,#6b2b56,#351728 65%);border-color:#f5a9d0}
+#cat-combos-supreme .combo-label{display:inline-block;background:#ffce55;color:#3a190c;border-radius:99px;padding:6px 12px;font-size:.8rem;font-weight:900;letter-spacing:.04em;text-transform:uppercase}
+#cat-combos-supreme .family .combo-label{background:#ffacd2;color:#43182b}
+#cat-combos-supreme h3{color:#fff;margin:16px 0 12px;font-size:1.5rem;font-weight:900}
+#cat-combos-supreme .combo-description{font-size:1.05rem;line-height:1.6;min-height:70px;color:#fff6eb}
+#cat-combos-supreme .combo-description strong{color:#ffe6a4}
+#cat-combos-supreme .combo-price{font-size:2.35rem;line-height:1.15;font-weight:950;color:#ffe073;margin:18px 0;text-shadow:0 2px 5px #28100c}
+#cat-combos-supreme .family .combo-price{color:#ffc1e0}
+#cat-combos-supreme .combo-add{display:block;width:100%;padding:15px 14px;border:0;border-radius:12px;background:linear-gradient(180deg,#ffe083,#f6aa22);color:#321609;font-weight:900;font-size:1.04rem;cursor:pointer;box-shadow:0 4px 0 #9d5911}
+#cat-combos-supreme .family .combo-add{background:linear-gradient(180deg,#ffd4e8,#f59ac5);box-shadow:0 4px 0 #9a4874}
+#cat-combos-supreme .combo-add:focus-visible{outline:3px solid #fff;outline-offset:3px}
+@media(max-width:600px){#cat-combos-supreme{margin:18px 10px;padding:20px 12px}#cat-combos-supreme .combo-card{padding:20px 16px}#cat-combos-supreme .combo-description{min-height:0}}
+</style>
+
 </main>
 <nav aria-label="Navegação rápida" class="mobile-app-nav">
 <a class="active" data-mobile-nav="inicio" href="#inicio"><span class="mn-icon">⌂</span><span>Início</span></a>
