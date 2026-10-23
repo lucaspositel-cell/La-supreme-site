@@ -41,6 +41,7 @@ button{cursor:pointer}button:disabled{opacity:.55;cursor:wait}button:focus-visib
 @media(min-width:800px){.modalbg:has(.waiter-modal){align-items:center;padding:20px}.waiter-modal{border-radius:20px;max-height:90vh}}
 @media(max-width:600px){#tables{grid-template-columns:repeat(2,minmax(0,1fr))}#tables .mesa{min-height:156px;padding:15px}.waiter-body{grid-template-columns:1fr;padding:14px;gap:18px}.waiter-modal{height:95dvh;max-height:95dvh}.waiter-modal .products{max-height:32vh}.waiter-top{padding:14px}.waiter-bottom{padding-left:14px;padding-right:14px}.waiter-bottom .total{font-size:19px}.waiter-bottom button{padding:12px}.waiter-heading h2{font-size:25px}}
 
+.hh-modal input,.hh-modal select{font-size:16px;min-height:50px;margin-top:6px}.hh-modal label{font-weight:700}.hh-results{max-height:220px;overflow:auto;border:1px solid var(--l);border-radius:10px;margin-top:6px;scrollbar-width:thin}.hh-results[hidden]{display:none}.hh-choice{display:flex;width:100%;justify-content:space-between;align-items:center;gap:12px;min-height:58px;padding:12px;text-align:left;border-radius:0;background:#241c19;color:var(--t);border-bottom:1px solid var(--l)}.hh-choice:hover,.hh-choice:focus-visible{background:#443221}.hh-choice small{display:block;color:var(--m);font-weight:400;margin-top:4px}.hh-choice>strong{color:var(--g);white-space:nowrap}.hh-summary{display:flex;justify-content:space-between;gap:12px;flex-wrap:wrap;padding:15px 0;margin-top:12px;border-top:1px solid var(--l)}.hh-summary strong{color:var(--g)}.hh-modal .actions button{min-height:50px}
 #mesaPrintArea{display:none}#mesaPrintArea pre{white-space:pre-wrap;overflow-wrap:anywhere;margin:0;font:12px/1.4 monospace}.waiter-bottom{flex-wrap:wrap}.waiter-print-actions{display:flex;gap:8px;flex-wrap:wrap}
 @media(max-width:420px){.waiter-print-actions{width:100%}.waiter-print-actions button{flex:1}}
 @media print{
@@ -283,14 +284,52 @@ async function addP(p,size,price,w){
 
 function pizzaProducts(){return PRODUCTS.filter(p=>p.broto!=null && !['Bebidas','Calzones','Crostinis','Pizza Rolls'].includes(p.category))}
 
+let hhPickerProducts=[],hhChosen=[null,null],hhSaving=false;
+const hhNormalize=s=>String(s||'').normalize('NFD').replace(/[\u0300-\u036f]/g,'').toLowerCase().trim();
+function hhMatches(slot){
+  const words=hhNormalize(document.getElementById('hh'+slot).value).split(/\s+/).filter(Boolean);
+  return hhPickerProducts.map((p,index)=>({p,index})).filter(({p})=>words.every(w=>hhNormalize(p.name).includes(w)));
+}
+function renderHalfChoices(slot){
+  const list=document.getElementById('hhResults'+slot),key=document.getElementById('hhsize').value==='Broto'?'broto':'grande';
+  list.hidden=false;
+  const matches=hhMatches(slot);
+  list.innerHTML=matches.map(({p,index})=>`<button type="button" class="hh-choice" onclick="chooseHalfFlavor(${slot},${index})"><span><b>${esc(p.name)}</b><small>${esc(p.category||'Pizza')}</small></span><strong>${money(p[key])}</strong></button>`).join('')||'<p class="small">Nenhum sabor encontrado. Tente outra parte do nome.</p>';
+}
+function searchHalfFlavor(slot){hhChosen[slot-1]=null;renderHalfChoices(slot);updateHalfTotal()}
+function chooseHalfFlavor(slot,index){
+  const p=hhPickerProducts[index];if(!p)return;
+  hhChosen[slot-1]=index;document.getElementById('hh'+slot).value=p.name;
+  document.getElementById('hhResults'+slot).hidden=true;updateHalfTotal();
+  if(slot===1&&hhChosen[1]===null){const next=document.getElementById('hh2');next.focus();renderHalfChoices(2)}
+}
+function halfFlavorKeys(event,slot){
+  if(event.key==='Enter'){event.preventDefault();const first=hhMatches(slot)[0];if(first)chooseHalfFlavor(slot,first.index)}
+  if(event.key==='Escape')document.getElementById('hhResults'+slot).hidden=true;
+}
+function updateHalfTotal(){
+  const ready=hhChosen.every(i=>i!==null&&!!hhPickerProducts[i]);
+  const key=document.getElementById('hhsize').value==='Broto'?'broto':'grande';
+  document.getElementById('hhTotal').textContent=ready?money(hhChosen.reduce((sum,i)=>sum+Number(hhPickerProducts[i][key]),0)/2):'Selecione os dois sabores';
+  document.getElementById('hhAddBtn').disabled=!ready||hhSaving;
+}
+function resizeHalfPizza(){updateHalfTotal();for(const slot of [1,2])if(!document.getElementById('hhResults'+slot).hidden)renderHalfChoices(slot)}
 function openHalfHalf(where){
-  const ps=pizzaProducts();
-  const opts=ps.map((p,i)=>`<option value="${i}">${esc(p.name)}</option>`).join('');
-  modal.innerHTML=`<div class="modalbg"><div class="modal"><div class="row"><h2>Pizza meio a meio</h2><span class="grow"></span><button class="dark" onclick="${where==='t'?'showT()':'closeM()'}">Fechar</button></div><div class="small">Preço = 50% do sabor 1 + 50% do sabor 2.</div><div class="field"><select id="hhsize"><option value="Broto">Broto</option><option value="Grande">Grande</option></select></div><div class="field"><label>1º sabor</label><select id="hh1">${opts}</select></div><div class="field"><label>2º sabor</label><select id="hh2">${opts}</select></div><div class="actions field"><button class="dark" onclick="${where==='t'?'showT()':'closeM()'}">Cancelar</button><button class="ok" onclick="addHalfHalf('${where}')">Adicionar 50/50</button></div></div></div>`;
+  hhPickerProducts=pizzaProducts();hhChosen=[null,null];hhSaving=false;
+  const back=where==='t'?'showT()':'closeM()';
+  modal.innerHTML=`<div class="modalbg"><div class="modal hh-modal" role="dialog" aria-modal="true" aria-labelledby="hhTitle"><div class="row"><h2 id="hhTitle">Pizza meio a meio</h2><span class="grow"></span><button class="dark" onclick="${back}">Voltar</button></div><p class="small">Digite parte do nome e toque no sabor desejado. Os valores da lista são da pizza inteira.</p><div class="field"><label for="hhsize">Tamanho</label><select id="hhsize" onchange="resizeHalfPizza()"><option value="Broto">Broto · 25 cm</option><option value="Grande">Grande · 35 cm</option></select></div>${[1,2].map(slot=>`<div class="field"><label for="hh${slot}">${slot}º sabor</label><input id="hh${slot}" type="search" inputmode="text" autocomplete="off" placeholder="Digite o sabor…" onfocus="renderHalfChoices(${slot})" oninput="searchHalfFlavor(${slot})" onkeydown="halfFlavorKeys(event,${slot})" aria-controls="hhResults${slot}"><div id="hhResults${slot}" class="hh-results" hidden></div></div>`).join('')}<div class="hh-summary"><span>50% de cada sabor</span><strong id="hhTotal" aria-live="polite">Selecione os dois sabores</strong></div><div class="actions field"><button class="dark" onclick="${back}">Cancelar</button><button id="hhAddBtn" class="ok" disabled onclick="submitHalfPizza('${where}')">Adicionar à comanda</button></div></div></div>`;
+  document.getElementById('hh1').focus();renderHalfChoices(1);
+}
+async function submitHalfPizza(where){
+  if(hhSaving)return;
+  if(hhChosen.some(i=>i===null))return alert('Escolha os dois sabores na lista.');
+  hhSaving=true;updateHalfTotal();
+  try{await addHalfHalf(where)}catch(e){alert('Não foi possível concluir o lançamento. Confira a comanda antes de tentar novamente. '+e.message)}finally{hhSaving=false;if(document.getElementById('hhAddBtn'))updateHalfTotal()}
 }
 
 async function addHalfHalf(where){
-  const ps=pizzaProducts(),p1=ps[Number(hh1.value)],p2=ps[Number(hh2.value)],size=hhsize.value;
+  if(hhChosen.some(i=>i===null))return alert('Escolha os dois sabores na lista.');
+  const p1=hhPickerProducts[hhChosen[0]],p2=hhPickerProducts[hhChosen[1]],size=document.getElementById('hhsize').value;
   const k=size==='Broto'?'broto':'grande';
   const price=(Number(p1[k])+Number(p2[k]))/2;
   const obj={produto_nome:`½ ${p1.name} + ½ ${p2.name}`,tamanho:size,sabor_1:p1.name,sabor_2:p2.name,quantidade:1,preco_unitario:price,adicionais:0,total:price,observacoes:'Pizza meio a meio 50/50'};
