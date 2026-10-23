@@ -41,7 +41,7 @@ button{cursor:pointer}button:disabled{opacity:.55;cursor:wait}button:focus-visib
 @media(min-width:800px){.modalbg:has(.waiter-modal){align-items:center;padding:20px}.waiter-modal{border-radius:20px;max-height:90vh}}
 @media(max-width:600px){#tables{grid-template-columns:repeat(2,minmax(0,1fr))}#tables .mesa{min-height:156px;padding:15px}.waiter-body{grid-template-columns:1fr;padding:14px;gap:18px}.waiter-modal{height:95dvh;max-height:95dvh}.waiter-modal .products{max-height:32vh}.waiter-top{padding:14px}.waiter-bottom{padding-left:14px;padding-right:14px}.waiter-bottom .total{font-size:19px}.waiter-bottom button{padding:12px}.waiter-heading h2{font-size:25px}}
 
-#mesaPrintArea{display:none}.waiter-bottom{flex-wrap:wrap}.waiter-print-actions{display:flex;gap:8px;flex-wrap:wrap}
+#mesaPrintArea{display:none}#mesaPrintArea pre{white-space:pre-wrap;overflow-wrap:anywhere;margin:0;font:12px/1.4 monospace}.waiter-bottom{flex-wrap:wrap}.waiter-print-actions{display:flex;gap:8px;flex-wrap:wrap}
 @media(max-width:420px){.waiter-print-actions{width:100%}.waiter-print-actions button{flex:1}}
 @media print{
  @page{size:auto;margin:3mm}
@@ -308,13 +308,50 @@ function mesaReceiptHTML(mesa,comanda,itens,emissao=new Date()){
   const total=itens.reduce((sum,x)=>sum+Number(x.total||0),0);
   return `<h1>LA SUPREME</h1><h2>Pedido · Mesa ${esc(mesa.numero)}</h2><p>Comanda: ${esc(comanda.id)}<br>${esc(emissao.toLocaleString('pt-BR'))}${comanda.cliente_nome?'<br>Cliente: '+esc(comanda.cliente_nome):''}</p><hr>${itens.map(x=>`<article><strong>${esc(x.quantidade)}x ${esc(x.produto_nome)}</strong>${x.tamanho?'<div>'+esc(x.tamanho)+'</div>':''}${x.observacoes?'<div>Obs.: '+esc(x.observacoes)+'</div>':''}<div>${money(x.total)}</div></article>`).join('')}<hr><h2>Total parcial: ${money(total)}</h2><p>COMANDA — NÃO É DOCUMENTO FISCAL<br>Impressão não confirma pagamento.<br>Reimpressão pode conter itens já preparados.</p>`;
 }
+function mesaReceiptText(mesa,comanda,itens,emissao=new Date()){
+  const W=32,L='-'.repeat(W),D='='.repeat(W);
+  const center=s=>' '.repeat(Math.max(0,Math.floor((W-s.length)/2)))+s;
+  const wrap=value=>{
+    const result=[];
+    for(const line of String(value??'').replace(/[\x00-\x08\x0b-\x1f\x7f]/g,'').split(/\r?\n/)){
+      let text=line.trim();
+      while(text.length>W){let cut=text.lastIndexOf(' ',W);if(cut<1)cut=W;result.push(text.slice(0,cut));text=text.slice(cut).trimStart()}
+      result.push(text);
+    }
+    return result;
+  };
+  const r=[D,center('LA SUPREME'),center('COMANDA DA MESA'),D];
+  const add=s=>r.push(...wrap(s));
+  add('MESA: '+mesa.numero);add('COMANDA: '+comanda.id);
+  add('IMPRESSAO: '+emissao.toLocaleString('pt-BR'));
+  if(comanda.cliente_nome)add('CLIENTE: '+comanda.cliente_nome);
+  r.push(L);
+  itens.forEach(x=>{
+    add(`${x.quantidade??1}x ${x.produto_nome||'Produto'}`);
+    if(x.tamanho)add('TAMANHO: '+x.tamanho);
+    if(x.borda||x.crust)add('BORDA: '+(x.borda||x.crust));
+    if(x.sabor_1&&x.sabor_2)add(`SABORES: 1/2 ${x.sabor_1} + 1/2 ${x.sabor_2}`);
+    if(x.observacoes)add('OBS: '+x.observacoes);
+    add('VALOR: '+money(x.total));r.push('');
+  });
+  r.push(L);add('TOTAL PARCIAL: '+money(itens.reduce((sum,x)=>sum+Number(x.total||0),0)));
+  r.push(D);add('NAO E DOCUMENTO FISCAL');add('NAO CONFIRMA PAGAMENTO');add('VIA COMPLETA: pode conter itens ja preparados.');r.push('','','');
+  return r.join('\n');
+}
 function printMesa(){
   if(!curT||!curC)return alert('Abra uma mesa para imprimir.');
   if(!sitems.length)return alert('Adicione pelo menos um item antes de imprimir.');
   if(document.body.classList.contains('mesa-printing'))return;
+  const txt=mesaReceiptText(curT,curC,sitems);
+  // Mesmo transporte usado no delivery: Android envia texto pelo protocolo RawBT.
+  if(/Android/i.test(navigator.userAgent)){
+    window.location.href='rawbt:'+encodeURIComponent(txt);
+    return;
+  }
   let area=document.getElementById('mesaPrintArea');
   if(!area){area=document.createElement('section');area.id='mesaPrintArea';document.body.appendChild(area)}
-  area.innerHTML=mesaReceiptHTML(curT,curC,sitems);
+  area.replaceChildren();
+  const pre=document.createElement('pre');pre.textContent=txt;area.appendChild(pre);
   document.body.classList.add('mesa-printing');
   requestAnimationFrame(()=>requestAnimationFrame(()=>{
     try{window.print()}catch(e){document.body.classList.remove('mesa-printing');alert('Não foi possível abrir a impressão. '+e.message)}
