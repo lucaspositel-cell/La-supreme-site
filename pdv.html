@@ -260,7 +260,7 @@ async function startT(){
 function showT(){
   waiterCategory='';
   const categories=[...new Set(PRODUCTS.filter(p=>!kidsCombo(p)||kidsActive()).map(p=>p.category))];
-  modal.innerHTML=`<div class="modalbg"><div class="modal waiter-modal" role="dialog" aria-modal="true" aria-labelledby="waiterTitle"><div class="waiter-top"><div class="row"><div class="grow"><span class="eyebrow">Comanda da mesa</span><h2 id="waiterTitle">Mesa ${esc(curT.numero)}</h2></div><button class="dark" onclick="closeM();load()">← Mesas</button></div><p class="waiter-subtitle">${curC.cliente_nome?'Cliente: '+esc(curC.cliente_nome):'Atendimento em andamento'}</p></div><div class="waiter-body"><div class="waiter-products"><label for="tq">Adicionar produtos</label><div class="field"><input id="tq" type="search" placeholder="Buscar sabor ou produto…" oninput="renderProducts('t')"></div><select class="waiter-category" aria-label="Categoria de produtos" onchange="waiterCategory=this.value;renderProducts('t')"><option value="">Todas as categorias</option>${categories.map(c=>`<option value="${esc(c)}">${esc(c)}</option>`).join('')}</select><div class="row field"><button class="yellow grow" onclick="openHalfHalf('t')">🍕 Montar pizza meio a meio</button></div><div id="tp" class="products"></div></div><div class="waiter-order"><h3>Itens da comanda</h3><div id="titems"></div><div class="waiter-secondary"><button class="dark" onclick="cancelT()">Cancelar atendimento</button></div></div></div><div class="waiter-bottom"><div><div class="small">Total da comanda</div><div class="total" id="ttot" aria-live="polite">R$ 0,00</div></div><div class="waiter-print-actions"><button class="yellow" onclick="printMesa()">🖨️ Imprimir pedido</button><button class="ok" onclick="closeTUI()">Fechar conta →</button></div></div></div></div>`;
+  modal.innerHTML=`<div class="modalbg"><div class="modal waiter-modal" role="dialog" aria-modal="true" aria-labelledby="waiterTitle"><div class="waiter-top"><div class="row"><div class="grow"><span class="eyebrow">Comanda da mesa</span><h2 id="waiterTitle">Mesa ${esc(curT.numero)}</h2></div><button class="dark" onclick="closeM();load()">← Mesas</button></div><p class="waiter-subtitle">${curC.cliente_nome?'Cliente: '+esc(curC.cliente_nome):'Atendimento em andamento'}</p></div><div class="waiter-body"><div class="waiter-products"><label for="tq">Adicionar produtos</label><div class="field"><input id="tq" type="search" placeholder="Buscar sabor ou produto…" oninput="renderProducts('t')"></div><select class="waiter-category" aria-label="Categoria de produtos" onchange="waiterCategory=this.value;renderProducts('t')"><option value="">Todas as categorias</option>${categories.map(c=>`<option value="${esc(c)}">${esc(c)}</option>`).join('')}</select><div class="row field"><button class="yellow grow" onclick="openHalfHalf('t')">🍕 Montar pizza meio a meio</button></div><div id="tp" class="products"></div></div><div class="waiter-order"><h3>Itens da comanda</h3><div id="titems"></div><p id="mesaPrintStatus" class="small" role="status"></p><div class="waiter-secondary"><button class="dark" onclick="printMesa(\'full\')">Reimprimir completa</button><button class="dark" onclick="undoMesaPrint()">Desfazer último envio</button><button class="dark" onclick="markMesaAlreadySent()">Marcar atuais como enviados</button><button class="dark" onclick="cancelT()">Cancelar atendimento</button></div></div></div><div class="waiter-bottom"><div><div class="small">Total da comanda</div><div class="total" id="ttot" aria-live="polite">R$ 0,00</div></div><div class="waiter-print-actions"><button class="yellow" onclick="printMesa()">🖨️ Imprimir novos itens</button><button class="ok" onclick="closeTUI()">Fechar conta →</button></div></div></div></div>`;
   renderProducts('t');renderTItems();
 }
 
@@ -308,7 +308,41 @@ function mesaReceiptHTML(mesa,comanda,itens,emissao=new Date()){
   const total=itens.reduce((sum,x)=>sum+Number(x.total||0),0);
   return `<h1>LA SUPREME</h1><h2>Pedido · Mesa ${esc(mesa.numero)}</h2><p>Comanda: ${esc(comanda.id)}<br>${esc(emissao.toLocaleString('pt-BR'))}${comanda.cliente_nome?'<br>Cliente: '+esc(comanda.cliente_nome):''}</p><hr>${itens.map(x=>`<article><strong>${esc(x.quantidade)}x ${esc(x.produto_nome)}</strong>${x.tamanho?'<div>'+esc(x.tamanho)+'</div>':''}${x.observacoes?'<div>Obs.: '+esc(x.observacoes)+'</div>':''}<div>${money(x.total)}</div></article>`).join('')}<hr><h2>Total parcial: ${money(total)}</h2><p>COMANDA — NÃO É DOCUMENTO FISCAL<br>Impressão não confirma pagamento.<br>Reimpressão pode conter itens já preparados.</p>`;
 }
-function mesaReceiptText(mesa,comanda,itens,emissao=new Date()){
+function mesaPrintKey(id){return 'ls_mesa_print_v1_'+String(id)}
+function mesaPrintRead(id){
+  const raw=localStorage.getItem(mesaPrintKey(id));
+  if(!raw)return {items:{},batch:0};
+  const state=JSON.parse(raw);
+  if(!state||!state.items||typeof state.items!=='object')throw Error('Histórico de impressão inválido. Não envie novamente sem conferir os cupons.');
+  return state;
+}
+function mesaPrintSignature(x){return JSON.stringify([x.produto_nome,x.tamanho,x.sabor_1,x.sabor_2,x.borda||x.crust,x.observacoes,Number(x.preco_unitario||0),Number(x.adicionais||0)])}
+function mesaPrintPending(items,state){
+  return items.flatMap(x=>{
+    if(x.id==null)throw Error('Item sem identificação. Atualize a comanda antes de imprimir.');
+    const old=state.items[String(x.id)],qty=Number(x.quantidade??1),changed=old&&old.signature!==mesaPrintSignature(x);
+    const delta=changed?qty:Math.max(0,qty-Number(old?.qty||0));
+    return delta>0?[{...x,quantidade:delta,total:Number(x.total||0)/Math.max(qty,1)*delta,observacoes:(changed?'ITEM ALTERADO - CONFERIR COM A COZINHA. ':'')+(x.observacoes||'')}]:[];
+  });
+}
+function mesaPrintSnapshot(items){return Object.fromEntries(items.map(x=>[String(x.id),{qty:Number(x.quantidade??1),signature:mesaPrintSignature(x)}]))}
+function updateMesaPrintStatus(){
+  const el=document.getElementById('mesaPrintStatus');if(!el||!curC)return;
+  try{const state=mesaPrintRead(curC.id),pending=mesaPrintPending(sitems,state);el.textContent=pending.reduce((n,x)=>n+Number(x.quantidade),0)+' unidade(s) nova(s) para enviar. Controle somente neste navegador/aparelho. Se falhar, desfaça o último envio.'}catch(e){el.textContent=e.message}
+}
+function undoMesaPrint(){
+  if(!curC)return;
+  try{const state=mesaPrintRead(curC.id);if(!state.previous)return alert('Nenhum envio para desfazer neste aparelho.');
+    if(!confirm('Desfazer o último envio? Os itens voltarão a ficar pendentes. Use somente se a impressão falhou, para evitar duplicidade na cozinha.'))return;
+    localStorage.setItem(mesaPrintKey(curC.id),JSON.stringify(state.previous));updateMesaPrintStatus();
+  }catch(e){alert('Não foi possível desfazer: '+e.message)}
+}
+function markMesaAlreadySent(){
+  if(!curC||!sitems.length)return;
+  if(!confirm('Marcar TODOS os itens atuais como já enviados, sem imprimir? Use somente se eles já foram entregues à cozinha antes desta atualização ou por outro aparelho.'))return;
+  try{const state=mesaPrintRead(curC.id);localStorage.setItem(mesaPrintKey(curC.id),JSON.stringify({items:mesaPrintSnapshot(sitems),batch:state.batch||0,previous:state}));updateMesaPrintStatus()}catch(e){alert(e.message)}
+}
+function mesaReceiptText(mesa,comanda,itens,emissao=new Date(),mode='full',batch=0){
   const W=32,L='-'.repeat(W),D='='.repeat(W);
   const center=s=>' '.repeat(Math.max(0,Math.floor((W-s.length)/2)))+s;
   const wrap=value=>{
@@ -320,9 +354,10 @@ function mesaReceiptText(mesa,comanda,itens,emissao=new Date()){
     }
     return result;
   };
-  const r=[D,center('LA SUPREME'),center('COMANDA DA MESA'),D];
+  const r=[D,center('LA SUPREME'),center(mode==='new'?'NOVOS ITENS - COZINHA':'REIMPRESSAO COMPLETA'),D];
   const add=s=>r.push(...wrap(s));
   add('MESA: '+mesa.numero);add('COMANDA: '+comanda.id);
+  if(mode==='new')add('ENVIO LOCAL: '+batch);
   add('IMPRESSAO: '+emissao.toLocaleString('pt-BR'));
   if(comanda.cliente_nome)add('CLIENTE: '+comanda.cliente_nome);
   r.push(L);
@@ -334,18 +369,31 @@ function mesaReceiptText(mesa,comanda,itens,emissao=new Date()){
     if(x.observacoes)add('OBS: '+x.observacoes);
     add('VALOR: '+money(x.total));r.push('');
   });
-  r.push(L);add('TOTAL PARCIAL: '+money(itens.reduce((sum,x)=>sum+Number(x.total||0),0)));
-  r.push(D);add('NAO E DOCUMENTO FISCAL');add('NAO CONFIRMA PAGAMENTO');add('VIA COMPLETA: pode conter itens ja preparados.');r.push('','','');
+  r.push(L);add((mode==='new'?'TOTAL DESTE ENVIO: ':'TOTAL PARCIAL: ')+money(itens.reduce((sum,x)=>sum+Number(x.total||0),0)));
+  r.push(D);add('NAO E DOCUMENTO FISCAL');add('NAO CONFIRMA PAGAMENTO');if(mode!=='new')add('CONFERENCIA: NAO PREPARAR NOVAMENTE.');r.push('','','');
   return r.join('\n');
 }
-function printMesa(){
+function printMesa(mode='new'){
   if(!curT||!curC)return alert('Abra uma mesa para imprimir.');
   if(!sitems.length)return alert('Adicione pelo menos um item antes de imprimir.');
   if(document.body.classList.contains('mesa-printing'))return;
-  const txt=mesaReceiptText(curT,curC,sitems);
+  let state,selected;
+  const comandaId=curC.id;
+  try{state=mesaPrintRead(comandaId);selected=mode==='full'?sitems:mesaPrintPending(sitems,state)}catch(e){return alert('Não foi possível conferir o histórico: '+e.message)}
+  if(!selected.length)return alert('Nenhum item novo para imprimir. Para conferência, use Reimprimir completa.');
+  if(mode==='full'&&!confirm('Reimprimir a comanda COMPLETA? Ela pode conter itens já preparados. Os novos itens continuarão pendentes para envio separado.'))return;
+  const snapshot=mesaPrintSnapshot(sitems);
+  const txt=mesaReceiptText(curT,curC,selected,new Date(),mode,Number(state.batch||0)+1);
+  const record=()=>{
+    if(mode==='full')return;
+    // Preserva itens removidos: não representa cancelamento automático para a cozinha.
+    const next={items:{...state.items,...snapshot},batch:Number(state.batch||0)+1,previous:{items:state.items,batch:state.batch||0}};
+    localStorage.setItem(mesaPrintKey(comandaId),JSON.stringify(next));
+  };
   // Mesmo transporte usado no delivery: Android envia texto pelo protocolo RawBT.
   if(/Android/i.test(navigator.userAgent)){
-    window.location.href='rawbt:'+encodeURIComponent(txt);
+    try{record();window.location.href='rawbt:'+encodeURIComponent(txt);updateMesaPrintStatus()}
+    catch(e){if(mode!=='full'){try{localStorage.setItem(mesaPrintKey(comandaId),JSON.stringify(state))}catch(ignore){}}alert('Não foi possível enviar: '+e.message)}
     return;
   }
   let area=document.getElementById('mesaPrintArea');
@@ -354,13 +402,14 @@ function printMesa(){
   const pre=document.createElement('pre');pre.textContent=txt;area.appendChild(pre);
   document.body.classList.add('mesa-printing');
   requestAnimationFrame(()=>requestAnimationFrame(()=>{
-    try{window.print()}catch(e){document.body.classList.remove('mesa-printing');alert('Não foi possível abrir a impressão. '+e.message)}
+    try{window.print();if(mode!=='full'&&confirm('A impressão foi concluída? Confirme somente se o cupom saiu.'))record();updateMesaPrintStatus()}catch(e){alert('Não foi possível concluir a impressão: '+e.message)}finally{document.body.classList.remove('mesa-printing')}
   }));
 }
 window.addEventListener('afterprint',()=>document.body.classList.remove('mesa-printing'));
 function renderTItems(){
   titems.innerHTML=sitems.map(x=>`<div class="item"><div class="row"><div class="grow"><b>${x.quantidade}x ${esc(x.produto_nome)}</b><div class="small">${esc(x.tamanho||'')} — ${money(x.total)}</div></div><button class="dark" aria-label="Remover ${esc(x.produto_nome)}" onclick="confirmWaiterRemove('${x.id}')">×</button></div></div>`).join('')||'<div class="waiter-empty">A comanda está vazia.<br>Escolha um produto para começar.</div>';
   ttot.textContent=money(sitems.reduce((a,x)=>a+Number(x.total),0));
+  updateMesaPrintStatus();
 }
 
 function confirmWaiterRemove(id){if(confirm('Remover este item da comanda?'))return delI(id).catch(e=>alert('Não foi possível remover o item. '+e.message))}
