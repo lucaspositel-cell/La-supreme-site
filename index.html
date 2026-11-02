@@ -679,6 +679,7 @@ body{background:#050505!important;color:#fff!important;padding-bottom:142px!impo
 <div class="combo-grid">
 <article class="combo-card"><span class="combo-label">2 pizzas no combo</span><h3>Combo Tradicional</h3><p class="combo-description"><strong>Frango com Catupiry</strong> — grande 35 cm<br>+ <strong>Banana Nevada</strong> — broto 25 cm</p><p class="combo-price">R$ 99,90</p><button type="button" class="combo-add" onclick="addSupremeCombo('supreme-tradicional')">Adicionar ao pedido</button></article>
 <article class="combo-card family"><span class="combo-label">2 pizzas no combo</span><h3>Combo Família</h3><p class="combo-description"><strong>Calabresa</strong> — grande 35 cm<br>+ <strong>Brigadeiro</strong> — broto 25 cm</p><p class="combo-price">R$ 99,90</p><button type="button" class="combo-add" onclick="addSupremeCombo('supreme-familia')">Adicionar ao pedido</button></article>
+<article class="combo-card"><span class="combo-label">2 pizzas no combo</span><h3>Combo Tropical</h3><p class="combo-description"><strong>Mista</strong> — grande 35 cm<br>+ <strong>Abacaxi Supreme</strong> — broto 25 cm</p><p class="combo-price">R$ 99,90</p><button type="button" class="combo-add" onclick="addSupremeCombo('supreme-tropical')">Adicionar ao pedido</button></article>
 </div></section>
 
 <div class="menu-welcome"><span>CARDÁPIO LA SUPREME</span><h2>Escolha sua pizza</h2><p>Encontre seu sabor e escolha inteira ou meio a meio.</p></div>
@@ -2201,7 +2202,7 @@ const KIDS_COMBOS = [{"id": "kids2026-familia", "name": "Combo Família Supreme"
 function kidsDate(now=new Date()) { return new Intl.DateTimeFormat('sv-SE',{timeZone:'America/Sao_Paulo',year:'numeric',month:'2-digit',day:'2-digit'}).format(now); }
 function kidsActive(now=new Date()) { return false; } // Campanha encerrada
 function kidsCombo(item) { return KIDS_COMBOS.find(c=>c.id===item?.combo_id || c.name===item?.name || c.name===item?.produto_nome); }
-function kidsHasCombo(items) { return items.some(x=>!!kidsCombo(x) || ['supreme-tradicional','supreme-familia'].includes(x?.combo_id)); }
+function kidsHasCombo(items) { return items.some(x=>!!kidsCombo(x) || ['supreme-tradicional','supreme-familia','supreme-tropical'].includes(x?.combo_id)); }
 function kidsValidate(items) {
  if(items.some(x=>!!kidsCombo(x)) && !kidsActive()) { alert('Os combos do Dia das Crianças são válidos somente em 12/10/2026. Remova os combos para continuar.'); return false; }
  return true;
@@ -3736,7 +3737,8 @@ refreshKidsAvailability();setInterval(refreshKidsAvailability,30000);
 // Combos permanentes La Supreme: identificadores separados da campanha encerrada de 12/10.
 const SUPREME_COMBOS = [
  {id:'supreme-tradicional',name:'Combo Tradicional',desc:'Frango com Catupiry 35 cm + Banana Nevada 25 cm',price:99.90},
- {id:'supreme-familia',name:'Combo Família',desc:'Calabresa 35 cm + Brigadeiro 25 cm',price:99.90}
+ {id:'supreme-familia',name:'Combo Família',desc:'Calabresa 35 cm + Brigadeiro 25 cm',price:99.90},
+ {id:'supreme-tropical',name:'Combo Tropical',desc:'Mista 35 cm + Abacaxi Supreme 25 cm',price:99.90}
 ];
 function addSupremeCombo(id){
  const c=SUPREME_COMBOS.find(x=>x.id===id);
