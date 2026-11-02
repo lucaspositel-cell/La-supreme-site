@@ -653,6 +653,7 @@ body{background:#050505!important;color:#fff!important;padding-bottom:142px!impo
 #cartOverlay #address,#cartOverlay #generalObs{min-height:64px}
 @media(max-width:360px){#cartOverlay .checkout-drink-grid{grid-template-columns:1fr}}
 </style>
+<style>#cartOverlay .remember-pix-email{display:flex;align-items:center;gap:8px;font-size:11px;font-weight:400;color:var(--muted)}#cartOverlay .remember-pix-email input{width:17px;height:17px;padding:0;accent-color:var(--gold)}</style>
 </head>
 <body>
 <nav class="site-nav app-topbar">
@@ -2106,6 +2107,7 @@ body{background:#050505!important;color:#fff!important;padding-bottom:142px!impo
 <div class="form-grid">
 <div class="field full"><label>Seu nome</label><input id="accountName" autocomplete="name" placeholder="Nome do cliente"></div>
 <div class="field full"><label>Telefone</label><input id="accountPhone" inputmode="tel" autocomplete="tel" placeholder="(15) 99999-9999"></div>
+<div class="field full"><label for="accountEmail">E-mail para Pix (opcional)</label><input id="accountEmail" type="email" inputmode="email" autocomplete="email" placeholder="seuemail@exemplo.com"></div>
 <div class="field full"><label>Endereço principal</label><textarea id="accountAddress" autocomplete="street-address" placeholder="Rua, número, bairro, cidade e referência"></textarea></div>
 </div>
 <div class="account-actions">
@@ -2590,6 +2592,19 @@ function subtotal(){return roundDeliveryMoney(cart.reduce((s,x)=>s+x.unit*x.qty,
 
 const CUSTOMER_PROFILE_KEY='ls_customer_profile_v1';
 
+function validCustomerEmail(email){
+  return typeof email==='string' && /^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(email);
+}
+function rememberCheckoutEmail(order){
+  if(order.payment!=='Pix' || !validCustomerEmail(order.customer.email))return;
+  if(!document.getElementById('rememberPixEmail')?.checked)return;
+  const profile=getCustomerProfile()||{};
+  // A phone match avoids mixing two customers using the same browser.
+  const sameCustomer=String(profile.phone||'').replace(/\D/g,'')===String(order.customer.phone||'').replace(/\D/g,'');
+  const next=sameCustomer?profile:{name:order.customer.name,phone:order.customer.phone,address:order.address};
+  localStorage.setItem(CUSTOMER_PROFILE_KEY,JSON.stringify({...next,email:order.customer.email,updatedAt:new Date().toISOString()}));
+}
+
 function getCustomerProfile(){
   try{return JSON.parse(localStorage.getItem(CUSTOMER_PROFILE_KEY)||'null');}
   catch(e){return null;}
@@ -2601,6 +2616,7 @@ function openCustomerAccount(){
   document.getElementById('accountName').value=p.name||'';
   document.getElementById('accountPhone').value=p.phone||'';
   document.getElementById('accountAddress').value=p.address||'';
+  document.getElementById('accountEmail').value=p.email||'';
   ov.classList.add('open');
 }
 function closeCustomerAccount(){
@@ -2610,9 +2626,11 @@ function saveCustomerProfile(){
   const name=document.getElementById('accountName')?.value.trim()||'';
   const phone=document.getElementById('accountPhone')?.value.trim()||'';
   const address=document.getElementById('accountAddress')?.value.trim()||'';
+  const email=document.getElementById('accountEmail')?.value.trim().toLowerCase()||'';
+  if(email && !validCustomerEmail(email))return alert('Confira seu e-mail.');
   if(!name)return alert('Informe seu nome.');
   if(phone.replace(/\D/g,'').length<10)return alert('Informe um telefone válido.');
-  localStorage.setItem(CUSTOMER_PROFILE_KEY,JSON.stringify({name,phone,address,updatedAt:new Date().toISOString()}));
+  localStorage.setItem(CUSTOMER_PROFILE_KEY,JSON.stringify({name,phone,address,email,updatedAt:new Date().toISOString()}));
   fillCheckoutFromProfile();
   closeCustomerAccount();
   showToast('Cadastro salvo neste aparelho!');
@@ -2636,6 +2654,8 @@ function fillCheckoutFromProfile(){
   if(n && !n.value)n.value=p.name||'';
   if(ph && !ph.value)ph.value=p.phone||'';
   if(a && !a.value)a.value=p.address||'';
+  const email=document.getElementById('custEmail');
+  if(email && !email.value && validCustomerEmail(p.email))email.value=p.email;
 }
 function saveCheckoutProfileIfRequested(){
   const chk=document.getElementById('saveCustomerData');
@@ -2643,8 +2663,9 @@ function saveCheckoutProfileIfRequested(){
   const name=document.getElementById('custName')?.value.trim()||'';
   const phone=document.getElementById('custPhone')?.value.trim()||'';
   const address=document.getElementById('address')?.value.trim()||'';
+  const email=document.getElementById('custEmail')?.value.trim().toLowerCase()||getCustomerProfile()?.email||'';
   if(name && phone.replace(/\D/g,'').length>=10){
-    localStorage.setItem(CUSTOMER_PROFILE_KEY,JSON.stringify({name,phone,address,updatedAt:new Date().toISOString()}));
+    localStorage.setItem(CUSTOMER_PROFILE_KEY,JSON.stringify({name,phone,address,email,updatedAt:new Date().toISOString()}));
   }
 }
 
@@ -2671,12 +2692,14 @@ function captureCheckoutDraft(){
   });
   const opened={};
   ['checkoutDrinkSuggest','checkoutCoupon','checkoutNotes'].forEach(id=>{opened[id]=!!document.getElementById(id)?.open;});
-  return {values,opened,fulfillment:window._fulfillment||'delivery'};
+  return {values,opened,rememberEmail:!!document.getElementById('rememberPixEmail')?.checked,fulfillment:window._fulfillment||'delivery'};
 }
 function restoreCheckoutDraft(draft){
   if(!draft)return;
   Object.entries(draft.values).forEach(([id,value])=>{const el=document.getElementById(id);if(el)el.value=value;});
   Object.entries(draft.opened).forEach(([id,open])=>{const el=document.getElementById(id);if(el)el.open=open;});
+  const remember=document.getElementById('rememberPixEmail');
+  if(remember)remember.checked=draft.rememberEmail;
   setFulfillment(draft.fulfillment);
   togglePixEmail();
 }
@@ -2686,7 +2709,7 @@ function renderCart(){
   const b=document.getElementById('cartBody');
   if(!cart.length){b.innerHTML='<div class="empty-cart">Seu carrinho está vazio.<br>Escolha os itens no cardápio.</div><button class="btn-main" style="width:100%" onclick="closeCart()">Voltar ao cardápio</button>';return;}
   const rows=cart.map(x=>`<div class="cart-row"><div><h4>${escapeHtml(x.name)}</h4><p>${x.size?escapeHtml(x.size):''}${x.crust?` • Borda ${escapeHtml(x.crust)}`:''}</p>${x.obs?`<p>Obs.: ${escapeHtml(x.obs)}</p>`:''}<strong>${money(x.unit*x.qty)}</strong><br><button class="remove-item" onclick="removeItem(${x.id})">Remover</button></div><div class="qty-controls"><button onclick="changeQty(${x.id},-1)">−</button><b>${x.qty}</b><button onclick="changeQty(${x.id},1)">+</button></div></div>`).join('');
-  b.innerHTML=`<div class="cart-list">${rows}</div><div class="checkout-block"><h3>Seus dados</h3><div class="form-grid"><div class="field full"><label>Seu nome</label><input id="custName" placeholder="Nome do cliente"></div><div class="field full"><label>Telefone</label><input id="custPhone" inputmode="tel" placeholder="(15) 99999-9999"></div><div class="field full"><label>Recebimento</label><div class="choice-row"><button id="deliveryBtn" class="choice active" onclick="setFulfillment('delivery')">Entrega</button><button id="pickupBtn" class="choice" onclick="setFulfillment('pickup')">Retirada</button></div></div><div id="deliveryFields" class="field full"><label>Sua cidade</label><select id="deliveryCity" onchange="updateDeliveryTotal()"><option value="" data-fee="0" selected disabled>Selecione sua cidade</option><option value="Maristela" data-fee="0">Maristela — entrega grátis</option><option value="Laranjal Paulista" data-fee="5">Laranjal Paulista — entrega R$ 5,00</option><option value="Pereiras" data-fee="5">Pereiras — entrega R$ 5,00</option></select></div><div id="addressFields" class="field full"><label>Endereço de entrega</label><textarea id="address" placeholder="Rua, número, bairro e referência"></textarea></div><details class="checkout-optional field full" id="checkoutCoupon"><summary>Tenho um cupom</summary><div class="optional-content"><div class="field full"><label>Cupom de desconto</label><div class="coupon-box"><div class="coupon-row"><input id="couponCode" maxlength="40" autocomplete="off" placeholder="Ex.: SUPREME10" oninput="couponInputChanged()"><button id="couponApplyBtn" class="coupon-apply" type="button" onclick="applyCoupon()">Aplicar</button></div><div id="couponMsg" class="coupon-msg"></div></div></div></div></details><div class="field full"><label>Forma de pagamento</label><select id="payment" onchange="togglePixEmail()"><option value="Pix">Pix</option><option value="Dinheiro">Dinheiro</option><option value="Cartão na entrega">Cartão na entrega</option></select></div><div id="pixEmailField" class="field full"><label>E-mail para gerar o Pix</label><input id="custEmail" type="email" inputmode="email" autocomplete="email" placeholder="seuemail@exemplo.com"><div class="small-note">Para gerar seu Pix.</div></div><details class="checkout-optional field full" id="checkoutNotes"><summary>Adicionar observação</summary><div class="optional-content"><div class="field full"><label>Observações gerais</label><textarea id="generalObs" placeholder="Alguma observação para o pedido?"></textarea></div></div></details></div><details class="checkout-drink-suggest" id="checkoutDrinkSuggest"><summary><span>🥤 Adicionar bebida</span><small>Opcional</small></summary><div class="checkout-drink-grid"><button type="button" class="checkout-drink-btn" onclick="addCheckoutBeverage('Coca-Cola Lata',7)">Coca-Cola Lata<span>R$ 7,00</span></button><button type="button" class="checkout-drink-btn" onclick="addCheckoutBeverage('Coca-Cola 1 Litro',12)">Coca-Cola 1 Litro<span>R$ 12,00</span></button><button type="button" class="checkout-drink-btn" onclick="addCheckoutBeverage('Coca-Cola 2L',19)">Coca-Cola 2L<span>R$ 19,00</span></button><button type="button" class="checkout-drink-btn" onclick="addCheckoutBeverage('Pérgola Tinto Suave',36)">Pérgola Tinto Suave<span>R$ 36,00</span></button><button type="button" class="checkout-drink-btn" onclick="addCheckoutBeverage('Pérgola Tinto Seco',36)">Pérgola Tinto Seco<span>R$ 36,00</span></button><button type="button" class="checkout-drink-btn" onclick="addCheckoutBeverage('Pérgola Bordô Demi-Sec',40)">Pérgola Bordô Demi-Sec<span>R$ 40,00</span></button></div></details><div class="cart-summary"><div class="sum-line"><span>Subtotal</span><span>${money(subtotal())}</span></div><div class="sum-line" id="deliveryFeeLine"><span>Entrega</span><span id="deliveryFeeValue">Grátis</span></div><div class="sum-line discount" id="discountLine" style="display:none"><span>Desconto</span><span id="discountValue">− R$ 0,00</span></div><div class="sum-line total"><span>Total</span><span id="checkoutTotalValue">${money(subtotal())}</span></div><div class="small-note" id="deliveryFeeNote">Escolha sua cidade abaixo. Maristela tem entrega grátis; Laranjal Paulista e Pereiras têm taxa de R$ 5,00.</div></div><button class="btn-main finish-btn" style="width:100%;margin-top:12px" onclick="checkoutWhatsApp()">✅ Finalizar pedido</button></div>`;
+  b.innerHTML=`<div class="cart-list">${rows}</div><div class="checkout-block"><h3>Seus dados</h3><div class="form-grid"><div class="field full"><label>Seu nome</label><input id="custName" placeholder="Nome do cliente"></div><div class="field full"><label>Telefone</label><input id="custPhone" inputmode="tel" placeholder="(15) 99999-9999"></div><div class="field full"><label>Recebimento</label><div class="choice-row"><button id="deliveryBtn" class="choice active" onclick="setFulfillment('delivery')">Entrega</button><button id="pickupBtn" class="choice" onclick="setFulfillment('pickup')">Retirada</button></div></div><div id="deliveryFields" class="field full"><label>Sua cidade</label><select id="deliveryCity" onchange="updateDeliveryTotal()"><option value="" data-fee="0" selected disabled>Selecione sua cidade</option><option value="Maristela" data-fee="0">Maristela — entrega grátis</option><option value="Laranjal Paulista" data-fee="5">Laranjal Paulista — entrega R$ 5,00</option><option value="Pereiras" data-fee="5">Pereiras — entrega R$ 5,00</option></select></div><div id="addressFields" class="field full"><label>Endereço de entrega</label><textarea id="address" placeholder="Rua, número, bairro e referência"></textarea></div><details class="checkout-optional field full" id="checkoutCoupon"><summary>Tenho um cupom</summary><div class="optional-content"><div class="field full"><label>Cupom de desconto</label><div class="coupon-box"><div class="coupon-row"><input id="couponCode" maxlength="40" autocomplete="off" placeholder="Ex.: SUPREME10" oninput="couponInputChanged()"><button id="couponApplyBtn" class="coupon-apply" type="button" onclick="applyCoupon()">Aplicar</button></div><div id="couponMsg" class="coupon-msg"></div></div></div></div></details><div class="field full"><label>Forma de pagamento</label><select id="payment" onchange="togglePixEmail()"><option value="Pix">Pix</option><option value="Dinheiro">Dinheiro</option><option value="Cartão na entrega">Cartão na entrega</option></select></div><div id="pixEmailField" class="field full"><label>E-mail para gerar o Pix</label><input id="custEmail" type="email" inputmode="email" autocomplete="email" placeholder="seuemail@exemplo.com"><label class="remember-pix-email"><input type="checkbox" id="rememberPixEmail"> Lembrar e-mail neste aparelho</label></div><details class="checkout-optional field full" id="checkoutNotes"><summary>Adicionar observação</summary><div class="optional-content"><div class="field full"><label>Observações gerais</label><textarea id="generalObs" placeholder="Alguma observação para o pedido?"></textarea></div></div></details></div><details class="checkout-drink-suggest" id="checkoutDrinkSuggest"><summary><span>🥤 Adicionar bebida</span><small>Opcional</small></summary><div class="checkout-drink-grid"><button type="button" class="checkout-drink-btn" onclick="addCheckoutBeverage('Coca-Cola Lata',7)">Coca-Cola Lata<span>R$ 7,00</span></button><button type="button" class="checkout-drink-btn" onclick="addCheckoutBeverage('Coca-Cola 1 Litro',12)">Coca-Cola 1 Litro<span>R$ 12,00</span></button><button type="button" class="checkout-drink-btn" onclick="addCheckoutBeverage('Coca-Cola 2L',19)">Coca-Cola 2L<span>R$ 19,00</span></button><button type="button" class="checkout-drink-btn" onclick="addCheckoutBeverage('Pérgola Tinto Suave',36)">Pérgola Tinto Suave<span>R$ 36,00</span></button><button type="button" class="checkout-drink-btn" onclick="addCheckoutBeverage('Pérgola Tinto Seco',36)">Pérgola Tinto Seco<span>R$ 36,00</span></button><button type="button" class="checkout-drink-btn" onclick="addCheckoutBeverage('Pérgola Bordô Demi-Sec',40)">Pérgola Bordô Demi-Sec<span>R$ 40,00</span></button></div></details><div class="cart-summary"><div class="sum-line"><span>Subtotal</span><span>${money(subtotal())}</span></div><div class="sum-line" id="deliveryFeeLine"><span>Entrega</span><span id="deliveryFeeValue">Grátis</span></div><div class="sum-line discount" id="discountLine" style="display:none"><span>Desconto</span><span id="discountValue">− R$ 0,00</span></div><div class="sum-line total"><span>Total</span><span id="checkoutTotalValue">${money(subtotal())}</span></div><div class="small-note" id="deliveryFeeNote">Escolha sua cidade abaixo. Maristela tem entrega grátis; Laranjal Paulista e Pereiras têm taxa de R$ 5,00.</div></div><button class="btn-main finish-btn" style="width:100%;margin-top:12px" onclick="checkoutWhatsApp()">✅ Finalizar pedido</button></div>`;
   window._fulfillment='delivery';
   applyStoreStatusUI();
   togglePixEmail();
@@ -2828,6 +2851,8 @@ function togglePixEmail(){
   const pay=document.getElementById('payment')?.value||'Pix';
   const field=document.getElementById('pixEmailField');
   if(field) field.style.display=pay==='Pix'?'flex':'none';
+  const email=document.getElementById('custEmail');
+  if(email)email.required=pay==='Pix';
 }
 function nextOrderNumber(){
   const d=new Date();
@@ -2852,7 +2877,7 @@ function buildOrderData(){
   if(fulfillment==='delivery'&&!address){alert('Informe o endereço de entrega.');return null;}
   const pay=document.getElementById('payment')?.value||'Pix';
   const email=document.getElementById('custEmail')?.value.trim().toLowerCase()||'';
-  if(pay==='Pix' && (!email || !email.includes('@'))){
+  if(pay==='Pix' && !validCustomerEmail(email)){
     alert('Informe um e-mail válido para gerar o Pix.');
     return null;
   }
@@ -3021,6 +3046,7 @@ async function checkoutWhatsApp(){
     if(order.payment==='Pix'){
       if(!order.dbId) throw new Error('Pedido salvo sem ID para cobrança Pix.');
       const pix=await createPixForOrder(order.dbId,order.customer.email);
+      rememberCheckoutEmail(order);
       _appliedCoupon=null;
       cart=[]; saveCart(); renderCart(); closeCart();
       showPixPayment(order,pix);
