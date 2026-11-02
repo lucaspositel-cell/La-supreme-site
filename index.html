@@ -645,7 +645,7 @@ body{background:#050505!important;color:#fff!important;padding-bottom:142px!impo
 <h1>Sua pizza <span>favorita está aqui.</span></h1>
 <p>Massa artesanal e ingredientes selecionados, preparados com a receita original La Supreme.</p>
 <div class="app-hero-actions">
-<a class="app-primary" href="#cardapio">🍕 ESCOLHER PIZZA</a>
+<a class="app-primary" href="#escolher-pizza" onclick="scrollToMenuSection('escolher-pizza');return false;">🍕 ESCOLHER PIZZA</a>
 <button class="app-secondary" onclick="openOrderTracking()" type="button">📍 ACOMPANHAR PEDIDO</button>
 </div>
 </div>
@@ -682,7 +682,7 @@ body{background:#050505!important;color:#fff!important;padding-bottom:142px!impo
 <article class="combo-card"><span class="combo-label">2 pizzas no combo</span><h3>Combo Tropical</h3><p class="combo-description"><strong>Mista</strong> — grande 35 cm<br>+ <strong>Abacaxi Supreme</strong> — broto 25 cm</p><p class="combo-price">R$ 99,90</p><button type="button" class="combo-add" onclick="addSupremeCombo('supreme-tropical')">Adicionar ao pedido</button></article>
 </div></section>
 
-<div class="menu-welcome"><span>CARDÁPIO LA SUPREME</span><h2>Escolha sua pizza</h2><p>Encontre seu sabor e escolha inteira ou meio a meio.</p></div>
+<div class="menu-welcome" id="escolher-pizza" style="scroll-margin-top:110px"><span>CARDÁPIO LA SUPREME</span><h2>Escolha sua pizza</h2><p>Encontre seu sabor e escolha inteira ou meio a meio.</p></div>
 
 
 <div class="search-wrap">
@@ -2051,7 +2051,7 @@ body{background:#050505!important;color:#fff!important;padding-bottom:142px!impo
 </main>
 <nav aria-label="Navegação rápida" class="mobile-app-nav">
 <a class="active" data-mobile-nav="inicio" href="#inicio"><span class="mn-icon">⌂</span><span>Início</span></a>
-<a data-mobile-nav="cardapio" href="#cardapio"><span class="mn-icon">🍕</span><span>Cardápio</span></a>
+<a onclick="openPizzaMenu();return false;" data-mobile-nav="cardapio" href="#cat-tradicionais"><span class="mn-icon">🍕</span><span>Cardápio</span></a>
 <button data-mobile-nav="pedidos" onclick="openOrderTracking()" type="button"><span class="mn-icon">◉</span><span>Pedidos</span></button>
 <button data-mobile-nav="carrinho" onclick="openCart()" style="position:relative" type="button"><span class="cart-dot" id="mobileCartCount">0</span><span class="mn-icon">🛒</span><span>Carrinho</span></button>
 </nav>
@@ -3510,7 +3510,7 @@ window.addEventListener('DOMContentLoaded',()=>{
 </script>
 <div aria-label="Navegação principal" class="mobile-app-nav">
 <a class="active-link" href="#inicio"><span>⌂</span>Início</a>
-<a href="#cardapio"><span>☷</span>Cardápio</a>
+<a onclick="openPizzaMenu();return false;" href="#cat-tradicionais"><span>☷</span>Cardápio</a>
 <button class="order-center" type="button" onclick="openCart()"><span>🍕</span>Pedir</button>
 <button onclick="openOrderTracking()" type="button"><span>▣</span>Pedidos</button>
 <button onclick="openCart()" type="button"><span>🛒</span>Carrinho</button>
@@ -3673,6 +3673,30 @@ document.addEventListener('DOMContentLoaded', lsOpenRecoveryIfNeeded);
 
 
 <script>
+function openPizzaMenu(){
+  const search=document.getElementById('search');
+  if(search){search.value='';search.blur();}
+  filterMenu();
+  document.getElementById('pizzaGroups')?.classList.remove('open');
+  const pizzaButton=document.getElementById('pizzaMainBtn');
+  pizzaButton?.classList.remove('open');
+  pizzaButton?.setAttribute('aria-expanded','false');
+  document.getElementById('drinkGroups')?.classList.remove('open');
+  document.getElementById('drinkMenuBtn')?.classList.remove('open-menu');
+  requestAnimationFrame(()=>{
+    const target=document.getElementById('cat-tradicionais');
+    if(!target)return;
+    let offset=12;
+    document.querySelectorAll('.app-topbar,.search-wrap,.category-shell').forEach(node=>{
+      const style=getComputedStyle(node);
+      if(style.display==='none'||!['sticky','fixed'].includes(style.position))return;
+      const top=parseFloat(style.top);
+      if(Number.isFinite(top))offset=Math.max(offset,top+node.getBoundingClientRect().height+12);
+    });
+    window.scrollTo({top:Math.max(0,window.scrollY+target.getBoundingClientRect().top-offset),behavior:'smooth'});
+  });
+}
+
 function scrollToMenuSection(id){
   const el=document.getElementById(id);
   if(!el) return;
