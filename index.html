@@ -625,6 +625,34 @@ body{background:#050505!important;color:#fff!important;padding-bottom:142px!impo
 #cat-combos-supreme .combo-description{font-size:.95rem;line-height:1.5}
 }
 </style>
+<style id="ls-checkout-clean">
+/* Checkout claro: dados essenciais primeiro, extras opcionais no final. */
+#cartOverlay .checkout-block{border-top:0;margin-top:20px;padding-top:0}
+#cartOverlay .checkout-block>h3{font-size:18px;margin:0 0 16px}
+#cartOverlay .form-grid{gap:14px}
+#cartOverlay .field label{font-size:12px;color:#d7d0c5}
+#cartOverlay .checkout-optional{border:1px solid #302a23;border-radius:11px;display:block;background:#100f0d}
+#cartOverlay details>summary{cursor:pointer;min-height:46px;padding:13px 12px;font-size:13px;color:#ded6c8;list-style:none;display:flex;align-items:center;gap:10px}
+#cartOverlay details>summary::-webkit-details-marker{display:none}
+#cartOverlay details>summary::after{content:'+';margin-left:auto;font-size:19px;color:var(--gold)}
+#cartOverlay details[open]>summary::after{content:'−'}
+#cartOverlay details>summary:focus-visible{outline:2px solid var(--gold);outline-offset:2px;border-radius:10px}
+#cartOverlay .optional-content{padding:0 12px 12px}
+#cartOverlay .coupon-box{padding:0;border:0;background:transparent}
+#cartOverlay .coupon-msg:empty{display:none}
+#cartOverlay .checkout-drink-suggest{margin:18px 0 0;padding:0;background:#100f0d;border:1px solid #302a23;border-radius:11px}
+#cartOverlay .checkout-drink-suggest summary small{color:#9d9488;font-size:11px;margin-left:auto}
+#cartOverlay .checkout-drink-suggest summary::after{margin-left:0}
+#cartOverlay .checkout-drink-grid{padding:0 12px 12px;grid-template-columns:repeat(2,minmax(0,1fr));gap:8px}
+#cartOverlay .checkout-drink-btn{min-height:54px;border-color:#352e23;background:#16130f;font-weight:600;font-size:12px;padding:10px;line-height:1.4}
+#cartOverlay .checkout-drink-btn span{font-size:12px;margin-top:4px}
+#cartOverlay .cart-summary{margin-top:18px;padding:14px 0 0;border-top:1px solid #352d21}
+#cartOverlay .sum-line{font-size:13px;color:var(--muted)}
+#cartOverlay .sum-line.total{font-size:22px;color:var(--gold);margin:12px 0 8px}
+#cartOverlay .finish-btn{min-height:50px;font-size:15px;border-radius:12px}
+#cartOverlay #address,#cartOverlay #generalObs{min-height:64px}
+@media(max-width:360px){#cartOverlay .checkout-drink-grid{grid-template-columns:1fr}}
+</style>
 </head>
 <body>
 <nav class="site-nav app-topbar">
@@ -2633,17 +2661,37 @@ function addCheckoutBeverage(name,price){
 }
 function skipCheckoutBeverages(){
   const el=document.getElementById('checkoutDrinkSuggest');
-  if(el){el.innerHTML='<p style="margin:0;color:var(--muted);font-size:12px">Bebidas não adicionadas. Você pode finalizar seu pedido abaixo.</p>';}
+  if(el)el.open=false;
 }
+function captureCheckoutDraft(){
+  if(!document.getElementById('custName'))return null;
+  const values={};
+  ['custName','custPhone','deliveryCity','address','payment','custEmail','couponCode','generalObs'].forEach(id=>{
+    const el=document.getElementById(id);if(el)values[id]=el.value;
+  });
+  const opened={};
+  ['checkoutDrinkSuggest','checkoutCoupon','checkoutNotes'].forEach(id=>{opened[id]=!!document.getElementById(id)?.open;});
+  return {values,opened,fulfillment:window._fulfillment||'delivery'};
+}
+function restoreCheckoutDraft(draft){
+  if(!draft)return;
+  Object.entries(draft.values).forEach(([id,value])=>{const el=document.getElementById(id);if(el)el.value=value;});
+  Object.entries(draft.opened).forEach(([id,open])=>{const el=document.getElementById(id);if(el)el.open=open;});
+  setFulfillment(draft.fulfillment);
+  togglePixEmail();
+}
+
 function renderCart(){
+  const checkoutDraft=captureCheckoutDraft();
   const b=document.getElementById('cartBody');
   if(!cart.length){b.innerHTML='<div class="empty-cart">Seu carrinho está vazio.<br>Escolha os itens no cardápio.</div><button class="btn-main" style="width:100%" onclick="closeCart()">Voltar ao cardápio</button>';return;}
   const rows=cart.map(x=>`<div class="cart-row"><div><h4>${escapeHtml(x.name)}</h4><p>${x.size?escapeHtml(x.size):''}${x.crust?` • Borda ${escapeHtml(x.crust)}`:''}</p>${x.obs?`<p>Obs.: ${escapeHtml(x.obs)}</p>`:''}<strong>${money(x.unit*x.qty)}</strong><br><button class="remove-item" onclick="removeItem(${x.id})">Remover</button></div><div class="qty-controls"><button onclick="changeQty(${x.id},-1)">−</button><b>${x.qty}</b><button onclick="changeQty(${x.id},1)">+</button></div></div>`).join('');
-  b.innerHTML=`<div class="cart-list">${rows}</div><div class="cart-summary"><div class="sum-line"><span>Subtotal</span><span>${money(subtotal())}</span></div><div class="sum-line" id="deliveryFeeLine"><span>Entrega</span><span id="deliveryFeeValue">Grátis</span></div><div class="sum-line discount" id="discountLine" style="display:none"><span>Desconto</span><span id="discountValue">− R$ 0,00</span></div><div class="sum-line total"><span>Total</span><span id="checkoutTotalValue">${money(subtotal())}</span></div><div class="small-note" id="deliveryFeeNote">Escolha sua cidade abaixo. Maristela tem entrega grátis; Laranjal Paulista e Pereiras têm taxa de R$ 5,00.</div></div><div class="checkout-block"><div class="checkout-drink-suggest" id="checkoutDrinkSuggest"><h4>🥤 Não esqueça sua bebida!</h4><p>Que tal completar seu pedido? Adicione uma bebida sem sair da finalização.</p><div class="checkout-drink-grid"><button type="button" class="checkout-drink-btn" onclick="addCheckoutBeverage('Coca-Cola Lata',7)">Coca-Cola Lata<span>R$ 7,00</span></button><button type="button" class="checkout-drink-btn" onclick="addCheckoutBeverage('Coca-Cola 1 Litro',12)">Coca-Cola 1 Litro<span>R$ 12,00</span></button><button type="button" class="checkout-drink-btn" onclick="addCheckoutBeverage('Coca-Cola 2L',19)">Coca-Cola 2L<span>R$ 19,00</span></button><button type="button" class="checkout-drink-btn" onclick="addCheckoutBeverage('Pérgola Tinto Suave',36)">Pérgola Tinto Suave<span>R$ 36,00</span></button><button type="button" class="checkout-drink-btn" onclick="addCheckoutBeverage('Pérgola Tinto Seco',36)">Pérgola Tinto Seco<span>R$ 36,00</span></button><button type="button" class="checkout-drink-btn" onclick="addCheckoutBeverage('Pérgola Bordô Demi-Sec',40)">Pérgola Bordô Demi-Sec<span>R$ 40,00</span></button></div><button type="button" class="checkout-drink-skip" onclick="skipCheckoutBeverages()">Continuar sem adicionar bebida</button></div><div class="checkout-steps"><div class="checkout-step active"><b>1</b>Pedido</div><div class="checkout-step active"><b>2</b>Entrega</div><div class="checkout-step active"><b>3</b>Pagamento</div><div class="checkout-step"><b>4</b>Confirmar</div></div><h3>Finalizar pedido</h3><div class="form-grid"><div class="field full"><label>Seu nome</label><input id="custName" placeholder="Nome do cliente"></div><div class="field full"><label>Telefone</label><input id="custPhone" inputmode="tel" placeholder="(15) 99999-9999"></div><div class="field full"><label>Recebimento</label><div class="choice-row"><button id="deliveryBtn" class="choice active" onclick="setFulfillment('delivery')">Entrega</button><button id="pickupBtn" class="choice" onclick="setFulfillment('pickup')">Retirada</button></div></div><div id="deliveryFields" class="field full"><label>Sua cidade</label><select id="deliveryCity" onchange="updateDeliveryTotal()"><option value="" data-fee="0" selected disabled>Selecione sua cidade</option><option value="Maristela" data-fee="0">Maristela — entrega grátis</option><option value="Laranjal Paulista" data-fee="5">Laranjal Paulista — entrega R$ 5,00</option><option value="Pereiras" data-fee="5">Pereiras — entrega R$ 5,00</option></select></div><div id="addressFields" class="field full"><label>Endereço de entrega</label><textarea id="address" placeholder="Rua, número, bairro e referência"></textarea></div><div class="field full"><label>Cupom de desconto</label><div class="coupon-box"><div class="coupon-row"><input id="couponCode" maxlength="40" autocomplete="off" placeholder="Ex.: SUPREME10" oninput="couponInputChanged()"><button id="couponApplyBtn" class="coupon-apply" type="button" onclick="applyCoupon()">Aplicar</button></div><div id="couponMsg" class="coupon-msg">Tem um cupom? Digite o código e toque em Aplicar.</div></div></div><div class="field full"><label>Forma de pagamento</label><select id="payment" onchange="togglePixEmail()"><option value="Pix">Pix</option><option value="Dinheiro">Dinheiro</option><option value="Cartão na entrega">Cartão na entrega</option></select></div><div id="pixEmailField" class="field full"><label>E-mail para gerar o Pix</label><input id="custEmail" type="email" inputmode="email" autocomplete="email" placeholder="seuemail@exemplo.com"><div class="small-note">Necessário somente para o Pix Mercado Pago.</div></div><div class="field full"><label>Observações gerais</label><textarea id="generalObs" placeholder="Alguma observação para o pedido?"></textarea></div></div><button class="btn-main finish-btn" style="width:100%;margin-top:12px" onclick="checkoutWhatsApp()">✅ Finalizar pedido</button></div>`;
+  b.innerHTML=`<div class="cart-list">${rows}</div><div class="checkout-block"><h3>Seus dados</h3><div class="form-grid"><div class="field full"><label>Seu nome</label><input id="custName" placeholder="Nome do cliente"></div><div class="field full"><label>Telefone</label><input id="custPhone" inputmode="tel" placeholder="(15) 99999-9999"></div><div class="field full"><label>Recebimento</label><div class="choice-row"><button id="deliveryBtn" class="choice active" onclick="setFulfillment('delivery')">Entrega</button><button id="pickupBtn" class="choice" onclick="setFulfillment('pickup')">Retirada</button></div></div><div id="deliveryFields" class="field full"><label>Sua cidade</label><select id="deliveryCity" onchange="updateDeliveryTotal()"><option value="" data-fee="0" selected disabled>Selecione sua cidade</option><option value="Maristela" data-fee="0">Maristela — entrega grátis</option><option value="Laranjal Paulista" data-fee="5">Laranjal Paulista — entrega R$ 5,00</option><option value="Pereiras" data-fee="5">Pereiras — entrega R$ 5,00</option></select></div><div id="addressFields" class="field full"><label>Endereço de entrega</label><textarea id="address" placeholder="Rua, número, bairro e referência"></textarea></div><details class="checkout-optional field full" id="checkoutCoupon"><summary>Tenho um cupom</summary><div class="optional-content"><div class="field full"><label>Cupom de desconto</label><div class="coupon-box"><div class="coupon-row"><input id="couponCode" maxlength="40" autocomplete="off" placeholder="Ex.: SUPREME10" oninput="couponInputChanged()"><button id="couponApplyBtn" class="coupon-apply" type="button" onclick="applyCoupon()">Aplicar</button></div><div id="couponMsg" class="coupon-msg"></div></div></div></div></details><div class="field full"><label>Forma de pagamento</label><select id="payment" onchange="togglePixEmail()"><option value="Pix">Pix</option><option value="Dinheiro">Dinheiro</option><option value="Cartão na entrega">Cartão na entrega</option></select></div><div id="pixEmailField" class="field full"><label>E-mail para gerar o Pix</label><input id="custEmail" type="email" inputmode="email" autocomplete="email" placeholder="seuemail@exemplo.com"><div class="small-note">Para gerar seu Pix.</div></div><details class="checkout-optional field full" id="checkoutNotes"><summary>Adicionar observação</summary><div class="optional-content"><div class="field full"><label>Observações gerais</label><textarea id="generalObs" placeholder="Alguma observação para o pedido?"></textarea></div></div></details></div><details class="checkout-drink-suggest" id="checkoutDrinkSuggest"><summary><span>🥤 Adicionar bebida</span><small>Opcional</small></summary><div class="checkout-drink-grid"><button type="button" class="checkout-drink-btn" onclick="addCheckoutBeverage('Coca-Cola Lata',7)">Coca-Cola Lata<span>R$ 7,00</span></button><button type="button" class="checkout-drink-btn" onclick="addCheckoutBeverage('Coca-Cola 1 Litro',12)">Coca-Cola 1 Litro<span>R$ 12,00</span></button><button type="button" class="checkout-drink-btn" onclick="addCheckoutBeverage('Coca-Cola 2L',19)">Coca-Cola 2L<span>R$ 19,00</span></button><button type="button" class="checkout-drink-btn" onclick="addCheckoutBeverage('Pérgola Tinto Suave',36)">Pérgola Tinto Suave<span>R$ 36,00</span></button><button type="button" class="checkout-drink-btn" onclick="addCheckoutBeverage('Pérgola Tinto Seco',36)">Pérgola Tinto Seco<span>R$ 36,00</span></button><button type="button" class="checkout-drink-btn" onclick="addCheckoutBeverage('Pérgola Bordô Demi-Sec',40)">Pérgola Bordô Demi-Sec<span>R$ 40,00</span></button></div></details><div class="cart-summary"><div class="sum-line"><span>Subtotal</span><span>${money(subtotal())}</span></div><div class="sum-line" id="deliveryFeeLine"><span>Entrega</span><span id="deliveryFeeValue">Grátis</span></div><div class="sum-line discount" id="discountLine" style="display:none"><span>Desconto</span><span id="discountValue">− R$ 0,00</span></div><div class="sum-line total"><span>Total</span><span id="checkoutTotalValue">${money(subtotal())}</span></div><div class="small-note" id="deliveryFeeNote">Escolha sua cidade abaixo. Maristela tem entrega grátis; Laranjal Paulista e Pereiras têm taxa de R$ 5,00.</div></div><button class="btn-main finish-btn" style="width:100%;margin-top:12px" onclick="checkoutWhatsApp()">✅ Finalizar pedido</button></div>`;
   window._fulfillment='delivery';
   applyStoreStatusUI();
   togglePixEmail();
   fillCheckoutFromProfile();
+  restoreCheckoutDraft(checkoutDraft);
   if(_appliedCoupon){
     const ci=document.getElementById('couponCode');
     if(ci)ci.value=String(_appliedCoupon.code||'').toUpperCase();
