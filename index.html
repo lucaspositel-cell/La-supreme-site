@@ -736,11 +736,12 @@ body{background:#050505!important;color:#fff!important;padding-bottom:142px!impo
 <section id="cat-combos-supreme" class="menu-section" aria-label="Combos La Supreme">
 <div style="text-align:center"><span class="combo-label">OFERTAS ESPECIAIS</span></div>
 <h2 class="combo-title">🍕 COMBOS LA SUPREME 🍕</h2>
-<p class="combo-intro">Duas pizzas deliciosas por um preço especial! Sem refrigerante ou brinde.</p>
+<p class="combo-intro">Combos de pizzas por um preço especial! Sem refrigerante ou brinde.</p>
 <div class="combo-grid">
 <article class="combo-card"><span class="combo-label">2 pizzas no combo</span><h3>Combo Tradicional</h3><p class="combo-description"><strong>Frango com Catupiry</strong> — grande 35 cm<br>+ <strong>Banana Nevada</strong> — broto 25 cm</p><p class="combo-price">R$ 99,90</p><button type="button" class="combo-add" onclick="addSupremeCombo('supreme-tradicional')">Adicionar ao pedido</button></article>
 <article class="combo-card family"><span class="combo-label">2 pizzas no combo</span><h3>Combo Família</h3><p class="combo-description"><strong>Calabresa</strong> — grande 35 cm<br>+ <strong>Brigadeiro</strong> — broto 25 cm</p><p class="combo-price">R$ 99,90</p><button type="button" class="combo-add" onclick="addSupremeCombo('supreme-familia')">Adicionar ao pedido</button></article>
 <article class="combo-card"><span class="combo-label">2 pizzas no combo</span><h3>Combo Tropical</h3><p class="combo-description"><strong>Mista</strong> — grande 35 cm<br>+ <strong>Abacaxi Supreme</strong> — broto 25 cm</p><p class="combo-price">R$ 99,90</p><button type="button" class="combo-add" onclick="addSupremeCombo('supreme-tropical')">Adicionar ao pedido</button></article>
+<article class="combo-card family"><span class="combo-label">3 pizzas no combo</span><h3>Super Combo Família Supreme</h3><p class="combo-description"><strong>Supreme Defumada</strong> — grande 35 cm<br>+ <strong>Chef Supreme</strong> — grande 35 cm<br>+ <strong>Morango</strong> — broto 25 cm</p><p class="combo-price">R$ 229,90</p><button type="button" class="combo-add" onclick="addSupremeCombo('supreme-super-familia')">Adicionar ao pedido</button></article>
 </div></section>
 
 <div class="menu-welcome" id="escolher-pizza" style="scroll-margin-top:110px"><span>CARDÁPIO LA SUPREME</span><h2>Escolha sua pizza</h2><p>Encontre seu sabor e escolha inteira ou meio a meio.</p></div>
@@ -2266,12 +2267,12 @@ const KIDS_COMBOS = [{"id": "kids2026-familia", "name": "Combo Família Supreme"
 function kidsDate(now=new Date()) { return new Intl.DateTimeFormat('sv-SE',{timeZone:'America/Sao_Paulo',year:'numeric',month:'2-digit',day:'2-digit'}).format(now); }
 function kidsActive(now=new Date()) { return false; } // Campanha encerrada
 function kidsCombo(item) { return KIDS_COMBOS.find(c=>c.id===item?.combo_id || c.name===item?.name || c.name===item?.produto_nome); }
-function kidsHasCombo(items) { return items.some(x=>!!kidsCombo(x) || ['supreme-tradicional','supreme-familia','supreme-tropical'].includes(x?.combo_id)); }
+function kidsHasCombo(items) { return items.some(x=>!!kidsCombo(x) || ['supreme-tradicional','supreme-familia','supreme-tropical','supreme-super-familia'].includes(x?.combo_id)); }
 function kidsValidate(items) {
  if(items.some(x=>!!kidsCombo(x)) && !kidsActive()) { alert('Os combos do Dia das Crianças são válidos somente em 12/10/2026. Remova os combos para continuar.'); return false; }
  return true;
 }
-function kidsPizzaUnits(x) { const c=kidsCombo(x); return c ? c.pizzas : 1; }
+function kidsPizzaUnits(x) { const c=kidsCombo(x)||SUPREME_COMBOS.find(c=>c.id===x?.combo_id); return c ? (c.pizzas||2) : 1; }
 
 function normalizeSearchText(value){
   return (value || '')
@@ -3392,7 +3393,7 @@ function lsQueuePizzaCount(o){
   const items=Array.isArray(o.items)?o.items:[];
   return items.reduce((n,x)=>{
     const qty=Math.max(1,Number(x?.qty ?? x?.quantidade ?? 1)||1);
-    return n+(kidsCombo(x)||lsQueueIsPizzaItem(x)?kidsPizzaUnits(x)*qty:0);
+    return n+(kidsCombo(x)||x.kind==='combo'||lsQueueIsPizzaItem(x)?kidsPizzaUnits(x)*qty:0);
   },0);
 }
 function lsQueueTransport15(o){
@@ -3473,6 +3474,25 @@ function renderTrackedOrder(o){
   _lsTrackLastStatus=status;
 }
 
+const lsDeliveryLinkDraft=new Map();
+function lsAttachDeliveryMap(order){
+ if(order.fulfillment!=='delivery'||['cancelado','cancelada','concluido'].includes(String(order.status)))return;
+ const draft=lsDeliveryLinkDraft.get(order.order_no)||{};
+ const box=document.createElement('details');box.className='ls-track-statusbox';box.open=!!draft.open;
+ const title=document.createElement('summary');title.textContent='🛵 Ver localização do motoboy';
+ const info=document.createElement('p');info.textContent='Use o link exclusivo enviado pela pizzaria para acompanhar sua entrega.';
+ const input=document.createElement('input');input.type='url';input.placeholder='Cole aqui o link de rastreio';input.setAttribute('aria-label','Link exclusivo da entrega');input.style.cssText='width:100%;padding:12px;margin:8px 0';
+ input.value=draft.value||'';
+ const save=()=>lsDeliveryLinkDraft.set(order.order_no,{value:input.value,open:box.open});input.addEventListener('input',save);box.addEventListener('toggle',save);
+ const button=document.createElement('button');button.type='button';button.textContent='Abrir mapa da entrega';
+ const message=document.createElement('div');message.setAttribute('role','status');
+ button.onclick=()=>{
+  try{const link=new URL(input.value.trim());if(link.origin!==location.origin||!link.pathname.endsWith('/acompanhar.html')||!/^#[a-f0-9]{64}$/.test(link.hash))throw Error();location.assign(link.href)}
+  catch(e){message.textContent='Cole o link de rastreio enviado pela pizzaria.'}
+ };
+ box.append(title,info,input,button,message);document.getElementById('lsTrackResult').appendChild(box);
+}
+
 async function trackOrderNow(manual){
   const no=(document.getElementById('lsTrackOrderNo')?.value||'').trim();
   const phone=(document.getElementById('lsTrackPhone')?.value||'').trim();
@@ -3534,6 +3554,7 @@ async function trackOrderNow(manual){
         }
       }
       renderTrackedOrder(o);
+      lsAttachDeliveryMap(o);
     }
   }catch(err){
     console.error('Falha ao acompanhar pedido:',err);
@@ -3870,13 +3891,14 @@ refreshKidsAvailability();setInterval(refreshKidsAvailability,30000);
 const SUPREME_COMBOS = [
  {id:'supreme-tradicional',name:'Combo Tradicional',desc:'Frango com Catupiry 35 cm + Banana Nevada 25 cm',price:99.90},
  {id:'supreme-familia',name:'Combo Família',desc:'Calabresa 35 cm + Brigadeiro 25 cm',price:99.90},
- {id:'supreme-tropical',name:'Combo Tropical',desc:'Mista 35 cm + Abacaxi Supreme 25 cm',price:99.90}
+ {id:'supreme-tropical',name:'Combo Tropical',desc:'Mista 35 cm + Abacaxi Supreme 25 cm',price:99.90},
+ {"id": "supreme-super-familia", "name": "Super Combo Família Supreme", "desc": "Supreme Defumada 35 cm + Chef Supreme 35 cm + Morango 25 cm", "price": 229.9, "pizzas": 3}
 ];
 function addSupremeCombo(id){
  const c=SUPREME_COMBOS.find(x=>x.id===id);
  if(!c)return;
  if(typeof cart==='undefined'||!Array.isArray(cart)){alert('Carrinho indisponível. Atualize a página.');return;}
- cart.push({id:Date.now()+Math.random(),combo_id:c.id,kind:'combo',name:c.name,size:c.desc,section:'cat-combos-supreme',sweetRatio:0,unit:c.price,qty:1});
+ cart.push({id:Date.now()+Math.random(),combo_id:c.id,kind:'combo',name:c.name,size:c.desc,section:'cat-combos-supreme',pizzas:c.pizzas||2,sweetRatio:0,unit:c.price,qty:1});
  if(typeof _appliedCoupon!=='undefined'&&_appliedCoupon){_appliedCoupon=null;if(typeof setCouponMessage==='function')setCouponMessage('Cupom removido: combos não são cumulativos com cupons.','err');}
  if(typeof saveCart==='function')saveCart();
  if(typeof updateDeliveryTotal==='function')updateDeliveryTotal();
