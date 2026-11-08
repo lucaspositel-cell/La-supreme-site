@@ -476,16 +476,143 @@ async function cancelT(){
 
 function closeTUI(){
   let total=sitems.reduce((a,x)=>a+Number(x.total),0);
-  modal.innerHTML=`<div class="modalbg"><div class="modal"><h2>Fechar Mesa ${esc(curT.numero)}</h2><div class="total">Total: ${money(total)}</div><div class="field"><select id="tpay"><option>Pix</option><option>Dinheiro</option><option>Cartão Débito</option><option>Cartão Crédito</option></select></div><div class="field"><input id="disc" value="0" inputmode="decimal" placeholder="Desconto"></div><div class="actions"><button class="dark" onclick="showT()">Voltar</button><button class="ok" onclick="finishT()">Confirmar</button></div></div></div>`;
+  modal.innerHTML=`<div class="modalbg"><div class="modal"><h2>Fechar Mesa ${esc(curT.numero)}</h2><div class="total">Total: ${money(total)}</div><div class="field"><select id="tpay"><option>Pix</option><option>Dinheiro</option><option>Cartão Débito</option><option>Cartão Crédito</option></select></div><div class="field"><input id="disc" value="0" inputmode="decimal" placeholder="Desconto"></div><div class="actions"><button class="dark" onclick="showT()">Voltar</button><button class="ok" onclick="finishT(this)">Fechar e imprimir</button></div></div></div>`;
 }
 
-async function finishT(){
- if(kidsHasCombo(sitems) && (Number(String(disc.value).replace(',','.'))||0)>0)return alert('Combos promocionais não acumulam com descontos.');
+function mesaCustomerReceiptText(mesa, comanda, itens) {
+  const separator = '-'.repeat(32);
+  const lines = [
+    '          LA SUPREME',
+    '     COMPROVANTE DO CLIENTE',
+    separator,
+    'MESA: ' + mesa.numero,
+    'COMANDA: ' + comanda.id,
+    new Date(comanda.fechada_em).toLocaleString('pt-BR', {timeZone:'America/Sao_Paulo'}),
+  ];
+  if (comanda.cliente_nome) lines.push('CLIENTE: ' + comanda.cliente_nome);
+  lines.push(separator);
+  for (const item of itens) {
+    const quantidade = Number(item.quantidade ?? 1);
+    lines.push(quantidade + 'x ' + (item.produto_nome || 'Produto'));
+    if (item.tamanho) lines.push(item.tamanho);
+    if (item.borda || item.crust) lines.push('Borda: ' + (item.borda || item.crust));
+    if (quantidade > 1 && item.preco_unitario != null) {
+      lines.push('Unitario: ' + money(item.preco_unitario));
+    }
+    lines.push('Valor do item: ' + money(item.total), '');
+  }
+  lines.push(
+    separator,
+    'SUBTOTAL: ' + money(comanda.subtotal),
+    'DESCONTO: ' + money(comanda.desconto),
+    'TOTAL: ' + money(comanda.total),
+    'PAGAMENTO: ' + comanda.forma_pagamento,
+    separator,
+    'NAO E DOCUMENTO FISCAL',
+  );
+  return lines.flatMap(line => {
+    let remaining = line.replace(/[\x00-\x1f\x7f]/g, ' ');
+    const wrapped = [];
+    while (remaining.length > 32) {
+      const space = remaining.lastIndexOf(' ', 32);
+      const cut = space > 0 ? space : 32;
+      wrapped.push(remaining.slice(0, cut));
+      remaining = remaining.slice(cut).trimStart();
+    }
+    return [...wrapped, remaining];
+  }).join('\n') + '\n\n\n';
+}
 
-  let sub=sitems.reduce((a,x)=>a+Number(x.total),0),d=Number(String(disc.value).replace(',','.'))||0,total=Math.max(0,sub-d);
-  await api(`comandas?id=eq.${curC.id}`,{method:'PATCH',body:JSON.stringify({status:'fechada',fechada_em:new Date().toISOString(),subtotal:sub,desconto:d,total,forma_pagamento:tpay.value})});
-  await api(`mesas?id=eq.${curT.id}`,{method:'PATCH',body:JSON.stringify({status:'livre'})});
-  closeM(); await load(); alert('Mesa fechada. Total: '+money(total));
+let mesaCustomerReceipt = '';
+
+function printMesaCustomerReceipt() {
+  if (!mesaCustomerReceipt || document.body.classList.contains('mesa-printing')) return;
+  try {
+    if (/Android/i.test(navigator.userAgent)) {
+      window.location.href = 'rawbt:' + encodeURIComponent(mesaCustomerReceipt);
+      return;
+    }
+    let area = document.getElementById('mesaPrintArea');
+    if (!area) {
+      area = document.createElement('section');
+      area.id = 'mesaPrintArea';
+      document.body.appendChild(area);
+    }
+    const pre = document.createElement('pre');
+    pre.textContent = mesaCustomerReceipt;
+    area.replaceChildren(pre);
+    document.body.classList.add('mesa-printing');
+    window.print();
+  } catch (error) {
+    alert('Não foi possível abrir a impressão. Tente em Imprimir comprovante.');
+  } finally {
+    document.body.classList.remove('mesa-printing');
+  }
+}
+
+async function finishT(button) {
+  if (button.disabled || !curC || !curT) return;
+  const subtotal = sitems.reduce((sum, item) => sum + Number(item.total), 0);
+  const desconto = Number(document.getElementById('disc').value.trim().replace(',', '.'));
+  if (!Number.isFinite(desconto) || desconto < 0 || desconto > subtotal) {
+    return alert('Informe um desconto entre zero e o subtotal da comanda.');
+  }
+  if (kidsHasCombo(sitems) && desconto > 0) {
+    return alert('Combos promocionais não acumulam com descontos.');
+  }
+
+  const mesa = curT;
+  const comanda = curC;
+  const itens = sitems.slice();
+  const dados = {
+    status:'fechada',
+    fechada_em:new Date().toISOString(),
+    subtotal,
+    desconto,
+    total:Math.round((subtotal - desconto) * 100) / 100,
+    forma_pagamento:document.getElementById('tpay').value,
+  };
+  const back = button.previousElementSibling;
+  button.disabled = back.disabled = true;
+  let fechada;
+  try {
+    [fechada] = await api(`comandas?id=eq.${comanda.id}&status=eq.aberta`, {
+      method:'PATCH', body:JSON.stringify(dados),
+    });
+    if (!fechada) {
+      closeM();
+      await load();
+      return alert('Esta comanda já foi encerrada. Confira a situação da mesa.');
+    }
+  } catch (error) {
+    alert('Não foi possível confirmar o fechamento. Confira a comanda e tente novamente.');
+    return;
+  } finally {
+    button.disabled = back.disabled = false;
+  }
+
+  button.disabled = back.disabled = true;
+  let mesaLiberada = true;
+  try {
+    await api(`mesas?id=eq.${mesa.id}`, {
+      method:'PATCH', body:JSON.stringify({status:'livre'}),
+    });
+  } catch (error) {
+    mesaLiberada = false;
+  }
+
+  mesaCustomerReceipt = mesaCustomerReceiptText(mesa, {...comanda, ...dados, ...fechada}, itens);
+  closeM();
+  modal.innerHTML = `<div class="modalbg"><div class="modal">
+    <h2>Comanda fechada · Mesa ${esc(mesa.numero)}</h2>
+    <div class="total">Total: ${money(fechada.total ?? dados.total)}</div>
+    ${mesaLiberada ? '' : '<p>Abra a mesa novamente para atualizar sua disponibilidade.</p>'}
+    <div class="actions">
+      <button class="dark" onclick="closeM();load()">Voltar às mesas</button>
+      <button class="ok" onclick="printMesaCustomerReceipt()">Imprimir comprovante</button>
+    </div>
+  </div></div>`;
+  printMesaCustomerReceipt();
 }
 
 function renderBCart(){
