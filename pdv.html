@@ -677,11 +677,19 @@ function normalizeDeliverySale(o){
     items:Array.isArray(o.items)?o.items:[]
   };
 }
+async function fetchReportPages(query) {
+  const rows = [];
+  while (true) {
+    const page = await api(query + '&order=id.asc&limit=200&offset=' + rows.length);
+    if (!page.length) return rows;
+    rows.push(...page);
+  }
+}
 async function deliverySalesBetween(startIso,endIso=''){
   let q=`orders?status=eq.concluido&concluded_at=gte.${encodeURIComponent(startIso)}`;
   if(endIso)q+=`&concluded_at=lte.${encodeURIComponent(endIso)}`;
   q+='&select=id,total,subtotal,delivery_fee,payment,payment_status,concluded_at,created_at,items,status';
-  const rows=await api(q);
+  const rows=endIso ? await fetchReportPages(q) : await api(q);
   return (rows||[]).map(normalizeDeliverySale);
 }
 
@@ -778,6 +786,65 @@ function applyCustomReport(){
   if(reportIni>reportFim)return alert('A data inicial não pode ser maior que a final.');
   loadRelatorios();
 }
+function reportSalesRanking(items) {
+  const nameKey = name => String(name).trim().normalize('NFD')
+    .replace(/[\u0300-\u036f]/g, '').replace(/\s+/g, ' ').toLowerCase();
+  const catalog = new Map(PRODUCTS.map(product => [nameKey(product.name), product]));
+  const canonicalName = name => catalog.get(nameKey(name))?.name || name.trim();
+  const halfPattern = /^\s*(?:½|1\s*\/\s*2)\s*(.+?)\s*\+\s*(?:½|1\s*\/\s*2)\s*(.+?)\s*$/;
+  const products = new Map();
+  const flavors = new Map();
+
+  for (const item of items) {
+    const name = String(item.produto_nome || item.name || item.sabor || 'Produto').trim();
+    const size = String(item.tamanho || item.size || '').trim();
+    const qty = Number(item.quantidade ?? item.qty ?? 1);
+    if (!Number.isFinite(qty) || qty <= 0) continue;
+
+    const sizeKey = nameKey(size);
+    const pizzaSize = /^(grande(?: 35\s*cm)?|35\s*cm)$/.test(sizeKey) ? 'Grande 35 cm'
+      : /^(broto(?: 25\s*cm)?|25\s*cm)$/.test(sizeKey) ? 'Broto 25 cm' : '';
+    const entry = catalog.get(nameKey(name));
+    const half = name.match(halfPattern);
+    const isCombo = item.kind === 'combo' || item.combo_id || /^((super )?combo)\b/i.test(name);
+    const isPizza = !isCombo && (item.kind === 'pizza' || entry?.grande != null
+      || (!entry && Boolean(pizzaSize || half)));
+    let soldFlavors = [];
+    if (isPizza) {
+      const first = item.sabor_1 || item.flavor_1;
+      const second = item.sabor_2 || item.flavor_2;
+      const split = half ? half.slice(1) : [first, second].filter(Boolean);
+      soldFlavors = (split.length ? split : [name]).map(canonicalName)
+        .sort((a,b) => a.localeCompare(b,'pt-BR'));
+    }
+    const productName = soldFlavors.length === 2
+      ? soldFlavors.map(flavor => '½ ' + flavor).join(' + ')
+      : canonicalName(name);
+    const productSize = pizzaSize || (isCombo ? '' : size);
+    const key = JSON.stringify([nameKey(productName), nameKey(productSize)]);
+    const row = products.get(key) || {nome:productName, tam:productSize, q:0, total:0, missing:0};
+    const unit = item.unit ?? item.preco_unitario ?? item.price ?? item.preco;
+    const lineValue = item.total ?? (unit == null || unit === '' ? null : Number(unit) * qty);
+    row.q += qty;
+    if (lineValue == null || lineValue === '' || !Number.isFinite(Number(lineValue))) row.missing += qty;
+    else row.total += Number(lineValue);
+    products.set(key,row);
+
+    for (const flavor of soldFlavors) {
+      const key = nameKey(flavor);
+      const row = flavors.get(key) || {name:flavor, qty:0};
+      row.qty += qty / soldFlavors.length;
+      flavors.set(key,row);
+    }
+  }
+
+  return {
+    products:[...products.values()].sort((a,b) => b.q-a.q || b.total-a.total
+      || a.nome.localeCompare(b.nome,'pt-BR') || a.tam.localeCompare(b.tam,'pt-BR')).slice(0,10),
+    flavors:[...flavors.values()].sort((a,b) => b.qty-a.qty || a.name.localeCompare(b.name,'pt-BR')).slice(0,10),
+  };
+}
+
 async function loadRelatorios(){
   if(!pdvRequireFinancial())return;
   reports.innerHTML='<h2>Relatórios</h2>'+reportFilterBar()+'<div class="small" style="margin-top:10px">Carregando...</div>';
@@ -785,21 +852,17 @@ async function loadRelatorios(){
     const rg=reportRange();
     if(!rg)return;
     const ini=encodeURIComponent(rg.start.toISOString()), fim=encodeURIComponent(rg.end.toISOString());
-    const vendasPdv=await api(`comandas?status=eq.fechada&fechada_em=gte.${ini}&fechada_em=lte.${fim}&select=id,tipo,total,subtotal,desconto,forma_pagamento,fechada_em`);
-    const vendasDelivery=await deliverySalesBetween(rg.start.toISOString(),rg.end.toISOString());
-    const vendas=[...(vendasPdv||[]).map(v=>({...v,forma_pagamento:paymentBucket(v.forma_pagamento)})),...vendasDelivery];
-    const ids=(vendasPdv||[]).map(v=>v.id);
-    let itens=[];
-    if(ids.length)itens=await api(`comanda_itens?comanda_id=in.(${ids.join(',')})&select=comanda_id,produto_nome,tamanho,sabor_1,sabor_2,quantidade,total`);
-    vendasDelivery.forEach(v=>{
-      (v.items||[]).forEach(x=>{
-        const qtd=Number(x.qty||x.quantidade||1);
-        const nome=x.name||x.produto_nome||'Produto';
-        const tam=x.size||x.tamanho||'';
-        const totalItem=Number(x.total!=null?x.total:(Number(x.price||x.preco||0)*qtd));
-        itens.push({comanda_id:v.id,produto_nome:nome,tamanho:tam,sabor_1:x.sabor_1||x.flavor_1||null,sabor_2:x.sabor_2||x.flavor_2||null,quantidade:qtd,total:totalItem});
-      });
-    });
+    const [vendasPdv, vendasDelivery] = await Promise.all([
+      fetchReportPages(`comandas?status=eq.fechada&fechada_em=gte.${ini}&fechada_em=lte.${fim}&select=id,tipo,total,subtotal,desconto,forma_pagamento,fechada_em`),
+      deliverySalesBetween(rg.start.toISOString(),rg.end.toISOString()),
+    ]);
+    const vendas=[...vendasPdv.map(v=>({...v,forma_pagamento:paymentBucket(v.forma_pagamento)})),...vendasDelivery];
+    const ids=vendasPdv.map(v=>v.id);
+    const itens=vendasDelivery.flatMap(v=>v.items);
+    for (let i=0; i<ids.length; i+=60) {
+      const batch=ids.slice(i,i+60).map(encodeURIComponent).join(',');
+      itens.push(...await fetchReportPages(`comanda_itens?comanda_id=in.(${batch})&select=id,produto_nome,tamanho,sabor_1,sabor_2,quantidade,total,preco_unitario`));
+    }
     const caixas=await api(`cash_sessions?opened_at=gte.${ini}&opened_at=lte.${fim}&select=*&order=opened_at.desc&limit=50`);
 
     const faturamento=vendas.reduce((n,v)=>n+Number(v.total||0),0);
@@ -816,13 +879,15 @@ async function loadRelatorios(){
     const dayMap={}; vendas.forEach(v=>{const k=localDateStr(new Date(v.fechada_em));dayMap[k]??={total:0,q:0};dayMap[k].total+=Number(v.total||0);dayMap[k].q++});
     const diasHtml=Object.keys(dayMap).length?Object.entries(dayMap).sort((a,b)=>b[0].localeCompare(a[0])).map(([k,x])=>reportRow(new Date(k+'T12:00:00').toLocaleDateString('pt-BR'),money(x.total)+' · '+x.q+' venda(s)')).join(''):'<div class="small">Sem vendas.</div>';
 
-    const prodMap={}; itens.forEach(x=>{const k=(x.produto_nome||'Produto')+'||'+(x.tamanho||'');prodMap[k]??={nome:x.produto_nome||'Produto',tam:x.tamanho||'',q:0,total:0};prodMap[k].q+=Number(x.quantidade||0);prodMap[k].total+=Number(x.total||0)});
-    const prods=Object.values(prodMap).sort((a,b)=>b.q-a.q||b.total-a.total).slice(0,10);
-    const prodHtml=prods.length?prods.map((x,i)=>`<div class="item"><b>${i+1}. ${esc(x.nome)}${x.tam?' — '+esc(x.tam):''}</b><div class="small">${x.q} un. · ${money(x.total)}</div></div>`).join(''):'<div class="small">Sem itens.</div>';
-
-    const sabMap={}; itens.forEach(x=>{[x.sabor_1,x.sabor_2].filter(Boolean).forEach(s=>sabMap[s]=(sabMap[s]||0)+Number(x.quantidade||1))});
-    const sabores=Object.entries(sabMap).sort((a,b)=>b[1]-a[1]).slice(0,10);
-    const sabHtml=sabores.length?sabores.map(([s,q],i)=>`<div class="item"><b>${i+1}. ${esc(s)}</b><div class="small">${q} ocorrência(s)</div></div>`).join(''):'<div class="small">Sem sabores.</div>';
+    const ranking=reportSalesRanking(itens);
+    const formatQty=qty=>qty.toLocaleString('pt-BR',{maximumFractionDigits:2});
+    const prodHtml=ranking.products.map((x,i)=>{
+      const value=x.missing===x.q ? 'Valor indisponível' : money(x.total)+(x.missing?' (valor parcial)':'');
+      return `<div class="item"><b>${i+1}. ${esc(x.nome)}${x.tam?' — '+esc(x.tam):''}</b><div class="small">${formatQty(x.q)} un. · ${value}</div></div>`;
+    }).join('')||'<div class="small">Sem itens.</div>';
+    const sabHtml=ranking.flavors.map(({name,qty},i)=>
+      `<div class="item"><b>${i+1}. ${esc(name)}</b><div class="small">${formatQty(qty)} pizza(s) equivalente(s)</div></div>`
+    ).join('')||'<div class="small">Sem sabores.</div>';
 
     const cxHtml=caixas.length?caixas.map(x=>`<div class="item"><b>${esc(x.opened_by||'Operador')} — ${String(x.status).toUpperCase()}</b><div class="small">Abertura: ${new Date(x.opened_at).toLocaleString('pt-BR')}${x.closed_at?' · Fechamento: '+new Date(x.closed_at).toLocaleString('pt-BR'):''}</div><div class="small">Inicial ${money(x.opening_amount)}${x.counted_amount!=null?' · Informado '+money(x.counted_amount)+' · Diferença '+money(x.difference_amount):''}</div></div>`).join(''):'<div class="small">Sem caixas no período.</div>';
 
@@ -833,8 +898,8 @@ async function loadRelatorios(){
       <div class="card" style="margin-top:10px"><h3>Formas de pagamento</h3>${payHtml}</div>
       <div class="card" style="margin-top:10px"><h3>Origem das vendas</h3>${origHtml}</div>
       <div class="card" style="margin-top:10px"><h3>Vendas por dia</h3>${diasHtml}</div>
-      <div class="card" style="margin-top:10px"><h3>Produtos mais vendidos</h3>${prodHtml}</div>
-      <div class="card" style="margin-top:10px"><h3>Sabores mais vendidos</h3>${sabHtml}</div>
+      <div class="card" style="margin-top:10px"><h3>Produtos mais vendidos</h3><p class="small">Por unidades vendidas no período.</p>${prodHtml}</div>
+      <div class="card" style="margin-top:10px"><h3>Sabores mais vendidos</h3><p class="small">Pizzas avulsas de todos os tamanhos. Cada metade conta como 0,5.</p>${sabHtml}</div>
       <div class="card" style="margin-top:10px"><h3>Histórico de caixas</h3>${cxHtml}</div>`;
   }catch(e){reports.innerHTML='<h2>Relatórios</h2>'+reportFilterBar()+'<div class="notice">Erro: '+esc(e.message)+'</div>'}
 }
