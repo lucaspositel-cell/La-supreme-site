@@ -633,14 +633,49 @@ async function finishB(){
 
 
 
+function pdvReportReceipt(area, titulo, agora) {
+  const width = 32;
+  const divider = '-'.repeat(width);
+  const center = line => ' '.repeat(Math.max(0, Math.floor((width - line.length) / 2))) + line;
+  const blockTags = new Set(['DIV','P','H2','H3','H4','ARTICLE','SECTION','LI','TABLE','TR']);
+  function readText(node) {
+    if (node.nodeType === 3) return node.nodeValue.replace(/\s+/g, ' ');
+    if (node.nodeType !== 1) return '';
+    if (node.tagName === 'BR' || node.tagName === 'HR') return '\n';
+    const content = Array.from(node.childNodes, readText).filter(Boolean).join(' ');
+    if (node.classList.contains('card')) return '\n' + divider + '\n' + content + '\n';
+    return blockTags.has(node.tagName) ? '\n' + content + '\n' : content;
+  }
+  const body = readText(area).split('\n').map(line =>
+    line.replace(/[\x00-\x1f\x7f]+/g, ' ').replace(/ +/g, ' ').trim()
+  ).filter(Boolean);
+  const lines = [center('LA SUPREME'), center(titulo.toUpperCase()), 'Impresso em ' + agora, divider, ...body, divider];
+  return lines.flatMap(line => {
+    const wrapped = [];
+    while (line.length > width) {
+      const space = line.lastIndexOf(' ', width);
+      const cut = space > 0 ? space : width;
+      wrapped.push(line.slice(0, cut));
+      line = line.slice(cut).trimStart();
+    }
+    return [...wrapped, line];
+  }).join('\n') + '\n\n\n';
+}
+
 function imprimirAreaPDV(areaId,titulo){
   const area=document.getElementById(areaId);
   if(!area)return alert('Relatório não encontrado para impressão.');
   const clone=area.cloneNode(true);
   clone.querySelectorAll('.no-print,button,input,select,textarea').forEach(el=>el.remove());
+  const agora = new Date().toLocaleString('pt-BR');
+  if (/Android/i.test(navigator.userAgent)) {
+    clone.querySelector('h2')?.remove();
+    const texto = pdvReportReceipt(clone, titulo, agora);
+    window.location.href = 'rawbt:' + encodeURIComponent(texto);
+    return;
+  }
   const w=window.open('','_blank','width=900,height=700');
   if(!w)return alert('O navegador bloqueou a janela de impressão. Permita pop-ups para este PDV e tente novamente.');
-  const agora=new Date().toLocaleString('pt-BR');
   w.document.open();
   w.document.write(`<!doctype html><html lang="pt-BR"><head><meta charset="utf-8"><title>${esc(titulo)}</title><style>
     *{box-sizing:border-box}body{font-family:Arial,Helvetica,sans-serif;color:#111;background:#fff;margin:0;padding:18px;font-size:13px;line-height:1.35}
