@@ -51,6 +51,12 @@ button{cursor:pointer}button:disabled{opacity:.55;cursor:wait}button:focus-visib
  body.mesa-printing #mesaPrintArea{display:block!important;width:100%;max-width:72mm;margin:0;color:#000;background:#fff;font:12px/1.4 Arial,sans-serif;overflow-wrap:anywhere}
  #mesaPrintArea h1{font:bold 18px Arial;margin:0 0 5px}#mesaPrintArea h2{font:bold 14px Arial;margin:8px 0}#mesaPrintArea p{margin:6px 0;font-size:10px}#mesaPrintArea article{padding:7px 0;border-bottom:1px dashed #666;break-inside:avoid}#mesaPrintArea hr{border:0;border-top:1px dashed #000}
 }
+
+.mesa-command-nav{display:grid;gap:8px;padding:10px 0 0}
+.mesa-command-summary{display:flex;justify-content:space-between;align-items:center;gap:10px;flex-wrap:wrap}
+.mesa-command-tabs{display:flex;flex-wrap:wrap;gap:6px}
+.mesa-command-tabs button{min-height:42px;padding:7px 10px;max-width:100%;overflow-wrap:anywhere}
+.waiter-order .item .row button{flex-shrink:0}
 </style></head><body>
 <div id="pdvLogin" class="auth-screen"><div class="auth-box"><h1>LA <span class="brand-gold">SUPREME</span></h1><div style="font-weight:700;font-size:18px">Acesso ao PDV</div><div class="small" style="margin-top:6px">Entre com seu usuário administrativo do Supabase.</div><label>E-mail<input id="pdvEmail" type="email" autocomplete="username" placeholder="seu@email.com"></label><label>Senha<input id="pdvPassword" type="password" autocomplete="current-password" placeholder="Sua senha" onkeydown="if(event.key==='Enter')pdvLogin()"></label><div id="pdvAuthError" class="auth-error"></div><div class="auth-actions"><button class="ok" id="pdvLoginBtn" onclick="pdvLogin()">🔐 Entrar no PDV</button></div><div class="small" style="margin-top:14px;text-align:center">Acesso restrito à equipe autorizada.</div></div></div><div id="pdvApp"><header><div class="h"><h1>LA <span class="gold">SUPREME</span> — PDV</h1></div></header><main class="wrap"><div class="pdv-userbar"><span id="pdvUserEmail"></span><button class="dark" onclick="pdvLogout()">Sair</button></div><div class="tabs"><button class="tab" onclick="location.href='painel.html'">Delivery</button><button class="tab" id="tb" onclick="tab('balcao')">Balcão</button><button class="tab on" id="tm" onclick="tab('mesas')">Mesas</button><button class="tab" id="tc" onclick="tab('caixa')">Caixa</button><button class="tab" id="tr" onclick="tab('relatorios')">Relatórios</button><button class="tab" id="tcu" onclick="tab('cupons')">Cupons</button><button class="tab" id="tcmv" onclick="tab('cmv')">CMV</button></div><div class="store-status-wrap"><span class="store-status-label">Status da loja:</span><button id="storeStatusBtn" class="store-status-btn open" onclick="toggleStoreStatus()">🟢 Aberto agora</button></div><div id="notice" class="notice">Conectando...</div><section id="mesas" aria-label="Atendimento de mesas"><div class="waiter-heading"><div><span class="eyebrow">Atendimento do salão</span><h2>Mesas</h2><div class="small">Escolha uma mesa para atender.</div></div><button class="dark" id="tablesRefresh" onclick="refreshWaiterTables()">↻ Atualizar</button></div><div class="table-controls" role="group" aria-label="Filtrar mesas"><button id="filter-all" aria-pressed="true" onclick="filterWaiterTables('all')">Todas</button><button id="filter-livre" aria-pressed="false" onclick="filterWaiterTables('livre')">Livres</button><button id="filter-ocupada" aria-pressed="false" onclick="filterWaiterTables('ocupada')">Ocupadas</button><input id="tableSearch" type="search" inputmode="numeric" aria-label="Buscar número da mesa" placeholder="Buscar mesa…" oninput="renderTables()"></div><div id="tableCount" class="small" role="status" style="margin-bottom:12px"></div><div id="tables" class="tables"></div></section><section id="balcao" class="hidden"><div class="counter"><div class="card"><h2>Balcão</h2><input id="bq" placeholder="Buscar produto" oninput="renderProducts('b')"><div id="bp" class="products"></div></div><div class="card"><h2>Comanda</h2><div class="field"><input id="bc" placeholder="Cliente (opcional)"></div><div id="bitems"></div><div class="total">Total: <span id="btot">R$ 0,00</span></div><div class="field"><select id="bpay"><option>Pix</option><option>Dinheiro</option><option>Cartão Débito</option><option>Cartão Crédito</option></select></div><div class="actions"><button class="dark" onclick="bCart=[];renderBCart()">Limpar</button><button class="ok" onclick="finishB()">Fechar venda</button></div></div></div></section><section id="caixa" class="hidden"><div id="cashbox" class="card"><h2>Caixa</h2><div class="small">Carregando...</div></div></section><section id="relatorios" class="hidden"><div id="reports" class="card"><h2>Relatórios</h2><div class="small">Carregando...</div></div></section><section id="cupons" class="hidden"><div class="card"><div class="row"><div><h2 style="margin-bottom:3px">Cupons</h2><div class="small">Crie e gerencie os cupons usados no site.</div></div><span class="grow"></span><button class="ok" id="newCouponBtn" onclick="newCoupon()" style="display:none">+ Novo cupom</button></div><div id="couponAuth"></div><div id="couponList"></div></div></section><section id="cmv" class="hidden"><div class="card">
 <div class="row"><div><h2 style="margin-bottom:3px">CMV & Custos</h2><div class="small">Gestão de insumos, fichas técnicas, margens e preços.</div></div><span class="grow"></span></div>
@@ -232,36 +238,64 @@ function renderTables(){
   for(const [k,label] of [['all','Todas'],['livre','Livres'],['ocupada','Ocupadas']]){const b=document.getElementById('filter-'+k);b.textContent=label+' · '+counts[k];b.setAttribute('aria-pressed',String(waiterFilter===k))}
   const visible=tabs.filter(t=>(waiterFilter==='all'||t.status===waiterFilter)&&String(t.numero).includes(q));
   document.getElementById('tableCount').textContent=visible.length+' de '+tabs.length+' mesas';
-  tables.innerHTML=visible.map(t=>`<button type="button" class="mesa ${t.status==='livre'?'livre':'ocupada'}" onclick="openWaiterTable(this,'${esc(t.id)}')"><span class="mesa-state">${t.status==='livre'?'Livre':t.status==='ocupada'?'Ocupada':esc(t.status||'Verificar')}</span><b>Mesa ${esc(t.numero)}</b><span class="mesa-link">${t.status==='livre'?'Abrir atendimento +':'Ver comanda →'}</span></button>`).join('')||'<div class="table-empty">Nenhuma mesa encontrada. Altere a busca ou o filtro.</div>';
+  tables.innerHTML=visible.map(t=>`<button type="button" class="mesa ${t.status==='livre'?'livre':'ocupada'}" onclick="openWaiterTable(this,'${esc(t.id)}')"><span class="mesa-state">${t.status==='livre'?'Livre':t.status==='ocupada'?'Ocupada':esc(t.status||'Verificar')}</span><b>Mesa ${esc(t.numero)}</b><span class="mesa-link">${t.status==='livre'?'Abrir atendimento +':'Ver comandas →'}</span></button>`).join('')||'<div class="table-empty">Nenhuma mesa encontrada. Altere a busca ou o filtro.</div>';
 }
 async function openWaiterTable(button,id){button.disabled=true;try{await openT(id)}catch(e){alert('Não foi possível abrir a mesa. '+e.message)}finally{button.disabled=false}}
 
-async function openT(id){
-  curT=tabs.find(t=>String(t.id)===String(id));
-  if(curT.status==='livre'){
-    modal.innerHTML=`<div class="modalbg"><div class="modal"><div class="row"><h2>Mesa ${esc(curT.numero)}</h2><span class="grow"></span><button class="dark" onclick="closeM()">Fechar</button></div><div class="field"><input id="cust" placeholder="Cliente (opcional)"></div><div class="actions"><button class="dark" onclick="closeM()">Cancelar</button><button class="ok" onclick="startT()">Abrir mesa</button></div></div></div>`;
-    return;
+let mesaComandas=[],mesaBusy=false,mesaCloseDraft=null;
+const mesaIdEq=(a,b)=>String(a)===String(b);
+const mesaSubtotal=items=>Math.round(items.reduce((n,i)=>n+Math.round(Number(i.total||0)*100),0))/100;
+const mesaComandaLabel=c=>c.cliente_nome||'Comanda '+String(c.id).slice(-6).toUpperCase();
+async function mesaRPC(id,acao,dados={}){
+  try{return await api('rpc/ls_pdv_mesa_v2',{method:'POST',body:JSON.stringify({p_mesa:String(id),p_acao:acao,p_dados:dados})})}
+  catch(e){
+    let info;try{info=JSON.parse(e.message)}catch{}
+    if(info?.code==='PGRST202')throw Error('A atualização de comandas precisa ser ativada no Supabase antes de usar Mesas.');
+    throw Error(info?.message||e.message);
   }
-  let a=await api(`comandas?mesa_id=eq.${curT.id}&status=eq.aberta&select=*&order=aberta_em.desc&limit=1`);
-  if(!a.length){await api(`mesas?id=eq.${curT.id}`,{method:'PATCH',body:JSON.stringify({status:'livre'})});await load();return openT(id)}
-  curC=a[0];
-  sitems=await api(`comanda_itens?comanda_id=eq.${curC.id}&select=*&order=created_at.asc`);
-  showT();
 }
-
-async function startT(){
-  let a=await api('comandas',{method:'POST',body:JSON.stringify({tipo:'mesa',mesa_id:curT.id,cliente_nome:cust.value.trim()||null,status:'aberta'})});
-  curC=a[0];
-  await api(`mesas?id=eq.${curT.id}`,{method:'PATCH',body:JSON.stringify({status:'ocupada'})});
-  sitems=[];
-  await load();
-  showT();
+function mesaApply(data,selected=data.selecionada){
+  curT=data.mesa;mesaComandas=data.abertas;
+  const current=mesaComandas.find(x=>mesaIdEq(x.comanda.id,selected))||mesaComandas[0];
+  curC=current?.comanda||null;sitems=current?.itens||[];
+  const table=tabs.find(t=>mesaIdEq(t.id,curT.id));
+  if(table)table.status=mesaComandas.length?'ocupada':'livre';
+  renderTables();
+}
+async function mesaOperation(run,message='Não foi possível concluir.'){
+  if(mesaBusy)return;
+  mesaBusy=true;
+  const pane=modal.querySelector('.modal');
+  if(pane)pane.inert=true;
+  try{await run()}catch(e){alert(message+' '+e.message)}
+  finally{mesaBusy=false;if(pane)pane.inert=false}
+}
+async function openT(id){
+  await mesaOperation(async()=>{
+    mesaApply(await mesaRPC(id,'ver'));
+    if(curC)showT();else showMesaNew(true);
+  },'Não foi possível abrir a mesa.');
+}
+function showMesaNew(primeira=false){
+  modal.innerHTML=`<div class="modalbg"><div class="modal" role="dialog" aria-modal="true" aria-labelledby="newMesaTitle"><div class="row"><h2 id="newMesaTitle">Mesa ${esc(curT.numero)} · ${primeira?'Abrir atendimento':'Nova comanda'}</h2><span class="grow"></span><button class="dark" onclick="${primeira?'closeM()':'showT()'}">Voltar</button></div><div class="field"><label for="cust">Nome ou número (opcional)</label><input id="cust" maxlength="48" placeholder="Ex.: Ana ou 02" autocomplete="off"></div><div class="actions"><button class="ok" onclick="startT(${primeira})">${primeira?'Abrir mesa':'Abrir comanda'}</button></div></div></div>`;
+}
+async function startT(primeira=false){
+  const nome=document.getElementById('cust').value.trim();
+  await mesaOperation(async()=>{mesaApply(await mesaRPC(curT.id,'abrir',{nome,primeira}));showT()});
+}
+async function chooseMesaComanda(index){
+  const id=mesaComandas[index]?.comanda.id;
+  if(id==null||!curT)return;
+  await mesaOperation(async()=>{mesaApply(await mesaRPC(curT.id,'ver'),id);if(curC)showT();else showMesaNew(true)});
+}
+function mesaComandaNav(){
+  return `<div class="mesa-command-nav"><div class="mesa-command-summary"><strong>${mesaComandas.length} ${mesaComandas.length===1?'comanda aberta':'comandas abertas'}</strong><span>Mesa: ${money(mesaSubtotal(mesaComandas.flatMap(x=>x.itens)))}</span></div><div class="mesa-command-tabs" aria-label="Comandas abertas">${mesaComandas.map(({comanda,itens},i)=>`<button type="button" class="${mesaIdEq(comanda.id,curC.id)?'yellow':'dark'}" aria-pressed="${mesaIdEq(comanda.id,curC.id)}" onclick="chooseMesaComanda(${i})">${esc(mesaComandaLabel(comanda))} · ${money(mesaSubtotal(itens))}</button>`).join('')}</div><div class="mesa-command-tabs"><button type="button" class="dark" onclick="showMesaNew()">+ Nova comanda</button>${mesaComandas.length>1?'<button type="button" class="dark" onclick="closeTUI(true)">Pagar todas juntas</button>':''}<button type="button" class="dark" onclick="chooseMesaComanda(mesaComandas.findIndex(x=>mesaIdEq(x.comanda.id,curC.id)))">Atualizar mesa</button></div></div>`;
 }
 
 function showT(){
   waiterCategory='';
   const categories=[...new Set(PRODUCTS.filter(p=>!kidsCombo(p)||kidsActive()).map(p=>p.category))];
-  modal.innerHTML=`<div class="modalbg"><div class="modal waiter-modal" role="dialog" aria-modal="true" aria-labelledby="waiterTitle"><div class="waiter-top"><div class="row"><div class="grow"><span class="eyebrow">Comanda da mesa</span><h2 id="waiterTitle">Mesa ${esc(curT.numero)}</h2></div><button class="dark" onclick="closeM();load()">← Mesas</button></div><p class="waiter-subtitle">${curC.cliente_nome?'Cliente: '+esc(curC.cliente_nome):'Atendimento em andamento'}</p></div><div class="waiter-body"><div class="waiter-products"><label for="tq">Adicionar produtos</label><div class="field"><input id="tq" type="search" placeholder="Buscar sabor ou produto…" oninput="renderProducts('t')"></div><select class="waiter-category" aria-label="Categoria de produtos" onchange="waiterCategory=this.value;renderProducts('t')"><option value="">Todas as categorias</option>${categories.map(c=>`<option value="${esc(c)}">${esc(c)}</option>`).join('')}</select><div class="row field"><button class="yellow grow" onclick="openHalfHalf('t')">🍕 Montar pizza meio a meio</button></div><div id="tp" class="products"></div></div><div class="waiter-order"><h3>Itens da comanda</h3><div id="titems"></div><p id="mesaPrintStatus" class="small" role="status"></p><div class="waiter-secondary"><button class="dark" onclick="printMesa(\'full\')">Reimprimir completa</button><button class="dark" onclick="undoMesaPrint()">Desfazer último envio</button><button class="dark" onclick="markMesaAlreadySent()">Marcar atuais como enviados</button><button class="dark" onclick="cancelT()">Cancelar atendimento</button></div></div></div><div class="waiter-bottom"><div><div class="small">Total da comanda</div><div class="total" id="ttot" aria-live="polite">R$ 0,00</div></div><div class="waiter-print-actions"><button class="yellow" onclick="printMesa()">🖨️ Imprimir novos itens</button><button class="ok" onclick="closeTUI()">Fechar conta →</button></div></div></div></div>`;
+  modal.innerHTML=`<div class="modalbg"><div class="modal waiter-modal" role="dialog" aria-modal="true" aria-labelledby="waiterTitle"><div class="waiter-top"><div class="row"><div class="grow"><span class="eyebrow">Comandas da mesa</span><h2 id="waiterTitle">Mesa ${esc(curT.numero)}</h2></div><button class="dark" onclick="closeM();load()">← Mesas</button></div><p class="waiter-subtitle">${esc(mesaComandaLabel(curC))} · comanda selecionada</p>${mesaComandaNav()}</div><div class="waiter-body"><div class="waiter-products"><label for="tq">Adicionar produtos</label><div class="field"><input id="tq" type="search" placeholder="Buscar sabor ou produto…" oninput="renderProducts('t')"></div><select class="waiter-category" aria-label="Categoria de produtos" onchange="waiterCategory=this.value;renderProducts('t')"><option value="">Todas as categorias</option>${categories.map(c=>`<option value="${esc(c)}">${esc(c)}</option>`).join('')}</select><div class="row field"><button class="yellow grow" onclick="openHalfHalf('t')">🍕 Montar pizza meio a meio</button></div><div id="tp" class="products"></div></div><div class="waiter-order"><h3>Itens da comanda</h3><div id="titems"></div><p id="mesaPrintStatus" class="small" role="status"></p><div class="waiter-secondary"><button class="dark" onclick="printMesa(\'full\')">Reimprimir completa</button><button class="dark" onclick="undoMesaPrint()">Desfazer último envio</button><button class="dark" onclick="markMesaAlreadySent()">Marcar atuais como enviados</button><button class="dark" onclick="cancelT()">Cancelar esta comanda</button></div></div></div><div class="waiter-bottom"><div><div class="small">Total da comanda</div><div class="total" id="ttot" aria-live="polite">R$ 0,00</div></div><div class="waiter-print-actions"><button class="yellow" onclick="printMesa()">🖨️ Imprimir novos itens</button><button class="ok" onclick="closeTUI()">Receber comanda →</button></div></div></div></div>`;
   renderProducts('t');renderTItems();
 }
 
@@ -278,8 +312,7 @@ async function addP(p,size,price,w){
     bCart.push({produto_nome:p.name,tamanho:size,sabor_1:p.name,sabor_2:null,quantidade:1,preco_unitario:price,adicionais:0,total:price,observacoes:p.category});
     return renderBCart();
   }
-  let a=await api('comanda_itens',{method:'POST',body:JSON.stringify({comanda_id:curC.id,produto_nome:p.name,tamanho:size||null,sabor_1:p.name,sabor_2:null,quantidade:1,preco_unitario:price,adicionais:0,total:price,observacoes:p.category})});
-  sitems.push(a[0]); await recalc(); renderTItems();
+  await mesaAddItem({produto_nome:p.name,tamanho:size||null,sabor_1:p.name,sabor_2:null,quantidade:1,preco_unitario:price,adicionais:0,observacoes:p.category});
 }
 
 function pizzaProducts(){return PRODUCTS.filter(p=>p.broto!=null && !['Bebidas','Calzones','Crostinis','Pizza Rolls'].includes(p.category))}
@@ -334,13 +367,18 @@ async function addHalfHalf(where){
   const price=(Number(p1[k])+Number(p2[k]))/2;
   const obj={produto_nome:`½ ${p1.name} + ½ ${p2.name}`,tamanho:size,sabor_1:p1.name,sabor_2:p2.name,quantidade:1,preco_unitario:price,adicionais:0,total:price,observacoes:'Pizza meio a meio 50/50'};
   if(where==='b'){bCart.push(obj);closeM();renderBCart();return}
-  let a=await api('comanda_itens',{method:'POST',body:JSON.stringify({comanda_id:curC.id,...obj})});
-  sitems.push(a[0]);await recalc();showT();
+  await mesaAddItem(obj,true);
 }
-
-async function recalc(){
-  let s=sitems.reduce((a,x)=>a+Number(x.total),0);
-  await api(`comandas?id=eq.${curC.id}`,{method:'PATCH',body:JSON.stringify({subtotal:s,total:s})});
+async function mesaAddItem(item,reopen=false){
+  await mesaOperation(async()=>{
+    mesaApply(await mesaRPC(curT.id,'adicionar',{id:String(curC.id),item}));
+    if(reopen)showT();
+    else{
+      const nav=document.querySelector('.mesa-command-nav');
+      if(nav)nav.outerHTML=mesaComandaNav();
+      renderTItems();
+    }
+  },'Não foi possível lançar o item. Confira a comanda antes de tentar novamente.');
 }
 
 function mesaReceiptHTML(mesa,comanda,itens,emissao=new Date()){
@@ -360,7 +398,7 @@ function mesaPrintPending(items,state){
   return items.flatMap(x=>{
     if(x.id==null)throw Error('Item sem identificação. Atualize a comanda antes de imprimir.');
     const old=state.items[String(x.id)],qty=Number(x.quantidade??1),changed=old&&old.signature!==mesaPrintSignature(x);
-    const delta=changed?qty:Math.max(0,qty-Number(old?.qty||0));
+    const delta=x.ls_cozinha_enviada?0:changed?qty:Math.max(0,qty-Number(old?.qty||0));
     return delta>0?[{...x,quantidade:delta,total:Number(x.total||0)/Math.max(qty,1)*delta,observacoes:(changed?'ITEM ALTERADO - CONFERIR COM A COZINHA. ':'')+(x.observacoes||'')}]:[];
   });
 }
@@ -446,37 +484,57 @@ function printMesa(mode='new'){
 }
 window.addEventListener('afterprint',()=>document.body.classList.remove('mesa-printing'));
 function renderTItems(){
-  titems.innerHTML=sitems.map(x=>`<div class="item"><div class="row"><div class="grow"><b>${x.quantidade}x ${esc(x.produto_nome)}</b><div class="small">${esc(x.tamanho||'')} — ${money(x.total)}</div></div><button class="dark" aria-label="Remover ${esc(x.produto_nome)}" onclick="confirmWaiterRemove('${x.id}')">×</button></div></div>`).join('')||'<div class="waiter-empty">A comanda está vazia.<br>Escolha um produto para começar.</div>';
-  ttot.textContent=money(sitems.reduce((a,x)=>a+Number(x.total),0));
+  titems.innerHTML=sitems.map((x,i)=>`<div class="item"><div class="row"><div class="grow"><b>${esc(x.quantidade)}x ${esc(x.produto_nome)}</b><div class="small">${esc(x.tamanho||'')} — ${money(x.total)}</div></div>${mesaComandas.length>1?`<button class="dark" aria-label="Transferir ${esc(x.produto_nome)}" onclick="showMesaTransfer(${i})">Mover</button>`:''}<button class="dark" aria-label="Remover ${esc(x.produto_nome)}" onclick="confirmWaiterRemove(${i})">×</button></div></div>`).join('')||'<div class="waiter-empty">A comanda está vazia.<br>Escolha um produto para começar.</div>';
+  ttot.textContent=money(mesaSubtotal(sitems));
   updateMesaPrintStatus();
 }
-
-function confirmWaiterRemove(id){if(confirm('Remover este item da comanda?'))return delI(id).catch(e=>alert('Não foi possível remover o item. '+e.message))}
-
-async function delI(id){
-  await api(`comanda_itens?id=eq.${id}`,{method:'DELETE'});
-  sitems=sitems.filter(x=>String(x.id)!==String(id)); await recalc(); renderTItems();
+function mesaPrintedHere(item){
+  if(item.ls_cozinha_enviada)return true;
+  try{return mesaPrintPending([item],mesaPrintRead(curC.id)).length===0}catch{return false}
 }
-
+async function confirmWaiterRemove(index){
+  const item=sitems[index];
+  if(!item||!confirm('Remover este item da comanda? Se já foi enviado, avise a cozinha.'))return;
+  await mesaOperation(async()=>{
+    mesaApply(await mesaRPC(curT.id,'remover',{id:String(curC.id),item_id:String(item.id)}));
+    showT();
+  });
+}
+function showMesaTransfer(index){
+  const item=sitems[index];if(!item)return;
+  const opts=mesaComandas.map((x,i)=>({c:x.comanda,i})).filter(({c})=>!mesaIdEq(c.id,curC.id));
+  modal.innerHTML=`<div class="modalbg"><div class="modal" role="dialog" aria-modal="true" aria-labelledby="mesaMoveTitle"><h2 id="mesaMoveTitle">Mover item · Mesa ${esc(curT.numero)}</h2><p><b>${esc(item.produto_nome)}</b> · ${money(item.total)}</p><div class="field"><label for="mesaMoveTo">Comanda de destino</label><select id="mesaMoveTo">${opts.map(({c,i})=>`<option value="${i}">${esc(mesaComandaLabel(c))}</option>`).join('')}</select></div><div class="field"><label><input id="mesaMovePrinted" type="checkbox" style="width:auto;margin-right:6px" ${mesaPrintedHere(item)?'checked':''} ${item.ls_cozinha_enviada?'disabled':''}> Já enviei este item para a cozinha</label><p class="small">Marque também se imprimiu em outro aparelho. O item não será reenviado no próximo cupom de novos itens.</p></div><div class="actions"><button class="dark" onclick="showT()">Voltar</button><button class="ok" onclick="finishMesaTransfer(${index})">Mover item</button></div></div></div>`;
+}
+async function finishMesaTransfer(index){
+  const item=sitems[index],target=mesaComandas[Number(document.getElementById('mesaMoveTo').value)]?.comanda;
+  const enviado=document.getElementById('mesaMovePrinted').checked;
+  if(!item||!target)return;
+  await mesaOperation(async()=>{
+    const data=await mesaRPC(curT.id,'transferir',{id:String(curC.id),item_id:String(item.id),destino:String(target.id),enviado});
+    mesaApply(data,target.id);showT();
+  });
+}
 async function cancelT(){
-  if(!curC||!curT)return;
-  const total=sitems.reduce((a,x)=>a+Number(x.total||0),0);
-  const ok=confirm(`Cancelar este pedido da Mesa ${curT.numero}?\n\nTotal atual: ${money(total)}\n\nEsta ação liberará a mesa e marcará a comanda como CANCELADA.`);
-  if(!ok)return;
-  try{
-    await api(`comandas?id=eq.${curC.id}`,{method:'PATCH',body:JSON.stringify({status:'cancelada',fechada_em:new Date().toISOString()})});
-    await api(`mesas?id=eq.${curT.id}`,{method:'PATCH',body:JSON.stringify({status:'livre'})});
-    closeM();
-    await load();
-    alert('Pedido cancelado e mesa liberada.');
-  }catch(e){
-    alert('Não foi possível cancelar o pedido: '+e.message);
-  }
+  if(!curC||!curT||!confirm(`Cancelar ${mesaComandaLabel(curC)} da Mesa ${curT.numero} (${money(mesaSubtotal(sitems))})? As outras comandas continuam abertas. Avise a cozinha se já enviou itens.`))return;
+  await mesaOperation(async()=>{
+    mesaApply(await mesaRPC(curT.id,'cancelar',{id:String(curC.id),itens:sitems}));
+    if(curC)showT();else closeM();
+  });
 }
 
-function closeTUI(){
-  let total=sitems.reduce((a,x)=>a+Number(x.total),0);
-  modal.innerHTML=`<div class="modalbg"><div class="modal"><h2>Fechar Mesa ${esc(curT.numero)}</h2><div class="total">Total: ${money(total)}</div><div class="field"><select id="tpay"><option>Pix</option><option>Dinheiro</option><option>Cartão Débito</option><option>Cartão Crédito</option></select></div><div class="field"><input id="disc" value="0" inputmode="decimal" placeholder="Desconto"></div><div class="actions"><button class="dark" onclick="showT()">Voltar</button><button class="ok" onclick="finishT(this)">Fechar e imprimir</button></div></div></div>`;
+async function closeTUI(all=false){
+  if(!curT||!curC)return;
+  const id=curC.id;
+  await mesaOperation(async()=>{
+    mesaApply(await mesaRPC(curT.id,'ver'),id);
+    if(!curC){showMesaNew(true);throw Error('Não há mais comandas abertas.')}
+    if(!all&&!mesaIdEq(curC.id,id)){showT();throw Error('Esta comanda já foi encerrada.')}
+    const groups=all?mesaComandas:mesaComandas.filter(x=>mesaIdEq(x.comanda.id,id));
+    if(groups.some(x=>!x.itens.length)){showT();throw Error(all?'Cancele as comandas vazias antes de pagar todas.':'Adicione pelo menos um item antes de receber.')}
+    const subtotal=mesaSubtotal(groups.flatMap(x=>x.itens));
+    mesaCloseDraft={all,subtotal,alvos:groups.map(({comanda,itens})=>({id:String(comanda.id),itens}))};
+    modal.innerHTML=`<div class="modalbg"><div class="modal" role="dialog" aria-modal="true" aria-labelledby="mesaPayTitle"><h2 id="mesaPayTitle">Mesa ${esc(curT.numero)} · ${all?'Pagar todas juntas':esc(mesaComandaLabel(curC))}</h2>${all?`<p>Um único pagamento para ${groups.length} comandas.</p>${groups.map(x=>`<div class="row"><span class="grow">${esc(mesaComandaLabel(x.comanda))}</span><b>${money(mesaSubtotal(x.itens))}</b></div>`).join('')}`:''}<div class="total">Total: ${money(subtotal)}</div><div class="field"><label for="tpay">Forma de pagamento</label><select id="tpay"><option>Pix</option><option>Dinheiro</option><option>Cartão Débito</option><option>Cartão Crédito</option></select></div>${all?'':'<div class="field"><label for="disc">Desconto em reais</label><input id="disc" value="0" inputmode="decimal" placeholder="Desconto"></div>'}<div class="actions"><button class="dark" onclick="showT()">Voltar</button><button class="ok" onclick="finishT()">Confirmar recebimento e imprimir</button></div></div></div>`;
+  },'Não foi possível abrir o fechamento.');
 }
 
 function mesaCustomerReceiptText(mesa, comanda, itens) {
@@ -550,69 +608,30 @@ function printMesaCustomerReceipt() {
   }
 }
 
-async function finishT(button) {
-  if (button.disabled || !curC || !curT) return;
-  const subtotal = sitems.reduce((sum, item) => sum + Number(item.total), 0);
-  const desconto = Number(document.getElementById('disc').value.trim().replace(',', '.'));
-  if (!Number.isFinite(desconto) || desconto < 0 || desconto > subtotal) {
-    return alert('Informe um desconto entre zero e o subtotal da comanda.');
+function mesaCombinedReceipt(mesa,recibos){
+  const total=mesaSubtotal(recibos.map(x=>x.comanda));
+  const intro=['          LA SUPREME','         PAGAMENTO UNICO','MESA: '+mesa.numero,'COMANDAS: '+recibos.length,'TOTAL PAGO: '+money(total),'PAGAMENTO: '+recibos[0].comanda.forma_pagamento,'='.repeat(32)].join('\n');
+  return intro+'\n\n'+recibos.map(({comanda,itens})=>mesaCustomerReceiptText(mesa,comanda,itens).trimEnd()).join('\n\n')+'\n\n\n';
+}
+async function finishT(){
+  const draft=mesaCloseDraft;
+  if(!draft||!curC||!curT)return;
+  const desconto=Number((document.getElementById('disc')?.value||'0').trim().replace(',','.'));
+  if(!Number.isFinite(desconto)||desconto<0||desconto>draft.subtotal||Math.abs(Math.round(desconto*100)-desconto*100)>1e-7){
+    return alert('Informe um desconto com até duas casas decimais, entre zero e o subtotal.');
   }
-  if (kidsHasCombo(sitems) && desconto > 0) {
-    return alert('Combos promocionais não acumulam com descontos.');
-  }
-
-  const mesa = curT;
-  const comanda = curC;
-  const itens = sitems.slice();
-  const dados = {
-    status:'fechada',
-    fechada_em:new Date().toISOString(),
-    subtotal,
-    desconto,
-    total:Math.round((subtotal - desconto) * 100) / 100,
-    forma_pagamento:document.getElementById('tpay').value,
-  };
-  const back = button.previousElementSibling;
-  button.disabled = back.disabled = true;
-  let fechada;
-  try {
-    [fechada] = await api(`comandas?id=eq.${comanda.id}&status=eq.aberta`, {
-      method:'PATCH', body:JSON.stringify(dados),
-    });
-    if (!fechada) {
-      closeM();
-      await load();
-      return alert('Esta comanda já foi encerrada. Confira a situação da mesa.');
-    }
-  } catch (error) {
-    alert('Não foi possível confirmar o fechamento. Confira a comanda e tente novamente.');
-    return;
-  } finally {
-    button.disabled = back.disabled = false;
-  }
-
-  button.disabled = back.disabled = true;
-  let mesaLiberada = true;
-  try {
-    await api(`mesas?id=eq.${mesa.id}`, {
-      method:'PATCH', body:JSON.stringify({status:'livre'}),
-    });
-  } catch (error) {
-    mesaLiberada = false;
-  }
-
-  mesaCustomerReceipt = mesaCustomerReceiptText(mesa, {...comanda, ...dados, ...fechada}, itens);
-  closeM();
-  modal.innerHTML = `<div class="modalbg"><div class="modal">
-    <h2>Comanda fechada · Mesa ${esc(mesa.numero)}</h2>
-    <div class="total">Total: ${money(fechada.total ?? dados.total)}</div>
-    ${mesaLiberada ? '' : '<p>Abra a mesa novamente para atualizar sua disponibilidade.</p>'}
-    <div class="actions">
-      <button class="dark" onclick="closeM();load()">Voltar às mesas</button>
-      <button class="ok" onclick="printMesaCustomerReceipt()">Imprimir comprovante</button>
-    </div>
-  </div></div>`;
-  printMesaCustomerReceipt();
+  if(desconto>0&&draft.alvos.some(x=>kidsHasCombo(x.itens)))return alert('Combos promocionais não acumulam com descontos.');
+  const forma=document.getElementById('tpay').value;
+  await mesaOperation(async()=>{
+    const data=await mesaRPC(curT.id,draft.all?'fechar_todas':'fechar',{id:draft.alvos[0].id,alvos:draft.alvos,desconto,forma});
+    mesaCloseDraft=null;
+    mesaApply(data);
+    const total=mesaSubtotal(data.recibos.map(x=>x.comanda));
+    mesaCustomerReceipt=data.recibos.length>1?mesaCombinedReceipt(curT,data.recibos):mesaCustomerReceiptText(curT,data.recibos[0].comanda,data.recibos[0].itens);
+    const restantes=mesaComandas.length;
+    modal.innerHTML=`<div class="modalbg"><div class="modal" role="dialog" aria-modal="true" aria-labelledby="mesaPaidTitle"><h2 id="mesaPaidTitle">${data.recibos.length>1?'Comandas fechadas':'Comanda fechada'} · Mesa ${esc(curT.numero)}</h2><div class="total">Recebido: ${money(total)}</div><p>${restantes?'Mesa segue ocupada · '+restantes+' em aberto.':'Mesa liberada.'}</p><div class="actions"><button class="dark" onclick="${restantes?'showT()':'closeM();load()'}">${restantes?'Ver comandas restantes':'Voltar às mesas'}</button><button class="ok" onclick="printMesaCustomerReceipt()">Reimprimir comprovante</button></div></div></div>`;
+    printMesaCustomerReceipt();
+  },'Não foi possível confirmar o fechamento. Atualize a mesa antes de tentar novamente.');
 }
 
 function renderBCart(){
@@ -939,7 +958,7 @@ async function loadRelatorios(){
   }catch(e){reports.innerHTML='<h2>Relatórios</h2>'+reportFilterBar()+'<div class="notice">Erro: '+esc(e.message)+'</div>'}
 }
 
-function closeM(){modal.innerHTML='';curT=curC=null;sitems=[]}
+function closeM(){modal.innerHTML='';curT=curC=null;sitems=[];mesaComandas=[];mesaCloseDraft=null}
 
 // botão meio a meio também no Balcão
 const oldTab=tab;
