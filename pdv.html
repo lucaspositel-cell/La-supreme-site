@@ -52,11 +52,63 @@ button{cursor:pointer}button:disabled{opacity:.55;cursor:wait}button:focus-visib
  #mesaPrintArea h1{font:bold 18px Arial;margin:0 0 5px}#mesaPrintArea h2{font:bold 14px Arial;margin:8px 0}#mesaPrintArea p{margin:6px 0;font-size:10px}#mesaPrintArea article{padding:7px 0;border-bottom:1px dashed #666;break-inside:avoid}#mesaPrintArea hr{border:0;border-top:1px dashed #000}
 }
 
-.mesa-command-nav{display:grid;gap:8px;padding:10px 0 0}
-.mesa-command-summary{display:flex;justify-content:space-between;align-items:center;gap:10px;flex-wrap:wrap}
-.mesa-command-tabs{display:flex;flex-wrap:wrap;gap:6px}
-.mesa-command-tabs button{min-height:42px;padding:7px 10px;max-width:100%;overflow-wrap:anywhere}
+
+.waiter-top{padding:12px 18px;position:relative;z-index:1}
+.waiter-titlebar{display:flex;align-items:center;gap:10px}
+.waiter-titlebar h2{flex:1;min-width:0}
+.waiter-titlebar>button,.waiter-menu>summary,.mesa-command-nav button{min-height:44px;padding:8px 12px}
+.waiter-menu{position:relative}
+.waiter-menu>summary,.waiter-item-menu>summary{display:flex;align-items:center;justify-content:center;list-style:none;cursor:pointer;border:1px solid var(--l);border-radius:10px;background:#302621;color:var(--t);font-weight:700}
+.waiter-menu>summary::-webkit-details-marker,.waiter-item-menu>summary::-webkit-details-marker{display:none}
+.waiter-menu>summary:focus-visible,.waiter-item-menu>summary:focus-visible{outline:3px solid #f5cd7d;outline-offset:2px}
+.waiter-menu-panel{position:absolute;right:0;top:calc(100% + 6px);width:min(285px,85vw);max-height:52dvh;overflow:auto;padding:8px;display:grid;gap:4px;border:1px solid var(--l);border-radius:12px;background:#241b17;box-shadow:0 10px 28px #0008}
+.waiter-menu-panel button{min-height:44px;text-align:left}
+.waiter-menu-panel .danger{margin-top:4px}
+.waiter-menu-panel p{margin:4px 7px 8px}
+.mesa-command-nav{display:flex;flex-wrap:wrap;align-items:center;gap:6px 10px;margin-top:10px}
+.mesa-command-field{display:flex;flex:1;align-items:center;gap:8px;min-width:0}
+.mesa-command-field label{white-space:nowrap;font-size:13px;color:var(--m)}
+.mesa-command-field select{flex:1;min-width:0;min-height:44px;padding:8px 9px;font-size:16px;text-overflow:ellipsis}
+.mesa-command-summary{width:100%;font-size:12px;color:var(--m);padding-left:1px}
+.waiter-mode{display:none}
+.waiter-body{min-height:0;flex:1}
+.waiter-products h3,.waiter-order h3{margin:0 0 10px;font-size:16px}
+.waiter-search{width:100%}
+.waiter-product-tools{display:flex;gap:7px;margin:7px 0 10px}
+.waiter-product-tools select{flex:1;min-width:0;min-height:44px;padding:8px 9px}
+.waiter-product-tools button{min-height:44px;white-space:nowrap;padding:8px 12px}
 .waiter-order .item .row button{flex-shrink:0}
+.waiter-order .item{position:relative;padding-right:52px}
+.waiter-item-menu{flex:none;text-align:right}
+.waiter-item-menu>summary{position:absolute;right:0;top:7px}
+.waiter-item-menu[open]{margin-right:-52px}
+.waiter-item-menu>summary{width:44px;height:44px;margin-left:auto}
+.waiter-item-actions{display:flex;justify-content:flex-end;flex-wrap:wrap;gap:6px;margin-top:4px}
+.waiter-footer-total{display:flex;align-items:baseline;gap:8px;flex-wrap:wrap}
+.waiter-bottom{flex:none}
+.waiter-bottom button:disabled{cursor:default}
+.waiter-bottom #mesaPrintStatus{margin:2px 0 0}
+.waiter-print-actions{width:auto}
+@media(max-width:700px){
+  .modalbg:has(.waiter-modal){padding:4px;align-items:center}
+  .waiter-modal{height:calc(100dvh - 8px);max-height:calc(100dvh - 8px)}
+  .waiter-top{padding:8px 12px}
+  .waiter-top h2{font-size:23px}
+  .mesa-command-nav{margin-top:6px}
+  .mesa-command-field label{display:none}
+  .waiter-mode{display:flex;gap:4px;padding:5px 12px;border-bottom:1px solid var(--l)}
+  .waiter-mode button{flex:1;min-height:44px;padding:8px;border:1px solid transparent}
+  .waiter-mode button[aria-pressed=true]{border-color:var(--g);color:var(--g)}
+  .waiter-body{display:block;padding:10px 12px}
+  .waiter-modal[data-mesa-pane="adicionar"] .waiter-order,
+  .waiter-modal[data-mesa-pane="pedido"] .waiter-products{display:none}
+  .waiter-products h3,.waiter-order h3{display:none}
+  .waiter-modal .products{max-height:none;overflow:visible}
+  .waiter-bottom{gap:6px;padding:8px 12px calc(8px + env(safe-area-inset-bottom))}
+  .waiter-print-actions{width:100%;display:grid;grid-template-columns:1fr 1fr}
+  .waiter-bottom button{min-height:44px;padding:8px}
+}
+
 </style></head><body>
 <div id="pdvLogin" class="auth-screen"><div class="auth-box"><h1>LA <span class="brand-gold">SUPREME</span></h1><div style="font-weight:700;font-size:18px">Acesso ao PDV</div><div class="small" style="margin-top:6px">Entre com seu usuário administrativo do Supabase.</div><label>E-mail<input id="pdvEmail" type="email" autocomplete="username" placeholder="seu@email.com"></label><label>Senha<input id="pdvPassword" type="password" autocomplete="current-password" placeholder="Sua senha" onkeydown="if(event.key==='Enter')pdvLogin()"></label><div id="pdvAuthError" class="auth-error"></div><div class="auth-actions"><button class="ok" id="pdvLoginBtn" onclick="pdvLogin()">🔐 Entrar no PDV</button></div><div class="small" style="margin-top:14px;text-align:center">Acesso restrito à equipe autorizada.</div></div></div><div id="pdvApp"><header><div class="h"><h1>LA <span class="gold">SUPREME</span> — PDV</h1></div></header><main class="wrap"><div class="pdv-userbar"><span id="pdvUserEmail"></span><button class="dark" onclick="pdvLogout()">Sair</button></div><div class="tabs"><button class="tab" onclick="location.href='painel.html'">Delivery</button><button class="tab" id="tb" onclick="tab('balcao')">Balcão</button><button class="tab on" id="tm" onclick="tab('mesas')">Mesas</button><button class="tab" id="tc" onclick="tab('caixa')">Caixa</button><button class="tab" id="tr" onclick="tab('relatorios')">Relatórios</button><button class="tab" id="tcu" onclick="tab('cupons')">Cupons</button><button class="tab" id="tcmv" onclick="tab('cmv')">CMV</button></div><div class="store-status-wrap"><span class="store-status-label">Status da loja:</span><button id="storeStatusBtn" class="store-status-btn open" onclick="toggleStoreStatus()">🟢 Aberto agora</button></div><div id="notice" class="notice">Conectando...</div><section id="mesas" aria-label="Atendimento de mesas"><div class="waiter-heading"><div><span class="eyebrow">Atendimento do salão</span><h2>Mesas</h2><div class="small">Escolha uma mesa para atender.</div></div><button class="dark" id="tablesRefresh" onclick="refreshWaiterTables()">↻ Atualizar</button></div><div class="table-controls" role="group" aria-label="Filtrar mesas"><button id="filter-all" aria-pressed="true" onclick="filterWaiterTables('all')">Todas</button><button id="filter-livre" aria-pressed="false" onclick="filterWaiterTables('livre')">Livres</button><button id="filter-ocupada" aria-pressed="false" onclick="filterWaiterTables('ocupada')">Ocupadas</button><input id="tableSearch" type="search" inputmode="numeric" aria-label="Buscar número da mesa" placeholder="Buscar mesa…" oninput="renderTables()"></div><div id="tableCount" class="small" role="status" style="margin-bottom:12px"></div><div id="tables" class="tables"></div></section><section id="balcao" class="hidden"><div class="counter"><div class="card"><h2>Balcão</h2><input id="bq" placeholder="Buscar produto" oninput="renderProducts('b')"><div id="bp" class="products"></div></div><div class="card"><h2>Comanda</h2><div class="field"><input id="bc" placeholder="Cliente (opcional)"></div><div id="bitems"></div><div class="total">Total: <span id="btot">R$ 0,00</span></div><div class="field"><select id="bpay"><option>Pix</option><option>Dinheiro</option><option>Cartão Débito</option><option>Cartão Crédito</option></select></div><div class="actions"><button class="dark" onclick="bCart=[];renderBCart()">Limpar</button><button class="ok" onclick="finishB()">Fechar venda</button></div></div></div></section><section id="caixa" class="hidden"><div id="cashbox" class="card"><h2>Caixa</h2><div class="small">Carregando...</div></div></section><section id="relatorios" class="hidden"><div id="reports" class="card"><h2>Relatórios</h2><div class="small">Carregando...</div></div></section><section id="cupons" class="hidden"><div class="card"><div class="row"><div><h2 style="margin-bottom:3px">Cupons</h2><div class="small">Crie e gerencie os cupons usados no site.</div></div><span class="grow"></span><button class="ok" id="newCouponBtn" onclick="newCoupon()" style="display:none">+ Novo cupom</button></div><div id="couponAuth"></div><div id="couponList"></div></div></section><section id="cmv" class="hidden"><div class="card">
 <div class="row"><div><h2 style="margin-bottom:3px">CMV & Custos</h2><div class="small">Gestão de insumos, fichas técnicas, margens e preços.</div></div><span class="grow"></span></div>
@@ -273,6 +325,7 @@ async function mesaOperation(run,message='Não foi possível concluir.'){
 async function openT(id){
   await mesaOperation(async()=>{
     mesaApply(await mesaRPC(id,'ver'));
+    waiterPane=sitems.length?'pedido':'adicionar';
     if(curC)showT();else showMesaNew(true);
   },'Não foi possível abrir a mesa.');
 }
@@ -281,22 +334,66 @@ function showMesaNew(primeira=false){
 }
 async function startT(primeira=false){
   const nome=document.getElementById('cust').value.trim();
-  await mesaOperation(async()=>{mesaApply(await mesaRPC(curT.id,'abrir',{nome,primeira}));showT()});
+  await mesaOperation(async()=>{mesaApply(await mesaRPC(curT.id,'abrir',{nome,primeira}));waiterPane='adicionar';showT()});
 }
 async function chooseMesaComanda(index){
   const id=mesaComandas[index]?.comanda.id;
   if(id==null||!curT)return;
-  await mesaOperation(async()=>{mesaApply(await mesaRPC(curT.id,'ver'),id);if(curC)showT();else showMesaNew(true)});
+  await mesaOperation(async()=>{mesaApply(await mesaRPC(curT.id,'ver'),id);if(curC){waiterPane=sitems.length?'pedido':'adicionar';showT()}else showMesaNew(true)});
+}
+let waiterPane='adicionar';
+function setWaiterPane(pane){
+  waiterPane=pane;
+  const view=modal.querySelector('.waiter-modal');
+  if(!view)return;
+  view.dataset.mesaPane=pane;
+  for(const btn of view.querySelectorAll('[data-waiter-pane]')){
+    btn.setAttribute('aria-pressed',String(btn.dataset.waiterPane===pane));
+  }
+  view.querySelector('.waiter-body').scrollTop=0;
 }
 function mesaComandaNav(){
-  return `<div class="mesa-command-nav"><div class="mesa-command-summary"><strong>${mesaComandas.length} ${mesaComandas.length===1?'comanda aberta':'comandas abertas'}</strong><span>Mesa: ${money(mesaSubtotal(mesaComandas.flatMap(x=>x.itens)))}</span></div><div class="mesa-command-tabs" aria-label="Comandas abertas">${mesaComandas.map(({comanda,itens},i)=>`<button type="button" class="${mesaIdEq(comanda.id,curC.id)?'yellow':'dark'}" aria-pressed="${mesaIdEq(comanda.id,curC.id)}" onclick="chooseMesaComanda(${i})">${esc(mesaComandaLabel(comanda))} · ${money(mesaSubtotal(itens))}</button>`).join('')}</div><div class="mesa-command-tabs"><button type="button" class="dark" onclick="showMesaNew()">+ Nova comanda</button>${mesaComandas.length>1?'<button type="button" class="dark" onclick="closeTUI(true)">Pagar todas juntas</button>':''}<button type="button" class="dark" onclick="chooseMesaComanda(mesaComandas.findIndex(x=>mesaIdEq(x.comanda.id,curC.id)))">Atualizar mesa</button></div></div>`;
+  const options=mesaComandas.map(({comanda,itens},i)=>`<option value="${i}" ${mesaIdEq(comanda.id,curC.id)?'selected':''}>${esc(mesaComandaLabel(comanda))} · ${money(mesaSubtotal(itens))}</option>`).join('');
+  return `<div class="mesa-command-nav"><div class="mesa-command-field"><label for="waiterComanda">Comanda</label><select id="waiterComanda" aria-label="Comanda ativa" onchange="changeWaiterComanda(this)">${options}</select></div><button type="button" class="dark" onclick="showMesaNew()">+ Comanda</button>${mesaComandas.length>1?`<div class="mesa-command-summary">${mesaComandas.length} abertas · Mesa: ${money(mesaSubtotal(mesaComandas.flatMap(x=>x.itens)))}</div>`:''}</div>`;
 }
-
+function changeWaiterComanda(select){
+  const next=Number(select.value);
+  select.value=String(mesaComandas.findIndex(x=>mesaIdEq(x.comanda.id,curC.id)));
+  return chooseMesaComanda(next);
+}
+function runWaiterAction(action){
+  const menu=modal.querySelector('.waiter-menu');
+  if(menu)menu.open=false;
+  return action();
+}
 function showT(){
   waiterCategory='';
   const categories=[...new Set(PRODUCTS.filter(p=>!kidsCombo(p)||kidsActive()).map(p=>p.category))];
-  modal.innerHTML=`<div class="modalbg"><div class="modal waiter-modal" role="dialog" aria-modal="true" aria-labelledby="waiterTitle"><div class="waiter-top"><div class="row"><div class="grow"><span class="eyebrow">Comandas da mesa</span><h2 id="waiterTitle">Mesa ${esc(curT.numero)}</h2></div><button class="dark" onclick="closeM();load()">← Mesas</button></div><p class="waiter-subtitle">${esc(mesaComandaLabel(curC))} · comanda selecionada</p>${mesaComandaNav()}</div><div class="waiter-body"><div class="waiter-products"><label for="tq">Adicionar produtos</label><div class="field"><input id="tq" type="search" placeholder="Buscar sabor ou produto…" oninput="renderProducts('t')"></div><select class="waiter-category" aria-label="Categoria de produtos" onchange="waiterCategory=this.value;renderProducts('t')"><option value="">Todas as categorias</option>${categories.map(c=>`<option value="${esc(c)}">${esc(c)}</option>`).join('')}</select><div class="row field"><button class="yellow grow" onclick="openHalfHalf('t')">🍕 Montar pizza meio a meio</button></div><div id="tp" class="products"></div></div><div class="waiter-order"><h3>Itens da comanda</h3><div id="titems"></div><p id="mesaPrintStatus" class="small" role="status"></p><div class="waiter-secondary"><button class="dark" onclick="printMesa(\'full\')">Reimprimir completa</button><button class="dark" onclick="undoMesaPrint()">Desfazer último envio</button><button class="dark" onclick="markMesaAlreadySent()">Marcar atuais como enviados</button><button class="dark" onclick="cancelT()">Cancelar esta comanda</button></div></div></div><div class="waiter-bottom"><div><div class="small">Total da comanda</div><div class="total" id="ttot" aria-live="polite">R$ 0,00</div></div><div class="waiter-print-actions"><button class="yellow" onclick="printMesa()">🖨️ Imprimir novos itens</button><button class="ok" onclick="closeTUI()">Receber comanda →</button></div></div></div></div>`;
-  renderProducts('t');renderTItems();
+  modal.innerHTML=`<div class="modalbg"><div class="modal waiter-modal" role="dialog" aria-modal="true" aria-labelledby="waiterTitle" data-mesa-pane="${waiterPane}">
+    <header class="waiter-top"><div class="waiter-titlebar"><button type="button" class="dark" onclick="closeM();load()">← Mesas</button><h2 id="waiterTitle">Mesa ${esc(curT.numero)}</h2>
+      <details class="waiter-menu"><summary>Mais</summary><div class="waiter-menu-panel">
+        ${mesaComandas.length>1?'<button class="ok" onclick="runWaiterAction(()=>closeTUI(true))">Pagar todas juntas</button>':''}
+        <button class="dark" onclick="runWaiterAction(()=>chooseMesaComanda(mesaComandas.findIndex(x=>mesaIdEq(x.comanda.id,curC.id))))">Atualizar mesa</button>
+        <button class="dark" onclick="runWaiterAction(()=>printMesa('full'))">Reimprimir comanda</button>
+        <button class="dark" onclick="runWaiterAction(undoMesaPrint)">Desfazer último envio</button>
+        <button class="dark" onclick="runWaiterAction(markMesaAlreadySent)">Marcar itens como enviados</button>
+        <p class="small">O histórico de impressão fica neste aparelho.</p>
+        <button class="danger" onclick="runWaiterAction(cancelT)">Cancelar esta comanda</button>
+      </div></details></div>${mesaComandaNav()}</header>
+    <div class="waiter-mode" aria-label="Tela do pedido">
+      <button type="button" class="dark" data-waiter-pane="adicionar" aria-controls="waiterProducts" onclick="setWaiterPane('adicionar')">Adicionar</button>
+      <button type="button" class="dark" data-waiter-pane="pedido" aria-controls="waiterOrder" onclick="setWaiterPane('pedido')">Pedido <span id="waiterCount"></span></button>
+    </div>
+    <div class="waiter-body"><section class="waiter-products" id="waiterProducts"><h3>Adicionar produtos</h3>
+      <input id="tq" class="waiter-search" type="search" aria-label="Buscar sabor ou produto" placeholder="Buscar sabor ou produto…" oninput="renderProducts('t')">
+      <div class="waiter-product-tools"><select aria-label="Categoria de produtos" onchange="waiterCategory=this.value;renderProducts('t')"><option value="">Todas as categorias</option>${categories.map(c=>`<option value="${esc(c)}">${esc(c)}</option>`).join('')}</select><button type="button" class="dark" onclick="openHalfHalf('t')">Meio a meio</button></div>
+      <div id="tp" class="products"></div></section>
+      <section class="waiter-order" id="waiterOrder"><h3>Itens da comanda</h3><div id="titems"></div></section>
+    </div>
+    <footer class="waiter-bottom"><div><div class="waiter-footer-total"><span class="small">Total da comanda</span><strong class="total" id="ttot" aria-live="polite">R$ 0,00</strong></div><p id="mesaPrintStatus" class="small" role="status"></p></div>
+      <div class="waiter-print-actions"><button type="button" id="waiterPrint" class="yellow" onclick="printMesa()">Imprimir novos itens</button><button type="button" id="waiterPay" class="ok" onclick="closeTUI()">Receber comanda</button></div>
+    </footer></div></div>`;
+  setWaiterPane(waiterPane);renderProducts('t');renderTItems();
 }
 
 function renderProducts(where){
@@ -404,9 +501,15 @@ function mesaPrintPending(items,state){
 }
 function mesaPrintSnapshot(items){return Object.fromEntries(items.map(x=>[String(x.id),{qty:Number(x.quantidade??1),signature:mesaPrintSignature(x)}]))}
 function updateMesaPrintStatus(){
-  const el=document.getElementById('mesaPrintStatus');if(!el||!curC)return;
-  try{const state=mesaPrintRead(curC.id),pending=mesaPrintPending(sitems,state);el.textContent=pending.reduce((n,x)=>n+Number(x.quantidade),0)+' unidade(s) nova(s) para enviar. Controle somente neste navegador/aparelho. Se falhar, desfaça o último envio.'}catch(e){el.textContent=e.message}
+  const el=document.getElementById('mesaPrintStatus'),button=document.getElementById('waiterPrint');
+  if(!el||!curC)return;
+  try{
+    const count=mesaPrintPending(sitems,mesaPrintRead(curC.id)).reduce((n,x)=>n+Number(x.quantidade),0);
+    el.textContent=count===0?'Sem itens novos para imprimir':count===1?'1 item novo para imprimir':count+' itens novos para imprimir';
+    if(button)button.disabled=count===0;
+  }catch(e){el.textContent=e.message;if(button)button.disabled=true}
 }
+
 function undoMesaPrint(){
   if(!curC)return;
   try{const state=mesaPrintRead(curC.id);if(!state.previous)return alert('Nenhum envio para desfazer neste aparelho.');
@@ -484,10 +587,13 @@ function printMesa(mode='new'){
 }
 window.addEventListener('afterprint',()=>document.body.classList.remove('mesa-printing'));
 function renderTItems(){
-  titems.innerHTML=sitems.map((x,i)=>`<div class="item"><div class="row"><div class="grow"><b>${esc(x.quantidade)}x ${esc(x.produto_nome)}</b><div class="small">${esc(x.tamanho||'')} — ${money(x.total)}</div></div>${mesaComandas.length>1?`<button class="dark" aria-label="Transferir ${esc(x.produto_nome)}" onclick="showMesaTransfer(${i})">Mover</button>`:''}<button class="dark" aria-label="Remover ${esc(x.produto_nome)}" onclick="confirmWaiterRemove(${i})">×</button></div></div>`).join('')||'<div class="waiter-empty">A comanda está vazia.<br>Escolha um produto para começar.</div>';
+  titems.innerHTML=sitems.map((x,i)=>`<div class="item"><div class="row"><div class="grow"><b>${esc(x.quantidade)}x ${esc(x.produto_nome)}</b>${x.tamanho?`<div class="small">${esc(x.tamanho)}</div>`:''}</div><strong>${money(x.total)}</strong></div><details class="waiter-item-menu"><summary aria-label="Opções de ${esc(x.produto_nome)}">⋯</summary><div class="waiter-item-actions">${mesaComandas.length>1?`<button class="dark" onclick="showMesaTransfer(${i})">Mover</button>`:''}<button class="dark" onclick="confirmWaiterRemove(${i})">Remover</button></div></details></div>`).join('')||'<div class="waiter-empty">A comanda está vazia.</div>';
   ttot.textContent=money(mesaSubtotal(sitems));
+  document.getElementById('waiterCount').textContent='('+sitems.reduce((n,x)=>n+Number(x.quantidade??1),0)+')';
+  document.getElementById('waiterPay').disabled=!sitems.length;
   updateMesaPrintStatus();
 }
+
 function mesaPrintedHere(item){
   if(item.ls_cozinha_enviada)return true;
   try{return mesaPrintPending([item],mesaPrintRead(curC.id)).length===0}catch{return false}
