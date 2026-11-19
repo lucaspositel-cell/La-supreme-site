@@ -3,12 +3,20 @@
 *{box-sizing:border-box}body{margin:0;background:#17120f;color:#fff4e4;font:18px system-ui}header,main,footer{padding:18px max(18px,calc((100vw - 1050px)/2))}header{background:#271d17;border-bottom:1px solid #5f482b}header strong{font: bold 27px Georgia;color:#edc47d}header small{display:block;color:#dac6ac}h1{font: bold 38px Georgia;margin:16px 0 8px}p{margin:8px 0 16px}button,select,input{font:inherit;min-height:49px;border-radius:12px;padding:10px 14px}button{border:0;background:#e9bd73;color:#24170d;font-weight:700;cursor:pointer}button.secondary{background:#49362a;color:#fff4e4}button[aria-pressed=true]{outline:3px solid #f9d894}button:disabled{opacity:.55}input{width:100%;background:#241b16;border:1px solid #806441;color:white}nav, .actions{display:flex;gap:8px;flex-wrap:wrap;margin:12px 0}.grid{display:grid;grid-template-columns:repeat(auto-fit,minmax(min(245px,100%),1fr));gap:12px;padding-bottom:110px}article{background:#2b211b;border:1px solid #654b32;border-radius:16px;padding:15px;display:flex;flex-direction:column;gap:8px}article p{font-size:15px;color:#e0cbb3;flex:1}footer{position:fixed;bottom:0;left:0;right:0;background:#241915;display:flex;align-items:center;justify-content:space-between;gap:10px;border-top:1px solid #785738}dialog{border:1px solid #8b6946;border-radius:18px;width:min(92vw,580px);max-height:85vh;background:#2b211b;color:#fff4e4;padding:20px}dialog::backdrop{background:#000a}.row{padding:10px 0;border-bottom:1px solid #70523c;display:flex;gap:8px;align-items:center;justify-content:space-between}.row button{min-width:46px}button:focus-visible,input:focus-visible{outline:3px solid white}small{color:#dac6ac}
 
 :root{color-scheme:light;--ink:#301a12;--red:#a52721;--gold:#ffca54;--paper:#fff8ec}body{background:var(--paper);color:var(--ink);font:18px system-ui,sans-serif}header{background:#321b14;color:white;display:flex;align-items:center;gap:14px;border:0}header strong{color:#ffd27d;letter-spacing:.04em}header small{color:#f0d3bd;font-size:12px;font-weight:700;letter-spacing:.1em}header .seal{background:#ffd27d;color:#321b14;display:grid;place-items:center;flex:0 0 49px;height:49px;border-radius:50%;font:bold 19px Georgia}.hero{position:relative;isolation:isolate;overflow:hidden;background:linear-gradient(125deg,#8e201c,#b33223);border-radius:24px;padding:25px clamp(20px,4vw,45px);color:white;min-height:185px;display:flex;justify-content:space-between;align-items:center;gap:12px}.hero h1{font:900 clamp(30px,5vw,56px)/1 system-ui;margin:8px 0;letter-spacing:-.045em}.hero .tag{background:#ffcf60;color:#491b14;padding:6px 10px;border-radius:20px;font-size:12px;font-weight:900}.hero p{margin:9px 0 0}.hero-art{font-size:clamp(48px,10vw,106px);transform:rotate(-14deg);filter:drop-shadow(0 8px 5px #58130d90)}.menu-tools{position:sticky;top:0;z-index:2;background:var(--paper);padding-top:12px}input{background:white;color:var(--ink);border:1px solid #d3ad83;min-height:52px}nav{flex-wrap:nowrap;overflow:auto;margin:0;padding:9px 3px 12px;scrollbar-width:thin}nav button{flex:none;white-space:nowrap}button{min-height:50px;background:var(--gold);color:#341e13}button.secondary{background:#f2e0c9;color:var(--ink)}nav button[aria-pressed=true]{background:var(--red);color:white;outline:2px solid #9f2d21;outline-offset:1px}.grid{grid-template-columns:repeat(auto-fill,minmax(min(220px,100%),1fr));gap:14px;padding-bottom:128px}article{background:#fff;border:1px solid #ead4bb;padding:12px;gap:5px;box-shadow:0 5px 16px #653d1b13;border-radius:20px}article p{color:#654b3b;font-size:14px;margin:3px 0 7px}article strong{font-size:20px}.product-icon{height:92px;display:grid;place-items:center;border-radius:13px;background:radial-gradient(circle,#ffdb80,#ffedc5);font-size:52px}.product-icon.sweet{background:linear-gradient(130deg,#f8cedb,#ffe5b5)}.product-icon.drink{background:linear-gradient(135deg,#d6eadc,#e4f3f6)}article .actions{display:grid;grid-template-columns:repeat(auto-fit,minmax(95px,1fr));margin:3px 0 0}article button{font-size:14px;padding:8px 5px}footer{background:#321b14;color:white;z-index:3}footer button{background:#ffca54}dialog{background:#fff8ec;color:var(--ink);border-color:#dfb984}dialog .row{border-color:#ead4bb}button:focus-visible,input:focus-visible{outline:3px solid #6d241b;outline-offset:2px}footer button:focus-visible{outline-color:white}#feedback{min-height:24px;font-weight:700;color:#793020;margin:0 0 8px;font-size:14px}#results{font:800 24px system-ui;margin:4px 0 8px}@media(max-width:520px){header,main,footer{padding:12px}body{font-size:16px}.grid{grid-template-columns:repeat(2,minmax(0,1fr));gap:8px}.hero{min-height:150px}.hero p{font-size:14px}article strong{font-size:16px}.product-icon{height:70px;font-size:41px}}@media(max-width:340px){.grid{grid-template-columns:1fr}}
-.product-icon svg{width:auto;height:84%;max-width:100%}.sweet-category{display:inline-flex;align-items:center;gap:6px}.sweet-category svg{width:32px;height:26px;flex:none}.product-kind{align-self:flex-start;border-radius:20px;padding:4px 9px;background:#f7e8d5;color:#6b351f;font-size:12px;font-weight:800;margin:3px 0 1px}.product-kind.sweet{background:#f9dfeb;color:#762343}.product-kind.drink{background:#e0f0e5;color:#234f38}#pizzaGroups[hidden]{display:none}#pizzaGroups{border-top:1px solid #ead4bb;padding-inline:3px}#pizzaMenu[aria-expanded=true],#pizzaMenu.current{background:var(--red);color:white}#half select{display:block;width:100%;margin:5px 0 14px;background:white;color:var(--ink);border:1px solid #d3ad83}#half label,#halfTotal{font-weight:800}.half-action{grid-column:1/-1}.product-icon.drink img{display:none}.product-icon.drink.has-photo{position:relative;background:#fff}.product-icon.drink.has-photo img{display:block;width:100%;height:100%;min-height:0;object-fit:contain;position:absolute;inset:0;padding:5px;box-sizing:border-box}</style>
+.product-icon svg{width:auto;height:84%;max-width:100%}.sweet-category{display:inline-flex;align-items:center;gap:6px}.sweet-category svg{width:32px;height:26px;flex:none}.product-kind{align-self:flex-start;border-radius:20px;padding:4px 9px;background:#f7e8d5;color:#6b351f;font-size:12px;font-weight:800;margin:3px 0 1px}.product-kind.sweet{background:#f9dfeb;color:#762343}.product-kind.drink{background:#e0f0e5;color:#234f38}#pizzaGroups[hidden]{display:none}#pizzaGroups{border-top:1px solid #ead4bb;padding-inline:3px}#pizzaMenu[aria-expanded=true],#pizzaMenu.current{background:var(--red);color:white}#half select{display:block;width:100%;margin:5px 0 14px;background:white;color:var(--ink);border:1px solid #d3ad83}#half label,#halfTotal{font-weight:800}.half-action{grid-column:1/-1}.product-icon.drink img{display:none}.product-icon.drink.has-photo{position:relative;background:#fff}.product-icon.drink.has-photo img{display:block;width:100%;height:100%;min-height:0;object-fit:contain;position:absolute;inset:0;padding:5px;box-sizing:border-box}#customObs{width:100%;box-sizing:border-box;font:inherit;padding:12px;border:1px solid #c4b4a5;border-radius:10px}#customCrustField[hidden]{display:none}</style>
 <header><span class="seal" aria-hidden="true">LS</span><div><strong>LA SUPREME</strong><small>AUTOATENDIMENTO · PAGAMENTO NO CAIXA</small></div></header>
 <main><section id="deviceSetup" hidden><h2>Ativar tablet do totem</h2><form id="deviceForm"><label>E-mail do tablet <input id="deviceEmail" type="email" required autocomplete="username"></label><label>Senha <input id="devicePassword" type="password" required autocomplete="current-password"></label><div class="actions"><button id="deviceLogin">Ativar tablet</button><button class="secondary" id="deviceBack" type="button">Voltar</button></div><p id="deviceStatus" role="status"></p></form></section><section class="hero"><div><span class="tag">MONTE DO SEU JEITO</span><h1>Bateu vontade<br>de pizza?</h1><p>Escolha seus favoritos e monte seu pedido.</p></div><span class="hero-art" aria-hidden="true">🍕</span></section><div class="menu-tools"><input id="search" type="search" aria-label="Buscar no cardápio" placeholder="Buscar pizza, ingrediente ou bebida"><nav id="cats" aria-label="Categorias"></nav><nav id="pizzaGroups" aria-label="Grupos de pizzas" hidden></nav></div><h2 id="results">Cardápio completo</h2><p id="feedback" role="status"></p><div class="grid" id="grid"></div></main>
 <footer><strong id="total" aria-live="polite"></strong><button id="review">🛍 Ver sacola</button></footer>
 <dialog id="bag" aria-labelledby="title"><h2 id="title">Sua sacola</h2><div id="items"></div><div class="actions"><button class="secondary" id="back">Continuar escolhendo</button><button id="finish">Enviar pedido ao caixa</button></div></dialog>
 <dialog id="half" aria-labelledby="halfTitle"><h2 id="halfTitle">Monte sua pizza meio a meio</h2><p id="firstFlavor"></p><label for="halfSize">Tamanho</label><select id="halfSize"><option>Grande</option><option>Broto</option></select><label for="secondFlavor">Segunda metade</label><select id="secondFlavor"></select><p id="halfTotal" aria-live="polite"></p><div class="actions"><button class="secondary" id="halfBack">Voltar</button><button id="halfAdd">Adicionar à sacola</button></div></dialog>
+<dialog id="custom" aria-labelledby="customTitle">
+<h2 id="customTitle"></h2><p id="customSize"></p>
+<div id="customCrustField"><label for="customCrust">Borda</label><select id="customCrust"></select></div>
+<label for="customObs">Observação (opcional)</label>
+<input id="customObs" type="text" maxlength="120" placeholder="Ex.: sem cebola, sem orégano">
+<p id="customHint" role="status"></p>
+<div class="actions"><button type="button" class="secondary" id="customBack">Voltar</button><button type="button" id="customAdd">Adicionar à sacola</button></div>
+</dialog>
 <script>
 const SUPABASE_URL = 'https://stacwvpsfjvyvbjwagtd.supabase.co';
 const SUPABASE_ANON_KEY = 'sb_publishable_uM7vsWn839Zmj1lTk3yKyg_b5Vj501Z';
@@ -34,8 +42,52 @@ function pizzaArt(key){
 const icons={'cat-bebidas':'🥤','cat-calzones':'🥟','cat-crostinis':'🥖','cat-pizza-rolls':'🌀'};
 function node(tag,value,parent){const el=document.createElement(tag);el.textContent=value;parent.append(el);return el}
 function button(parent,label,action,cls){const b=node('button',label,parent);b.type='button';b.onclick=action;if(cls)b.className=cls;return b}
-function putInCart(key,name,size,value,i,j=null){if(sending||requestId)return;const item=cart.get(key)||{name,size,value,i,j,qty:0};item.qty++;cart.set(key,item);$('feedback').textContent=item.name+' na sacola';summary()}
-function add(i,size,value){putInCart(i+'-'+size,catalog[i].name,size,Math.round(value*100),i)}
+function putInCart(key,name,size,value,i,j,crust,obs){if(sending||requestId)return;const item=cart.get(key)||{name,size,value,i,j,crust,obs,qty:0};item.qty++;cart.set(key,item);$('feedback').textContent=item.name+' na sacola';summary()}
+const crustPrices={"Catupiry": [800, 1200], "Cheddar": [800, 1200], "Pistache": [1000, 1500], "Avelã": [1000, 1500], "Chocolate ao leite": [800, 1200]};
+let customItem=null;
+function crustCost(x,size,crust){
+ if(!crust)return 0;
+ if(/supreme/i.test(x.name)&&(sweetPizza(x)||crust==='Catupiry'||crust==='Cheddar'))return 0;
+ return crustPrices[crust][size==='Broto'?0:1];
+}
+function openCustom(name,size,base,i,j=null){
+ if(sending||requestId)return;
+ customItem={name,size,base,i,j};
+ const x=catalog[i], select=$('customCrust');
+ $('customTitle').textContent=name;
+ $('customSize').textContent=size;
+ $('customObs').value='';
+ $('customHint').textContent='';
+ $('customCrustField').hidden=!x.isPizza;
+ select.replaceChildren(new Option('Sem borda',''));
+ if(x.isPizza)for(const crust of Object.keys(crustPrices)){
+   const cost=crustCost(x,size,crust);
+   select.add(new Option(crust+(cost?' · + '+money(cost):' · inclusa'),crust));
+ }
+ refreshCustom();
+ $('custom').showModal();
+}
+function refreshCustom(){
+ const x=customItem;
+ if(x)$('customAdd').textContent='Adicionar · '+money(x.base+crustCost(catalog[x.i],x.size,$('customCrust').value));
+}
+$('customCrust').onchange=refreshCustom;
+$('customBack').onclick=()=>$('custom').close();
+$('customAdd').onclick=()=>{
+ const x=customItem;
+ if(!x||sending||requestId)return;
+ const obs=$('customObs').value.trim().replace(/\s+/g,' ');
+ if(/[<>&"'\x00-\x1f\x7f]/.test(obs)){
+   $('customHint').textContent='Use texto simples na observação, sem aspas, <, > ou &.';
+   return;
+ }
+ const crust=$('customCrust').value;
+ const key=JSON.stringify([x.i,x.j,x.size,crust,obs]);
+ putInCart(key,x.name,x.size,x.base+crustCost(catalog[x.i],x.size,crust),x.i,x.j,crust,obs);
+ $('custom').close();
+};
+function add(i,size,value){openCustom(catalog[i].name,size,Math.round(value*100),i)}
+
 let halfFirst=null;
 const halfPrice=(x,size)=>Math.round(Number(size==='Broto'?x.broto:x.grande)*100);
 function halfTotal(a,b){return Math.round((a+b)/2)}
@@ -58,7 +110,7 @@ function refreshHalf(){
 }
 $('halfSize').onchange=updateHalfOptions;$('secondFlavor').onchange=refreshHalf;
 $('halfBack').onclick=()=>$('half').close();
-$('halfAdd').onclick=()=>{const price=refreshHalf();if(price===null)return;const second=Number($('secondFlavor').value),size=$('halfSize').value;const [a,b]=[halfFirst,second].sort((a,b)=>a-b);putInCart('half-'+a+'-'+b+'-'+size,'Meio a meio: '+catalog[halfFirst].name+' + '+catalog[second].name,size,price,halfFirst,second);$('half').close()};
+$('halfAdd').onclick=()=>{const price=refreshHalf();if(price===null)return;const second=Number($('secondFlavor').value),size=$('halfSize').value;$('half').close();openCustom('Meio a meio: '+catalog[halfFirst].name+' + '+catalog[second].name,size,price,halfFirst,second)};
 function summary(){let qty=0,total=0;cart.forEach(x=>{qty+=x.qty;total+=x.qty*x.value});$('total').textContent=qty+' '+(qty===1?'item':'itens')+' · '+money(total);$('finish').disabled=!qty;return total}
 function render(){const grid=$('grid');grid.replaceChildren();$('results').textContent=active==='all'?'Cardápio completo':categories[active];const q=norm($('search').value.trim());catalog.forEach((x,i)=>{if((active!=='all'&&active!==x.section)||!norm(x.name+' '+x.desc).includes(q))return;const card=node('article','',grid);const art=node('span',icons[x.section]||'🍕',card);art.className='product-icon '+(x.section==='cat-bebidas'?'drink':x.section==='cat-pizzas-doces'?'sweet':'');art.setAttribute('aria-hidden','true');const illustration=pizzaArt(x.section);if(illustration)art.innerHTML=illustration;if(x.section==='cat-bebidas'&&drinkPhotos[x.name]){
 const img=document.createElement('img');img.alt='';img.decoding='async';
@@ -92,7 +144,7 @@ for(const [key,label] of Object.entries(categories)){
  b.setAttribute('aria-pressed','false');
 }
 mainButtons.get('all').setAttribute('aria-pressed','true');
-function review(){const items=$('items');items.replaceChildren();for(const [key,x] of cart){const r=node('div','',items);r.className='row';node('span',x.qty+' × '+x.name+(x.size?' · '+x.size:'')+' — '+money(x.value*x.qty),r);const b=button(r,'−',()=>{if(sending||requestId)return;if(--x.qty===0)cart.delete(key);review()},'secondary');b.setAttribute('aria-label','Remover uma unidade de '+x.name)}node('p',cart.size?'Total: '+money(summary()):'Sua sacola está vazia.',items);summary()}
+function review(){const items=$('items');items.replaceChildren();for(const [key,x] of cart){const r=node('div','',items);r.className='row';node('span',x.qty+' × '+x.name+(x.size?' · '+x.size:'')+(x.crust?' · Borda: '+x.crust:'')+(x.obs?' · Obs.: '+x.obs:'')+' — '+money(x.value*x.qty),r);const b=button(r,'−',()=>{if(sending||requestId)return;if(--x.qty===0)cart.delete(key);review()},'secondary');b.setAttribute('aria-label','Remover uma unidade de '+x.name)}node('p',cart.size?'Total: '+money(summary()):'Sua sacola está vazia.',items);summary()}
 $('search').oninput=render;$('review').onclick=()=>{review();$('bag').showModal()};$('back').onclick=()=>$('bag').close();let session=null, requestId=null,sending=false;
 try{session=JSON.parse(localStorage.getItem('ls_totem_session')||'null')}catch{}
 function saveSession(next){session=next;try{localStorage.setItem('ls_totem_session',JSON.stringify(next))}catch{}}
@@ -127,7 +179,7 @@ function receiptLink(code, lines){
  const sale=lines.reduce((sum,x)=>sum+x.value*x.qty,0);
  const sep='-'.repeat(width)+'\n';
  const body=lines.map(x=>wrap(x.qty+' x '+x.name+(x.size?' - '+x.size:''))+
-      '\n  '+amount(x.value*x.qty)+'\n').join('\n');
+      (x.crust?'\n'+wrap('Borda: '+x.crust):'')+(x.obs?'\n'+wrap('Obs.: '+x.obs):'')+'\n  '+amount(x.value*x.qty)+'\n').join('\n');
  const bytes='\x1b@\x1ba\x01\x1bE\x01LA SUPREME\nVIA DO CLIENTE\n'+code+
       '\n\x1bE\x00\x1ba\x00'+sep+body+sep+'TOTAL: '+amount(sale)+
       '\nPagamento no caixa\nNao comprova pagamento\n\n\n\n';
@@ -154,7 +206,7 @@ $('finish').onclick=async()=>{
  try{
    const lines=[...cart.values()].map(x=>({...x}));
    const access=await token();requestId??=crypto.randomUUID();
-   const code=await call('/rest/v1/rpc/ls_totem_order',{p_request:requestId,p_items:lines.map(({i,j,size,qty})=>({i,j,size,qty}))},access);
+   const code=await call('/rest/v1/rpc/ls_totem_order_v2',{p_request:requestId,p_items:lines.map(({i,j,size,qty,crust,obs})=>({i,j,size,qty,crust,obs}))},access);
    if(typeof code!=='string'||!code.startsWith('TOT-'))throw Error('O envio não foi confirmado.');
    cart.clear();requestId=null;$('items').replaceChildren();node('h3','Pedido '+code,$('items'));node('p','Mostre este número e pague no caixa.',$('items'));
    $('feedback').textContent='';$('search').value='';selectCategory('all');
@@ -180,5 +232,26 @@ $('finish').onclick=async()=>{
    node('p','Não foi possível confirmar. '+err.message+' Toque em Enviar novamente.',$('items')).setAttribute('role','alert');
  }finally{sending=false;$('finish').textContent='Enviar pedido ao caixa';summary()}
 };
+// Keep Android Back inside the installed kiosk after the first interaction.
+const standalone=matchMedia('(display-mode: standalone)').matches ||
+                 matchMedia('(display-mode: fullscreen)').matches;
+if(standalone){
+ const armBack=()=>{
+   if(!history.state?.lsTotemBack)
+     history.pushState({...history.state,lsTotemBack:true},'',location.href);
+ };
+ document.addEventListener('click',event=>{
+   if(event.isTrusted)armBack();
+ },true);
+ window.addEventListener('popstate',()=>{
+   if($('custom').open)$('custom').close();
+   else if($('half').open)$('half').close();
+   else if($('bag').open){
+     if(receiptUntil)dismissReceipt();
+     else $('bag').close();
+   }
+   armBack();
+ });
+}
 render();summary();
 </script></html>
