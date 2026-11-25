@@ -453,6 +453,18 @@ button{cursor:pointer}.arm{border:0;border-radius:10px;padding:10px 12px;backgro
   <div class="metric"><span>Maior espera</span><b id="mWait">00:00</b></div>
 </div>
 <div class="pdv-toptools">
+  <button type="button" class="pdv-mode" onclick="document.getElementById('lsClub').showModal()">🎁 Clube La Supreme</button>
+  <dialog id="lsClub" style="max-width:420px;width:calc(100% - 32px);padding:20px;border-radius:14px">
+    <form method="dialog"><button type="submit">Fechar</button></form>
+    <h2>Clube La Supreme</h2>
+    <label>WhatsApp com DDD <input id="lsClubPhone" type="tel" autocomplete="off"></label>
+    <button type="button" onclick="lsClubRun(false)">Consultar saldo</button>
+    <p><label>Tamanho <select id="lsClubSize"><option>Broto</option><option>Grande</option></select></label>
+    <label>Sabor <select id="lsClubFlavor"><option>Calabresa</option><option>Mussarela</option><option>Frango com Catupiry</option></select></label></p>
+    <button type="button" onclick="lsClubRun(true)">Registrar resgate de 10 pontos</button>
+    <p role="status" id="lsClubStatus"></p>
+  </dialog>
+
   <input id="pdvSearch" class="pdv-search" placeholder="Buscar pedido, cliente, telefone ou endereço..." oninput="renderOperationalView()">
   <button id="modeAll" class="pdv-mode active" onclick="setOperationalMode('all')">Todos</button>
   <button id="modeDelivery" class="pdv-mode" onclick="setOperationalMode('delivery')">🛵 Delivery</button>
@@ -2258,5 +2270,35 @@ async function arVoid(id){
 }
 
 panelStart();
+</script>
+<script>
+let lsClubPending=null,lsClubBusy=false;
+async function lsClubRun(redeem){
+ if(lsClubBusy)return;
+ const get=id=>document.getElementById(id);
+ const phone=get('lsClubPhone').value.trim(),status=get('lsClubStatus');
+ const payload={p_telefone:phone};
+ if(redeem){
+  const tamanho=get('lsClubSize').value,sabor=get('lsClubFlavor').value;
+  const key=JSON.stringify([phone,tamanho,sabor]);
+  if(lsClubPending && lsClubPending.key!==key){status.textContent='Confirme primeiro o resgate anterior com o mesmo telefone, tamanho e sabor.';return}
+  if(!lsClubPending){
+   if(!confirm('Debitar 10 pontos por '+tamanho+' de '+sabor+'?'))return;
+   lsClubPending={key,id:crypto.randomUUID()};
+  }
+  Object.assign(payload,{p_id:lsClubPending.id,p_tamanho:tamanho,p_sabor:sabor});
+ }
+ lsClubBusy=true;status.textContent='Aguarde…';
+ try{
+  const data=await api('rpc/ls_clube_caixa',{method:'POST',body:JSON.stringify(payload)});
+  status.textContent=(redeem?'Resgate registrado. Lance a pizza de brinde para a cozinha. ':'')+'Saldo: '+Number(data.pontos).toLocaleString('pt-BR')+' pontos.';
+  if(redeem)lsClubPending=null;
+ }catch(e){
+  let detail;
+  try{detail=JSON.parse(e.message)}catch{}
+  if(redeem&&detail?.code==='P0001')lsClubPending=null;
+  status.textContent=detail?.code==='P0001'?detail.message:'Não foi possível confirmar. Tente novamente com os mesmos dados.';
+ }finally{lsClubBusy=false}
+}
 </script>
 </body></html>
