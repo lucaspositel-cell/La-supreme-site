@@ -1866,10 +1866,27 @@ function whatsappOrder(o){
  const msg=pickup?'Olá! Seu pedido da La Supreme está pronto para retirada. 🍕':'Olá! Seu pedido da La Supreme saiu para entrega. 🛵🍕';
  window.open(`https://wa.me/${full}?text=${encodeURIComponent(msg)}`,'_blank');
 }
-async function markManualPixPaid(id){
- if(!confirm('Confirmar que este Pix foi recebido?'))return;
- try{await api(`orders?id=eq.${encodeURIComponent(id)}`,{method:'PATCH',body:JSON.stringify({payment_status:'paid'})});loadOrders()}
- catch(e){alert('Não foi possível confirmar o Pix: '+e.message)}
+const confirmingPayments=new Set();
+async function confirmOrderPayment(id){
+ if(confirmingPayments.has(id))return;
+ confirmingPayments.add(id);
+ try{
+  const key=encodeURIComponent(id);
+  const [o]=await api('orders?id=eq.'+key+'&select=id,order_no,status,payment,payment_status,total');
+  if(!o||['cancelado','cancelada'].includes(o.status))return alert('Pedido cancelado ou não encontrado.');
+  if(arPaid(o.payment_status)){await loadOrders();if(document.getElementById('arOverlay'))await loadReceivables();return;}
+  if(panelFinanceAllowed()){
+   const debts=await api('delivery_receivables?order_id=eq.'+key+'&select=id,state');
+   if(debts.some(d=>d.state==='active')){await arOrderControl(id);return}
+  }else if(String(o.payment||'').trim().toLowerCase()!=='pix'){return panelDenyFinance();}
+  if(!confirm('Confirma que recebeu '+money(o.total)+' do pedido '+o.order_no+'?'))return;
+  const previous=o.payment_status==null?'is.null':'eq.'+encodeURIComponent(o.payment_status);
+  const updated=await api('orders?id=eq.'+key+'&status=not.in.(cancelado,cancelada)&payment_status='+previous,{method:'PATCH',body:JSON.stringify({payment_status:'paid'})});
+  if(!updated?.length)alert('O pedido mudou ou seu perfil não permite confirmar o pagamento. Confira o status atualizado.');
+  await loadOrders();
+  if(document.getElementById('arOverlay'))await loadReceivables();
+ }catch(e){alert('Não foi possível confirmar o pagamento: '+e.message)}
+ finally{confirmingPayments.delete(id)}
 }
 
 async function loadOrders(){
@@ -1934,7 +1951,7 @@ function render(rows){
       ${paymentBadge(o)}
       <div class="quick-contact">
         ${o.customer_phone?`<button onclick='whatsappOrder(${JSON.stringify(o).replace(/'/g,"&#39;")})'>💬 WhatsApp</button>`:''}
-        ${(String(o.payment||'').toLowerCase()==='pix'&&!['approved','paid','processed','accredited','manual'].includes(String(o.payment_status||'').toLowerCase()))?`<button onclick="markManualPixPaid('${esc(o.id)}')">✓ Confirmar Pix</button>`:''}
+        ${!arPaid(o.payment_status)&&!['cancelado','cancelada'].includes(o.status)&&(panelFinanceAllowed()||String(o.payment||'').trim().toLowerCase()==='pix')?`<button class="done" onclick="confirmOrderPayment('${esc(o.id)}')">✓ Confirmar pagamento</button>`:''}
       </div>
       <div class="items">${items.map(x=>`<div class="item"><b>${x.qty||1}× ${esc(x.name)}</b>${x.size?'<br><span class="muted">'+esc(x.size)+'</span>':''}${x.crust?'<br><span class="muted">Borda: '+esc(x.crust)+'</span>':''}${x.obs?'<div class="obsalert">⚠️ '+esc(x.obs)+'</div>':''}</div>`).join('')}</div>
       ${o.general_obs?`<div class="generalalert">⚠️ OBS. GERAL: ${esc(o.general_obs)}</div>`:''}
@@ -1945,7 +1962,6 @@ function render(rows){
         <div class="secondary-actions">
           <button class="print" onclick='printOrder(${JSON.stringify(o).replace(/'/g,"&#39;")})'>🖨️ Cozinha</button>
           ${o.fulfillment==='delivery'?`<button class="print" onclick='printDelivery(${JSON.stringify(o).replace(/'/g,"&#39;")})'>🛵 Delivery</button>`:''}
-          ${panelFinanceAllowed()&&!arPaid(o.payment_status)&&!['cancelado','cancelada'].includes(o.status)?`<button class="done" onclick="arOrderControl('${esc(o.id)}')">💳 Conferir pagamento / débito</button>`:''}
           ${cancelButton(o)}
         </div>
       </div>
@@ -2201,6 +2217,7 @@ function arAmount(v){const raw=String(v||'').trim();const s=raw.includes(',')?ra
 async function arAll(path){let rows=[];for(let offset=0;offset<50000;offset+=1000){const part=await api(path+'&limit=1000&offset='+offset);rows.push(...part);if(part.length<1000)return rows}throw Error('Volume excede esta consulta. Solicite um extrato por período.');}
 async function openReceivables(){
  if(!panelFinanceAllowed())return panelDenyFinance();
+ arMode='open';
  let overlay=document.getElementById('arOverlay');
  if(!overlay){overlay=document.createElement('div');overlay.id='arOverlay';overlay.className='ar-overlay';document.body.appendChild(overlay)}
  overlay.innerHTML=`<div class="ar-shell" role="dialog" aria-modal="true" aria-labelledby="arTitle"><div class="ar-head"><div><h2 id="arTitle">Débitos do delivery</h2><p class="muted">Recebimentos separados das vendas e do caixa. Nenhuma cobrança é enviada ao cliente.</p></div><button onclick="document.getElementById('arOverlay').remove()">Fechar</button></div><div id="arNotice" role="status">Carregando…</div><div id="arStats" class="ar-stats"></div><div class="ar-tools"><button onclick="arMode='open';renderReceivables()">Em aberto</button><button onclick="arMode='overdue';renderReceivables()">Vencidos</button><button onclick="arMode='paid';renderReceivables()">Quitados</button><button onclick="arMode='review';renderReceivables()">Conferir pagamentos</button><button onclick="arMode='void';renderReceivables()">Cancelados</button><button onclick="loadReceivables()">↻ Atualizar</button><input id="arSearch" type="search" placeholder="Cliente, telefone ou pedido" aria-label="Buscar débitos" oninput="renderReceivables()"></div><div id="arDetail"></div><div id="arList"></div></div>`;
@@ -2212,10 +2229,10 @@ async function loadReceivables(){
  notice.textContent='Atualizando…';
  try{
   const since=new Date(Date.now()-30*86400000).toISOString();
-  const [rows,orders]=await Promise.all([arAll('delivery_receivables?select=*&order=created_at.desc,id.asc'),arAll('orders?select=id,order_no,customer_name,customer_phone,total,status,payment,payment_status,created_at&status=in.(concluido,entrega)&created_at=gte.'+encodeURIComponent(since)+'&order=created_at.desc,id.asc')]);
-  arRows=rows;const ids=new Set(rows.map(r=>String(r.order_id)));
+  const [rows,orders]=await Promise.all([arAll('delivery_receivables?select=*&order=created_at.desc,id.asc'),arAll('orders?select=id,order_no,customer_name,customer_phone,total,status,payment,payment_status,created_at&or=(status.eq.concluido,and(status.eq.entrega,created_at.gte.'+encodeURIComponent(since)+'))&order=created_at.desc,id.asc')]);
+  arRows=rows;const ids=new Set(rows.filter(r=>r.state==='active').map(r=>String(r.order_id)));
   arReview=orders.filter(o=>!arPaid(o.payment_status)&&Number(o.total)>0&&!ids.has(String(o.id)));
-  notice.textContent='Débitos confirmados: todo o histórico. Conferência: pedidos em entrega ou concluídos dos últimos 30 dias. Pendente no cartão/dinheiro não comprova dívida.';
+  notice.textContent='Pedidos concluídos sem confirmação aparecem em Em aberto para conferência. Eles não entram no saldo de débitos confirmados.';
   renderReceivables();
  }catch(e){notice.textContent='Não foi possível carregar. Execute DEBITOS_DELIVERY.sql no Supabase da La Supreme e confira o perfil gerente/administrador. Detalhe: '+e.message;document.getElementById('arList').innerHTML='';document.getElementById('arStats').innerHTML=''}
 }
@@ -2223,14 +2240,19 @@ function renderReceivables(){
  if(!document.getElementById('arList'))return;
  const open=arRows.filter(r=>r.state==='active'&&arBalance(r)>0),over=open.filter(arOverdue);
  document.getElementById('arStats').innerHTML=`<div>Saldo confirmado<strong>${money(open.reduce((s,r)=>s+arBalance(r),0))}</strong></div><div>Vencido<strong>${money(over.reduce((s,r)=>s+arBalance(r),0))}</strong></div><div>Pedidos em aberto<strong>${open.length}</strong></div><div>Para conferir · 30 dias<strong>${arReview.length}</strong></div>`;
+ const pending=arReview.filter(r=>r.status==='concluido');
  const q=String(document.getElementById('arSearch')?.value||'').toLowerCase();
  let rows=arMode==='review'?arReview:arRows.filter(r=>arMode==='void'?r.state==='void':arMode==='paid'?r.state==='active'&&arBalance(r)===0:arMode==='overdue'?arOverdue(r):r.state==='active'&&arBalance(r)>0);
  rows=rows.filter(r=>[r.order_no,r.customer_name,r.customer_phone].join(' ').toLowerCase().includes(q));
- document.getElementById('arList').innerHTML=`<h3>${({open:'Débitos confirmados em aberto',overdue:'Débitos vencidos',paid:'Quitados',review:'Pagamentos a conferir — não são dívidas confirmadas',void:'Cobranças canceladas'})[arMode]}</h3>`+(rows.map(r=>arMode==='review'?`<article class="ar-card"><div><b>${esc(r.order_no)}</b> · ${esc(r.customer_name||'Cliente')}<p>${esc(r.customer_phone||'')} · ${esc(r.payment||'')} · status: ${esc(r.payment_status||'não informado')}</p><strong>${money(r.total)}</strong></div><button onclick="arOpenForm('${esc(r.id)}')">Conferir / abrir débito</button></article>`:`<article class="ar-card"><div><b>${esc(r.order_no)}</b> · ${esc(r.customer_name||'Cliente')}<p>${esc(r.customer_phone||'')} · ${r.due_date?'Vence em '+esc(r.due_date.split('-').reverse().join('/')):'Sem vencimento'} ${arOverdue(r)?'· VENCIDO':''}</p><p>Total: ${money(r.principal)} · Recebido: ${money(r.received)} · <strong>Saldo: ${money(arBalance(r))}</strong></p><p>${esc(r.note)}${r.state==='void'?'<br>Cancelamento: '+esc(r.void_reason):''}</p></div><button onclick="arDetail('${esc(r.id)}')">Ver / receber</button></article>`).join('')||'<p class="muted">Nenhum registro neste filtro.</p>');
+ document.getElementById('arList').innerHTML=`<h3>${({open:'Em aberto: débitos e pagamentos pendentes',overdue:'Débitos vencidos',paid:'Quitados',review:'Pagamentos a conferir — não são dívidas confirmadas',void:'Cobranças canceladas'})[arMode]}</h3>`+(rows.map(r=>arMode==='review'?`<article class="ar-card"><div><b>${esc(r.order_no)}</b> · ${esc(r.customer_name||'Cliente')}<p>${esc(r.customer_phone||'')} · ${esc(r.payment||'')} · status: ${esc(r.payment_status||'não informado')}</p><strong>${money(r.total)}</strong></div><button onclick="arOpenForm('${esc(r.id)}')">Conferir / abrir débito</button></article>`:`<article class="ar-card"><div><b>${esc(r.order_no)}</b> · ${esc(r.customer_name||'Cliente')}<p>${esc(r.customer_phone||'')} · ${r.due_date?'Vence em '+esc(r.due_date.split('-').reverse().join('/')):'Sem vencimento'} ${arOverdue(r)?'· VENCIDO':''}</p><p>Total: ${money(r.principal)} · Recebido: ${money(r.received)} · <strong>Saldo: ${money(arBalance(r))}</strong></p><p>${esc(r.note)}${r.state==='void'?'<br>Cancelamento: '+esc(r.void_reason):''}</p></div><button onclick="arDetail('${esc(r.id)}')">Ver / receber</button></article>`) .join('')||((arMode==='open'&&pending.some(matchesPending))?'':'<p class="muted">Nenhum registro neste filtro.</p>'));
+ function matchesPending(r){return [r.order_no,r.customer_name,r.customer_phone].join(' ').toLowerCase().includes(q);}
+ if(arMode==='open'&&pending.some(matchesPending)){
+  document.getElementById('arList').insertAdjacentHTML('beforeend','<h3>Aguardando confirmação</h3>'+pending.filter(matchesPending).map(r=>`<article class="ar-card"><div><b>${esc(r.order_no)}</b> · ${esc(r.customer_name||'Cliente')}<p>${esc(r.customer_phone||'')} · ${esc(r.payment||'')}</p><strong>${money(r.total)}</strong></div><button onclick="confirmOrderPayment('${esc(r.id)}')">✓ Confirmar pagamento</button><button onclick="arOpenForm('${esc(r.id)}')">Registrar débito</button></article>`).join(''));
+ }
 }
 async function arOpenForm(orderId){
  if(!panelFinanceAllowed())return panelDenyFinance();
- const existing=arRows.find(r=>String(r.order_id)===String(orderId));if(existing)return arDetail(existing.id);
+ const existing=arRows.find(r=>r.state==='active'&&String(r.order_id)===String(orderId));if(existing)return arDetail(existing.id);
  let o=arReview.find(x=>String(x.id)===String(orderId))||latestAllOrders.find(x=>String(x.id)===String(orderId));
  if(!o){const rows=await api('orders?id=eq.'+encodeURIComponent(orderId)+'&select=id,order_no,customer_name,customer_phone,total,payment_status');o=rows[0]}
  if(!o)return alert('Pedido não encontrado.');
