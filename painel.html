@@ -462,7 +462,7 @@ button{cursor:pointer}.arm{border:0;border-radius:10px;padding:10px 12px;backgro
       <section class="club-balance" aria-label="Saldo do cliente"><span>Saldo disponível</span><strong id="lsClubBalance">—</strong><small id="lsClubProgress">Consulte o WhatsApp para ver os pontos.</small></section>
       <fieldset id="lsClubChoices" disabled><legend>Escolha a pizza de brinde</legend>
         <label for="lsClubSize">Tamanho</label><select id="lsClubSize"><option value="">Escolha um tamanho</option><option value="Broto">Broto · 25 cm</option><option value="Grande">Grande · 35 cm</option></select>
-        <label for="lsClubFlavor">Sabor</label><select id="lsClubFlavor"><option value="">Escolha um sabor</option><option>Calabresa</option><option>Mussarela</option><option>Frango com Catupiry</option></select>
+        <label for="lsClubFlavor">Sabor</label><select id="lsClubFlavor"><option value="">Escolha primeiro o tamanho</option></select>
       </fieldset>
       <button class="club-redeem" id="lsClubRedeem" type="button" onclick="lsClubRun(true)" disabled>Resgatar por 10 pontos</button>
       <p role="status" id="lsClubStatus"></p>
@@ -2316,7 +2316,19 @@ function lsClubSync(){
 }
 lsClubEl('lsClubConsulta').onsubmit=e=>{e.preventDefault();lsClubRun(false)};
 lsClubEl('lsClubPhone').oninput=()=>{lsClubChecked=null;lsClubEl('lsClubStatus').textContent='';lsClubEl('lsClubLink').replaceChildren();lsClubSync()};
-lsClubEl('lsClubSize').onchange=lsClubEl('lsClubFlavor').onchange=lsClubSync;
+const lsClubSabores={
+ Grande:['Mussarela','Mista','Calabresa','Frango com Catupiry'],
+ Broto:['Brigadeiro','Banana Nevada','Romeu e Julieta']
+};
+function lsClubAtualizarSabores(){
+ const size=lsClubEl('lsClubSize').value;
+ const flavor=lsClubEl('lsClubFlavor');
+ flavor.replaceChildren(new Option(size?'Escolha um sabor':'Escolha primeiro o tamanho',''));
+ for(const nome of lsClubSabores[size]||[])flavor.add(new Option(nome,nome));
+ lsClubSync();
+}
+lsClubEl('lsClubSize').onchange=lsClubAtualizarSabores;
+lsClubEl('lsClubFlavor').onchange=lsClubSync;
 async function lsClubRun(redeem){
  if(lsClubBusy)return;
  const get=lsClubEl;
@@ -2341,10 +2353,10 @@ async function lsClubRun(redeem){
   if(redeem){
    lsClubPending=null;
    status.textContent='Resgate registrado: '+tamanho+' de '+sabor+'. Lance a pizza de brinde para a cozinha.';
-   get('lsClubSize').value='';get('lsClubFlavor').value='';
+   get('lsClubSize').value='';lsClubAtualizarSabores();
   }else{
    status.textContent='';
-   get('lsClubSize').value='';get('lsClubFlavor').value='';
+   get('lsClubSize').value='';lsClubAtualizarSabores();
   }
  }catch(e){
   let detail;try{detail=JSON.parse(e.message)}catch{}
