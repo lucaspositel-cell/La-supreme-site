@@ -458,7 +458,7 @@ button{cursor:pointer}.arm{border:0;border-radius:10px;padding:10px 12px;backgro
     <form method="dialog"><button type="submit">Fechar</button></form>
     <h2>Clube La Supreme</h2>
     <label>WhatsApp com DDD <input id="lsClubPhone" type="tel" autocomplete="off"></label>
-    <button type="button" onclick="lsClubRun(false)">Consultar saldo</button>
+    <button type="button" onclick="lsClubRun(false)">Consultar saldo</button><button type="button" onclick="lsClubEmitir()">Gerar link para o cliente</button><p id="lsClubLink"></p>
     <p><label>Tamanho <select id="lsClubSize"><option>Broto</option><option>Grande</option></select></label>
     <label>Sabor <select id="lsClubFlavor"><option>Calabresa</option><option>Mussarela</option><option>Frango com Catupiry</option></select></label></p>
     <button type="button" onclick="lsClubRun(true)">Registrar resgate de 10 pontos</button>
@@ -2321,6 +2321,26 @@ async function lsClubRun(redeem){
   if(redeem&&detail?.code==='P0001')lsClubPending=null;
   status.textContent=detail?.code==='P0001'?detail.message:'Não foi possível confirmar. Tente novamente com os mesmos dados.';
  }finally{lsClubBusy=false}
+}
+</script>
+<script>
+let lsClubLinkBusy=false;
+async function lsClubEmitir(){
+ if(lsClubLinkBusy)return;
+ const phone=document.getElementById('lsClubPhone').value.trim();
+ const box=document.getElementById('lsClubLink');
+ if(!confirm('Gerar um link pessoal? O link anterior deste número deixará de funcionar.'))return;
+ lsClubLinkBusy=true;box.textContent='Gerando…';
+ try{
+  const token=await api('rpc/ls_clube_emitir_link',{method:'POST',body:JSON.stringify({p_telefone:phone})});
+  if(typeof token!=='string'||! /^[a-f0-9]{64}$/.test(token))throw Error();
+  const url='https://www.lasupremepizza.com.br/#clube='+token;
+  const input=document.createElement('input');input.readOnly=true;input.value=url;input.setAttribute('aria-label','Link pessoal do Clube');input.onclick=()=>input.select();
+  const celular=phone.replace(/\D/g,'').replace(/^55(?=\d{10,11}$)/,'');
+  const a=document.createElement('a');a.textContent='Abrir WhatsApp com o link';a.target='_blank';a.rel='noopener noreferrer';a.href='https://wa.me/55'+celular+'?text='+encodeURIComponent('Olá! Este é seu link pessoal para acompanhar os pontos do Clube La Supreme. Não compartilhe: '+url);
+  box.replaceChildren(input,document.createElement('br'),a);
+ }catch{box.textContent='Não foi possível gerar o link. Confira o WhatsApp com DDD.';}
+ finally{lsClubLinkBusy=false;}
 }
 </script>
 </body></html>
