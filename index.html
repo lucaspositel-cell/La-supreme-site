@@ -3963,6 +3963,20 @@ async function lsClubeAtualizar(){
 }
 window.addEventListener('focus',()=>{if(document.getElementById('lsClubeDialog').open||document.getElementById('lsClubeCarrinho'))lsClubeAtualizar();});
 if(lsClubeEntrada)lsClubeAbrir();
+if(lsClubeToken){
+ const button=document.querySelector('.top-action[onclick="lsClubeAbrir()"]');
+ const atualizar=async()=>{
+  if(document.hidden||!lsClubeToken||!button)return;
+  try{
+   const r=await fetch(SUPABASE_URL+'/rest/v1/rpc/ls_clube_cliente',{method:'POST',cache:'no-store',headers:{apikey:SUPABASE_ANON_KEY,'Content-Type':'application/json'},body:JSON.stringify({p_token:lsClubeToken})});
+   if(!r.ok)return;
+   const x=await r.json();
+   button.querySelector('small').textContent=x?.brindes>0?'Brinde disponível':'Meus pontos';
+  }catch{}
+ };
+ atualizar();setInterval(atualizar,30000);
+}
+
 </script>
 </body>
 </html>

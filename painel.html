@@ -452,7 +452,8 @@ button{cursor:pointer}.arm{border:0;border-radius:10px;padding:10px 12px;backgro
   <div class="metric"><span>Em preparo</span><b id="mPrep">0</b></div>
   <div class="metric"><span>Maior espera</span><b id="mWait">00:00</b></div>
 </div>
-<div class="pdv-toptools">
+<div class="pdv-toptools"><button id="lsAvisoBadge" type="button" class="pdv-mode" onclick="document.getElementById('lsAvisos').showModal();lsAvisoAtualizar()">🔔 Avisos do Clube</button>
+<dialog id="lsAvisos" style="width:min(92vw,530px);max-height:80vh;padding:20px;border-radius:14px"><form method="dialog"><button>Fechar</button></form><h2>Brindes disponíveis</h2><p>Envie a mensagem e depois marque o aviso como enviado.</p><p id="lsAvisoStatus" role="status"></p><div id="lsAvisoLista"></div></dialog>
   <button type="button" class="pdv-mode" onclick="document.getElementById('lsClub').showModal()">🎁 Clube La Supreme</button>
   <dialog id="lsClub" style="max-width:420px;width:calc(100% - 32px);padding:20px;border-radius:14px">
     <form method="dialog"><button type="submit">Fechar</button></form>
@@ -2205,6 +2206,7 @@ async function panelStart(){
   }catch(e){document.getElementById('notice').textContent='Acesso ao painel bloqueado: '+e.message;return}
   setFilter(filter);
   setInterval(loadOrders,5000);
+  lsAvisoAtualizar();setInterval(lsAvisoAtualizar,30000);
 }
 async function arOrderControl(id){if(!panelFinanceAllowed())return panelDenyFinance();await openReceivables();return arOpenForm(id)}
 // Controle financeiro separado: nunca confunde status operacional com pagamento.
@@ -2341,6 +2343,48 @@ async function lsClubEmitir(){
   box.replaceChildren(input,document.createElement('br'),a);
  }catch{box.textContent='Não foi possível gerar o link. Confira o WhatsApp com DDD.';}
  finally{lsClubLinkBusy=false;}
+}
+</script>
+<script>
+let lsAvisoBusy=false;
+const lsAvisoPrepared=new Map();
+async function lsAvisoAtualizar(payload={}){
+ if(lsAvisoBusy)return;
+ lsAvisoBusy=true;
+ const el=id=>document.getElementById(id);
+ try{
+  const rows=await api('rpc/ls_clube_avisos',{method:'POST',body:JSON.stringify(payload)});
+  el('lsAvisoBadge').textContent='🔔 Avisos do Clube'+(rows.length?' ('+rows.length+')':'');
+  el('lsAvisoBadge').style.background=rows.length?'#ffd36b':'';
+  el('lsAvisoBadge').style.color=rows.length?'#321b14':'';
+  el('lsAvisoStatus').textContent=rows.length?'':'Nenhum aviso pendente.';
+  const list=el('lsAvisoLista');list.replaceChildren();
+  for(const x of rows){
+   const key=x.telefone+':'+x.marco;
+   const row=document.createElement('section');row.style.margin='12px 0';
+   const title=document.createElement('strong');title.textContent=x.telefone+' · '+Number(x.pontos).toLocaleString('pt-BR')+' pontos';
+   const send=document.createElement('button');send.type='button';send.textContent='Preparar WhatsApp';
+   const link=document.createElement('a');link.textContent='Abrir WhatsApp';link.target='_blank';link.rel='noopener noreferrer';link.hidden=true;
+   const done=document.createElement('button');done.type='button';done.textContent='Marcar como enviado';done.hidden=true;
+   const show=url=>{link.href=url;link.hidden=false;done.hidden=false;send.hidden=true};
+   if(lsAvisoPrepared.has(key))show(lsAvisoPrepared.get(key));
+   send.onclick=async()=>{
+    send.disabled=true;
+    try{
+     const token=await api('rpc/ls_clube_emitir_link',{method:'POST',body:JSON.stringify({p_telefone:x.telefone})});
+     if(typeof token!=='string'||! /^[a-f0-9]{64}$/.test(token))throw Error();
+     const msg='Olá! Você já tem '+x.brindes+(x.brindes===1?' pizza de brinde':' pizzas de brinde')+' no Clube La Supreme! Confira seus pontos no seu link pessoal: https://www.lasupremepizza.com.br/#clube='+token;
+     const url='https://wa.me/55'+x.telefone+'?text='+encodeURIComponent(msg);
+     lsAvisoPrepared.set(key,url);
+     if(row.isConnected)show(url);
+    }catch{el('lsAvisoStatus').textContent='Não foi possível preparar o WhatsApp.'}
+    finally{send.disabled=false}
+   };
+   done.onclick=()=>{if(confirm('Você já enviou a mensagem para este cliente?'))lsAvisoAtualizar({p_telefone:x.telefone,p_marco:x.marco})};
+   row.append(title,document.createElement('br'),send,link,done);list.append(row);
+  }
+ }catch{el('lsAvisoStatus').textContent='Não foi possível consultar os avisos.'}
+ finally{lsAvisoBusy=false}
 }
 </script>
 </body></html>
