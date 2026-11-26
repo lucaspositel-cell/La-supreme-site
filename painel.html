@@ -455,15 +455,19 @@ button{cursor:pointer}.arm{border:0;border-radius:10px;padding:10px 12px;backgro
 <div class="pdv-toptools"><button id="lsAvisoBadge" type="button" class="pdv-mode" onclick="document.getElementById('lsAvisos').showModal();lsAvisoAtualizar()">🔔 Avisos do Clube</button>
 <dialog id="lsAvisos" style="width:min(92vw,530px);max-height:80vh;padding:20px;border-radius:14px"><form method="dialog"><button>Fechar</button></form><h2>Brindes disponíveis</h2><p>Envie a mensagem e depois marque o aviso como enviado.</p><p id="lsAvisoStatus" role="status"></p><div id="lsAvisoLista"></div></dialog>
   <button type="button" class="pdv-mode" onclick="document.getElementById('lsClub').showModal()">🎁 Clube La Supreme</button>
-  <dialog id="lsClub" style="max-width:420px;width:calc(100% - 32px);padding:20px;border-radius:14px">
-    <form method="dialog"><button type="submit">Fechar</button></form>
-    <h2>Clube La Supreme</h2>
-    <label>WhatsApp com DDD <input id="lsClubPhone" type="tel" autocomplete="off"></label>
-    <button type="button" onclick="lsClubRun(false)">Consultar saldo</button><button type="button" onclick="lsClubEmitir()">Gerar link para o cliente</button><p id="lsClubLink"></p>
-    <p><label>Tamanho <select id="lsClubSize"><option>Broto</option><option>Grande</option></select></label>
-    <label>Sabor <select id="lsClubFlavor"><option>Calabresa</option><option>Mussarela</option><option>Frango com Catupiry</option></select></label></p>
-    <button type="button" onclick="lsClubRun(true)">Registrar resgate de 10 pontos</button>
-    <p role="status" id="lsClubStatus"></p>
+  <dialog id="lsClub" aria-labelledby="lsClubeResgateTitulo">
+    <header class="club-head"><div><p>FIDELIDADE · LA SUPREME</p><h2 id="lsClubeResgateTitulo">Resgatar pizza</h2></div><form method="dialog"><button type="submit" aria-label="Fechar resgate">✕</button></form></header>
+    <div class="club-body">
+      <form id="lsClubConsulta" class="club-lookup"><label for="lsClubPhone">WhatsApp do cliente com DDD</label><div><input id="lsClubPhone" type="tel" autocomplete="off" placeholder="(15) 99999-9999" required><button id="lsClubConsult" type="submit">Consultar saldo</button></div></form>
+      <section class="club-balance" aria-label="Saldo do cliente"><span>Saldo disponível</span><strong id="lsClubBalance">—</strong><small id="lsClubProgress">Consulte o WhatsApp para ver os pontos.</small></section>
+      <fieldset id="lsClubChoices" disabled><legend>Escolha a pizza de brinde</legend>
+        <label for="lsClubSize">Tamanho</label><select id="lsClubSize"><option value="">Escolha um tamanho</option><option value="Broto">Broto · 25 cm</option><option value="Grande">Grande · 35 cm</option></select>
+        <label for="lsClubFlavor">Sabor</label><select id="lsClubFlavor"><option value="">Escolha um sabor</option><option>Calabresa</option><option>Mussarela</option><option>Frango com Catupiry</option></select>
+      </fieldset>
+      <button class="club-redeem" id="lsClubRedeem" type="button" onclick="lsClubRun(true)" disabled>Resgatar por 10 pontos</button>
+      <p role="status" id="lsClubStatus"></p>
+      <details><summary>Enviar link de pontos ao cliente</summary><button type="button" onclick="lsClubEmitir()">Gerar link para o cliente</button><p id="lsClubLink"></p></details>
+    </div>
   </dialog>
 
   <input id="pdvSearch" class="pdv-search" placeholder="Buscar pedido, cliente, telefone ou endereço..." oninput="renderOperationalView()">
@@ -2296,33 +2300,58 @@ async function arVoid(id){
 panelStart();
 </script>
 <script>
-let lsClubPending=null,lsClubBusy=false;
+let lsClubPending=null,lsClubBusy=false, lsClubChecked=null;
+const lsClubEl=id=>document.getElementById(id);
+function lsClubSync(){
+ const get=lsClubEl;
+ const current=lsClubChecked?.phone===get('lsClubPhone').value.trim();
+ const points=current?lsClubChecked.points:null;
+ get('lsClubBalance').textContent=points===null?'—':points.toLocaleString('pt-BR')+' pontos';
+ get('lsClubProgress').textContent=points===null?'Consulte o WhatsApp para ver os pontos.':points>=10?Math.floor(points/10)+' brinde(s) disponível(is)':'Faltam '+(10-points).toLocaleString('pt-BR')+' pontos para o próximo brinde.';
+ get('lsClubChoices').disabled=lsClubBusy||!!lsClubPending||!(points>=10);
+ get('lsClubPhone').disabled=lsClubBusy||!!lsClubPending;
+ get('lsClubConsult').disabled=lsClubBusy||!!lsClubPending;
+ get('lsClubRedeem').disabled=lsClubBusy||(!lsClubPending&&(!(points>=10)||!get('lsClubSize').value||!get('lsClubFlavor').value));
+ get('lsClubRedeem').textContent=lsClubPending?'Conferir / repetir o mesmo resgate':'Resgatar por 10 pontos';
+}
+lsClubEl('lsClubConsulta').onsubmit=e=>{e.preventDefault();lsClubRun(false)};
+lsClubEl('lsClubPhone').oninput=()=>{lsClubChecked=null;lsClubEl('lsClubStatus').textContent='';lsClubEl('lsClubLink').replaceChildren();lsClubSync()};
+lsClubEl('lsClubSize').onchange=lsClubEl('lsClubFlavor').onchange=lsClubSync;
 async function lsClubRun(redeem){
  if(lsClubBusy)return;
- const get=id=>document.getElementById(id);
+ const get=lsClubEl;
  const phone=get('lsClubPhone').value.trim(),status=get('lsClubStatus');
  const payload={p_telefone:phone};
+ let tamanho,sabor;
  if(redeem){
-  const tamanho=get('lsClubSize').value,sabor=get('lsClubFlavor').value;
-  const key=JSON.stringify([phone,tamanho,sabor]);
-  if(lsClubPending && lsClubPending.key!==key){status.textContent='Confirme primeiro o resgate anterior com o mesmo telefone, tamanho e sabor.';return}
+  tamanho=get('lsClubSize').value;sabor=get('lsClubFlavor').value;
   if(!lsClubPending){
-   if(!confirm('Debitar 10 pontos por '+tamanho+' de '+sabor+'?'))return;
-   lsClubPending={key,id:crypto.randomUUID()};
+   if(lsClubChecked?.phone!==phone||lsClubChecked.points<10||!tamanho||!sabor)return;
+   if(!confirm('Resgatar '+tamanho+' de '+sabor+' por 10 pontos?'))return;
+   lsClubPending={id:crypto.randomUUID()};
   }
   Object.assign(payload,{p_id:lsClubPending.id,p_tamanho:tamanho,p_sabor:sabor});
  }
- lsClubBusy=true;status.textContent='Aguarde…';
+ lsClubBusy=true;status.textContent='Aguarde…';lsClubSync();
  try{
   const data=await api('rpc/ls_clube_caixa',{method:'POST',body:JSON.stringify(payload)});
-  status.textContent=(redeem?'Resgate registrado. Lance a pizza de brinde para a cozinha. ':'')+'Saldo: '+Number(data.pontos).toLocaleString('pt-BR')+' pontos.';
-  if(redeem)lsClubPending=null;
+  const points=Number(data?.pontos);
+  if(data?.pontos==null||!Number.isFinite(points)||(redeem&&!data?.resgate))throw Error();
+  lsClubChecked={phone,points};
+  if(redeem){
+   lsClubPending=null;
+   status.textContent='Resgate registrado: '+tamanho+' de '+sabor+'. Lance a pizza de brinde para a cozinha.';
+   get('lsClubSize').value='';get('lsClubFlavor').value='';
+  }else{
+   status.textContent='';
+   get('lsClubSize').value='';get('lsClubFlavor').value='';
+  }
  }catch(e){
-  let detail;
-  try{detail=JSON.parse(e.message)}catch{}
+  let detail;try{detail=JSON.parse(e.message)}catch{}
   if(redeem&&detail?.code==='P0001')lsClubPending=null;
-  status.textContent=detail?.code==='P0001'?detail.message:'Não foi possível confirmar. Tente novamente com os mesmos dados.';
- }finally{lsClubBusy=false}
+  lsClubChecked=null;
+  status.textContent=detail?.code==='P0001'?detail.message:redeem?'Resgate não confirmado. Use o botão para repetir a mesma solicitação, sem duplicar.':'Não foi possível consultar. Tente novamente.';
+ }finally{lsClubBusy=false;lsClubSync()}
 }
 </script>
 <script>
@@ -2387,4 +2416,23 @@ async function lsAvisoAtualizar(payload={}){
  finally{lsAvisoBusy=false}
 }
 </script>
-</body></html>
+<style>
+#lsClub{width:min(94vw,540px);max-height:90vh;padding:0;border:1px solid #a97746;border-radius:20px;background:#fff7ea;color:#301a12}
+#lsClub::backdrop{background:#190d0ac0}
+#lsClub .club-head{display:flex;align-items:center;justify-content:space-between;gap:12px;padding:17px 20px;background:#70231c;color:#fff8ec}
+#lsClub .club-head p{margin:0;color:#ffcf71;font-size:12px;letter-spacing:.1em;font-weight:800}
+#lsClub .club-head h2{margin:4px 0 0;color:#fff8ec}
+#lsClub .club-body{padding:18px;display:grid;gap:12px}
+#lsClub .club-lookup>div{display:flex;flex-wrap:wrap;gap:8px}
+#lsClub .club-lookup input{flex:1 1 170px}
+#lsClub :is(input,select){box-sizing:border-box;background:#fff;color:#301a12;border:1px solid #c09573;border-radius:9px;padding:10px}
+#lsClub .club-balance{display:grid;gap:4px;padding:13px 15px;border-radius:13px;background:#fff0cb;border:1px solid #e9bd72}
+#lsClubBalance{font-size:29px;color:#54261a}
+#lsClubChoices{display:grid;gap:5px;border:1px solid #d8b38f;border-radius:12px;padding:10px}
+#lsClubChoices:disabled{opacity:.6}
+#lsClub button{border:0;border-radius:10px;padding:10px 14px;background:#ffd16f;color:#391e13;font-weight:800;min-height:42px}
+#lsClub button:disabled{opacity:.5;cursor:default}
+#lsClub .club-redeem{background:#79271f;color:#fff;font-size:16px}
+#lsClubStatus{margin:0;font-weight:700;color:#5f211b}
+#lsClub details{border-top:1px solid #e1c4a5;padding-top:8px}
+</style></body></html>
